@@ -9,7 +9,28 @@
  * argument is a `String` with the title of the page, the second
  * argument is an `Html` object containing the body of the page.
  *@
-@main("Welcome to Play") {
+@main("Логистика заказов") {
+
+ <script src="@routes.Assets.versioned("javascripts/products.js")" type="text/javascript"></script>
+
+
+<div class="container-fluid">
+  <div class="col-md-offset-4 col-md-4">
+   <h2 class="text-primary text-center"> Наименование отчета</h2>
+  </div>
+
+
+  <div id="graph" class="col-md-offset-1 col-md-10" >
+   <div class="demo-section k-content wide">
+    <div id="chart"></div>
+   </div>
+  </div>
+  <p></p>
+  <div id="grid" class="col-md-12" >
+   <div id="grid"></div>
+  </div>
+
+</div>
 
 
 
