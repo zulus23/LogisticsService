@@ -26,7 +26,7 @@ $(document).ready(function() {
           url: "api/typereport",
           contentType: "application/json; charset=utf-8",
           dataType: 'json',
-          data: JSON.stringify({key: "value"}),
+          //data: JSON.stringify({key: "value"}),
           success: function(data) {
             options.success(data);
           }
@@ -42,7 +42,7 @@ $(document).ready(function() {
           url: "api/listdb",
           contentType: "application/json; charset=utf-8",
           dataType: 'json',
-          data: JSON.stringify({key: "value"}),
+          //data: JSON.stringify({key: "value"}),
           success: function(data) {
             options.success(data);
           }
