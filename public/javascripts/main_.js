@@ -18,6 +18,39 @@ $(document).ready(function() {
   ]
 */
 
+  var dataSourceTypeReport = new kendo.data.DataSource({
+    transport: {
+      read: function(options) {
+        $.ajax({
+          type: "GET",
+          url: "api/typereport",
+          contentType: "application/json; charset=utf-8",
+          dataType: 'json',
+          data: JSON.stringify({key: "value"}),
+          success: function(data) {
+            options.success(data);
+          }
+        });
+      }
+    }
+  });
+  var dataSourceDB = new kendo.data.DataSource({
+    transport: {
+      read: function(options) {
+        $.ajax({
+          type: "GET",
+          url: "api/listdb",
+          contentType: "application/json; charset=utf-8",
+          dataType: 'json',
+          data: JSON.stringify({key: "value"}),
+          success: function(data) {
+            options.success(data);
+          }
+        });
+      }
+    }
+  });
+
 
   kendo.culture("ru-RU");
   // create DatePicker from input HTML element
@@ -37,7 +70,7 @@ $(document).ready(function() {
   $("#enterprise").kendoDropDownList({
     dataTextField: "name",
     dataValueField: "id",
-    dataSource: {   // specifies data protocol
+    dataSource: dataSourceDB/*{   // specifies data protocol
       transport: {
       read: {
         type: "get",
@@ -45,7 +78,7 @@ $(document).ready(function() {
             url: "http://localhost:9000/api/listdb"
       }
       }
-    },
+    }*/,
     index: 0,
     change: onChange
   });
@@ -60,7 +93,7 @@ $(document).ready(function() {
   $("#reports").kendoDropDownList({
     dataTextField: "name",
     dataValueField: "id",
-    dataSource: {
+    dataSource:dataSourceTypeReport/* {
        // specifies data protocol
       transport: {
 
@@ -71,7 +104,7 @@ $(document).ready(function() {
         }
       },
 
-    },
+    }*/,
     index: 0,
     change: onChange
   })
