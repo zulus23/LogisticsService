@@ -1,22 +1,5 @@
 $(document).ready(function() {
-/*
-  var data = [
-    { text: "ГОТЭК", value: "1" },
-    { text: "ЦЕНТР", value: "2" },
-    { text: "ГСЗ", value: "3" }
-  ];
-*/
-/*
-  var reportData =[
-    { text: "Все заказы", value: "1" },
-    { text: "Точность открытия заказов", value: "2" },
-    { text: "Точность планирования заказов", value: "3" },
-    { text: "Точность постановки заказов в производство", value: "4" },
-    { text: "Точность выхода заказов на склад", value: "5" },
-    { text: "Точность отгрузки заказов", value: "6" },
-    { text: "Точность доставки заказов", value: "7" }
-  ]
-*/
+
 
   var dataSourceTypeReport = new kendo.data.DataSource({
     transport: {
@@ -54,13 +37,13 @@ $(document).ready(function() {
 
   kendo.culture("ru-RU");
   // create DatePicker from input HTML element
-  $("#datepickerBegin").kendoDatePicker({
+  $("#dateBegin").kendoDatePicker({
     format: kendo.culture().calendar.patterns.d
   });
 
 
 
-  $("#datepickerEnd").kendoDatePicker({
+  $("#dateEnd").kendoDatePicker({
 
 
     // display month and year in the input
@@ -114,7 +97,7 @@ $(document).ready(function() {
     var value = $("#enterprise").val();
   }
 
-  $("#grid").kendoGrid({
+  /*$("#grid").kendoGrid({
     dataSource: {
       data: products,
       schema: {
@@ -144,7 +127,7 @@ $(document).ready(function() {
       { field: "UnitsInStock", title: "Units In Stock", width: "130px" },
       { field: "Discontinued", width: "130px" }
     ]
-  });
+  });*/
 
   createChart();
   $(document).bind("kendo:skinChange", createChart);

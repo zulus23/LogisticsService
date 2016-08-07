@@ -9,6 +9,12 @@ GET     /count                      controllers.CountController.count
 # An example controller showing how to write asynchronous code
 GET     /message                    controllers.AsyncController.message
 
+GET    /report/precisioncreateorder controllers.PrecisionCreateOrderController.show
+POST   /runreport                   controllers.HomeController.runReport
+
+GET  /api/listorder                    controllers.PrecisionCreateOrderController.listorder(dateBegin:Option[String], dateEnd:Option[String],site: Option[String] , mode :Option[String])
+
+
 
 GET     /api/typereport             controllers.HelperController.getTypeReport
 GET     /api/listdb                 controllers.HelperController.listdb

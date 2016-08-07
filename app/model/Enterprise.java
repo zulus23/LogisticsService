@@ -4,12 +4,15 @@ package model;
  * Created by Gukov on 05.08.2016.
  */
 public class Enterprise extends Base{
+    private String nameInDb;
 
-
-    public Enterprise(int id, String name) {
+    public Enterprise(int id, String name, String nameInDb) {
         super(id,name);
+        this.nameInDb = nameInDb;
 
     }
+
+
 
     @Override
     public boolean equals(Object o) {
@@ -28,5 +31,9 @@ public class Enterprise extends Base{
         int result = this.getId();
         result = 31 * result + getName().hashCode();
         return result;
+    }
+
+    public String getNameInDb() {
+        return nameInDb;
     }
 }

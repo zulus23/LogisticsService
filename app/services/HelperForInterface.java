@@ -10,9 +10,12 @@ import java.util.List;
  * Created by Gukov on 05.08.2016.
  */
 public class HelperForInterface {
+    List<TypeReport> typeReports = new ArrayList<>();
+    List<Enterprise> enterprises = new ArrayList<>();
+
 
      public List<TypeReport> typeReportList(){
-         List<TypeReport> typeReports = new ArrayList<>();
+         typeReports.clear();
          typeReports.add(new TypeReport(1,"Все заказы"));
          typeReports.add(new TypeReport(2,"Точность открытия заказов"));
          typeReports.add(new TypeReport(3,"Точность планирования заказов"));
@@ -25,11 +28,16 @@ public class HelperForInterface {
      }
 
     public List<Enterprise> listDB() {
-        List<Enterprise> enterprises = new ArrayList<>();
-            enterprises.add(new Enterprise(1,"ГОТЭК"));
-            enterprises.add(new Enterprise(2,"ЦЕНТР"));
-            enterprises.add(new Enterprise(3,"ГСЗ"));
+           enterprises.clear();
+            enterprises.add(new Enterprise(1,"ГОТЭК","GOTEK"));
+            enterprises.add(new Enterprise(2,"ЦЕНТР","Center"));
+            enterprises.add(new Enterprise(3,"ГСЗ","SPB"));
 
         return enterprises;
+    }
+
+    public String siteName(int id){
+        listDB();
+        return enterprises.stream().filter(s -> s.getId() == id).map(e -> e.getNameInDb()).findFirst().get();
     }
 }

@@ -1,0 +1,109 @@
+@*
+* This template takes a single argument, a String containing a
+* message to display.
+*@
+
+@import com.fasterxml.jackson.databind.JsonNode
+@(message: String)(implicit webJarAssets: WebJarAssets,paramReportSelectForm:Form[ParamReportSelect],select:ParamReportSelect)
+
+
+@main("Точность открытия заказов") {
+    <div class="container-fluid">
+        <div class="col-md-offset-4 col-md-4">
+            <h2 class="text-primary text-center">Точность открытия заказов</h2>
+        </div>
+
+
+        <div id="graph" class="col-md-offset-1 col-md-10" >
+            <div class="demo-section k-content wide">
+                <div id="chart"></div>
+            </div>
+        </div>
+        <p></p>
+        <div  class="col-md-12" >
+            <div id="gridTest"></div>
+        </div>
+
+        <script>
+              /* var dataall = [];
+
+               for(order <- listOrder) {
+               var order = {}
+               order["OrderNumber"] = 'order.getOrderNumber()';
+               order["OrderLine"] ='order.getOrderLine()';
+               order["Manager"] ='order.getManager()';
+               order["Customer"] ='order.getCustomer()';
+               dataall.push(order);
+               }
+*/
+
+
+               var dataSourceDB = new kendo.data.DataSource({
+                   transport: {
+                       read: function(options) {
+                           $.ajax({
+                               type: "GET",
+                               url: "api/listorder",
+                               contentType: "application/json; charset=utf-8",
+                               dataType: 'json',
+                               data: /*JSON.stringify(*/{dateBegin: '@select.getDateBegin',dateEnd:'@select.getDateEnd', site:'@select.getEnterprise'}/*)*/,
+                               success: function(data) {
+                                   options.success(data);
+                               }
+                           });
+                       }
+                   }
+               });
+
+
+
+
+               $("#gridTest").kendoGrid({
+                   toolbar: ["excel"],
+                   excel: {
+                       allPages: true
+                   },
+
+                    dataSource: dataSourceDB,
+                        schema: {
+                            model: {
+                                fields: {
+                                    id: {id:"id",
+                                        type:"number"},
+                                   /* site:{type:"string"},*/
+                                    orderNumber: { type: "string" },
+                                    orderLine: { type: "number" },
+                                    manager: { type: "string" },
+                                    customer: { type: "string" },
+                                    itemDescription:{type:"string"}
+                                }
+                            }
+                        },
+                        pageSize: 20
+                    ,
+                    height: 550,
+                    groupable: true,
+                    scrollable: true,
+                    sortable: true,
+                    filterable: true,
+                    pageable: {
+                        input: true,
+                        numeric: false
+                    },
+                    columns: [
+                        { field: "orderNumber",title:"№ Заказа", width: "70px"},
+                        { field: "orderLine", title: "№ Строки",  width: "30px" },
+                        { field: "manager", title: "Менеджер", width: "70px" },
+                        { field: "customer", title: "Клиент",width: "130px" },
+                        { field: "itemDescription", title: "Наименование заказа",width: "130px" },
+                        { field: "customer", title: "Месяц отгрузки",width: "50px" },
+                        { field: "customer", title: "Дата открытия заказа",width: "50px" },
+                        { field: "customer", title: "Дата начала производства",width: "50px" },
+                        { field: "customer", title: "Отклонение",width: "130px" },
+                        { field: "customer", title: "Причина отклонения",width: "130px" },
+                        { field: "customer", title: "Состояние",width: "130px" }
+                    ]
+                });
+        </script>
+    </div>
+}
