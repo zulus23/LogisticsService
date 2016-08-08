@@ -1,13 +1,15 @@
 package model;
 
 import com.avaje.ebean.Model;
-import play.mvc.PathBindable;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
+import java.util.Locale;
+import java.util.Optional;
 
 /**
  * Created by Gukov on 05.08.2016.
@@ -37,14 +39,30 @@ public class ReportPrecisionCreateOrder  extends Model{
     @Column(name = "DateActual_Ship")
     private LocalDate monthActualShip;
     @Column(name = "DateCreate_Row")
-    private LocalDate dataCreateOrder;
+    private LocalDate dateCreateOrder;
     @Column(name = "DatePlan_Mnfg")
-    private LocalDate dataBeginProduction;
+    private LocalDate dateBeginProduction;
+    @Column(name = "DatePlan_Ship")
+    private LocalDate datePlanShip;
+
     /*@Column(name = "Item_Desc")
     private int deviation;
     @Column(name = "Item_Desc")
-    private String deviationReason;
-    private String statusOrder;*/
+    private String deviationReason;*/
+    @Column(name = "StatusRow")
+    private String statusOrder;
+
+    @Transient
+    private String monthShip;
+    @Transient
+    private String dateCreateOrderFormat;
+    @Transient
+    private String dateBeginProductionFormat;
+
+    @Transient
+    private int deviation;
+    @Transient
+    private String caclStatus;
 
 
     public String getSite() {
@@ -111,20 +129,28 @@ public class ReportPrecisionCreateOrder  extends Model{
         this.monthActualShip = monthActualShip;
     }
 
-    public LocalDate getDataCreateOrder() {
-        return dataCreateOrder;
+    public LocalDate getDateCreateOrder() {
+        return dateCreateOrder;
     }
 
-    public void setDataCreateOrder(LocalDate dataCreateOrder) {
-        this.dataCreateOrder = dataCreateOrder;
+    public void setDateCreateOrder(LocalDate dateCreateOrder) {
+        this.dateCreateOrder = dateCreateOrder;
     }
 
-    public LocalDate getDataBeginProduction() {
-        return dataBeginProduction;
+    public LocalDate getDateBeginProduction() {
+        return dateBeginProduction;
     }
 
-    public void setDataBeginProduction(LocalDate dataBeginProduction) {
-        this.dataBeginProduction = dataBeginProduction;
+    public void setDateBeginProduction(LocalDate dateBeginProduction) {
+        this.dateBeginProduction = dateBeginProduction;
+    }
+
+    public String getStatusOrder() {
+        return statusOrder;
+    }
+
+    public void setStatusOrder(String statusOrder) {
+        this.statusOrder = statusOrder;
     }
 
     public Long getId() {
@@ -133,6 +159,52 @@ public class ReportPrecisionCreateOrder  extends Model{
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public LocalDate getDatePlanShip() {
+        return datePlanShip;
+    }
+
+    public void setDatePlanShip(LocalDate datePlanShip) {
+        this.datePlanShip = datePlanShip;
+    }
+
+    public String getMonthShip() {
+        if(monthActualShip != null) {
+            return monthActualShip.getMonth().getDisplayName(TextStyle.FULL_STANDALONE, Locale.forLanguageTag("ru-RU"));
+        }
+        return "";
+    }
+
+    public String getDateCreateOrderFormat() {
+
+        if(dateCreateOrder != null) {
+            return dateCreateOrder.format(DateTimeFormatter.ofPattern("dd-MM-yyyy", Locale.forLanguageTag("ru-RU")));
+        }
+
+         return "";
+    }
+
+    public String getDateBeginProductionFormat() {
+        if(dateBeginProduction != null) {
+            return dateBeginProduction.format(DateTimeFormatter.ofPattern("dd-MM-yyyy", Locale.forLanguageTag("ru-RU")));
+        }
+         return "";
+    }
+
+    public int getDeviation() {
+        if(dateBeginProduction != null && dateCreateOrder != null) {
+
+            int temp = Period.between(dateBeginProduction, dateCreateOrder).getDays();
+            return temp < 3 && temp > 0 ? temp : 0;
+        }
+        return 0;
+    }
+
+    public String getCaclStatus() {
+        Optional<String> status = Optional.ofNullable(statusOrder);
+        //String temp =   Optional.ofNullable(statusOrder).orElseGet(()-> getDeviation() !=0 ? "С отклонением":"");
+        return getDeviation() !=0 ? "С отклонением":"Без отклонений";
     }
 
     public static Finder<Long, ReportPrecisionCreateOrder> find = new Finder<Long,ReportPrecisionCreateOrder>(ReportPrecisionCreateOrder.class);

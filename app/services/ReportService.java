@@ -14,6 +14,6 @@ import java.util.List;
 public class ReportService {
 
     public List<ReportPrecisionCreateOrder> precisionCreateOrders(LocalDate dateBegin, LocalDate dateEnd, String site, String mode){
-        return ReportPrecisionCreateOrder.find.where().eq("site",site).between("dataCreateOrder",dateBegin,dateEnd).findList();
+        return ReportPrecisionCreateOrder.find.where().eq("site",site).between("dateCreateOrder",dateBegin,dateEnd).findList();
     }
 }

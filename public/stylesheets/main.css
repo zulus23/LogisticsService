@@ -1,7 +1,9 @@
-body{
+html,body{
     padding-top: 50px;
-    with:100%
-
+    with:100%;
+    margin:0;
+    height:100%;
+    overflow:hidden;
 }
 
 @media (min-width: 768px) {
@@ -10,3 +12,19 @@ body{
     }
 }
 
+
+
+#vertical,
+#horizontal
+{
+    height:100%;
+}
+
+#vertical
+{
+    border-width: 0;
+}
+
+#t1{
+    height: 100%;
+}

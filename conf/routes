@@ -13,6 +13,7 @@ GET    /report/precisioncreateorder controllers.PrecisionCreateOrderController.s
 POST   /runreport                   controllers.HomeController.runReport
 
 GET  /api/listorder                    controllers.PrecisionCreateOrderController.listorder(dateBegin:Option[String], dateEnd:Option[String],site: Option[String] , mode :Option[String])
+GET  /api/grapth                    controllers.PrecisionCreateOrderController.grapth(dateBegin:Option[String], dateEnd:Option[String],site: Option[String] , mode :Option[String])
 
 
 
