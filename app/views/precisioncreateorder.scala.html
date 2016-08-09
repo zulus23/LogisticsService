@@ -62,7 +62,15 @@
                            });
                        }
                    },
-                   pageSize:20
+                 //  pageSize:20,
+                   aggregate:[
+                       {field:"caclStatus",aggregate:"count"},
+                       {field:"customer", aggregate:"count"},
+                       {field:"monthShip", aggregate:"count"}
+                   ]
+
+
+
                });
 
               var dataSourceGrapth = new kendo.data.DataSource({
@@ -85,7 +93,8 @@
 
 
 
-               $("#gridTest").kendoGrid({
+
+              $("#gridTest").kendoGrid({
                    toolbar: ["excel"],
                    excel: {
                        allPages: true
@@ -114,25 +123,70 @@
                     height: '100%',
                     groupable: true,
 
+                   /*    rowTemplate: "<tr>" + "#= getGridGroupCells('gridTest') #" + "<td>...</td><td>...</td><td>...</td></tr>",
+                       altRowTemplate: "<tr class='k-alt'>" +                  "#= getGridGroupCells('gridTest') #" +              "<td>...</td><td>...</td><td>...</td></tr>",*/
                     sortable: true,
                     filterable: true,
-                    pageable: {
+                   /* pageable: {
                          pageSizes: true
-                    },
+                    },*/
                     columns: [
                         { field: "orderNumber",title:"№ Заказа", width: "70px"},
                         { field: "orderLine", title: "№ Строки",  width: "30px" },
                         { field: "manager", title: "Менеджер", width: "70px" },
                         { field: "customer", title: "Клиент",width: "130px" },
                         { field: "itemDescription", title: "Наименование заказа",width: "130px" },
-                        { field: "monthShip", title: "Месяц отгрузки",width: "50px" },
+                        { field: "monthShip", title: "Месяц отгрузки",width: "50px",aggregates: ["count"],
+                                 groupHeaderTemplate: "Месяц отгрузки: #=value# : (#= Math.round((count/calcAll(field,value))*100)#%)"    },
                         { field: "dateCreateOrderFormat", title: "Дата открытия заказа",width: "150px"},
                         { field: "dateBeginProductionFormat", title: "Дата начала производства",width: "150px" },
                         { field: "deviation", title: "Отклонение",width: "130px" },
 
-                        { field: "caclStatus", title: "Состояние",width: "130px" }
+                        { field: "caclStatus", title: "Состояние",width: "130px" ,aggregates: ["count"],
+                                    groupHeaderTemplate: "Состояние: #=value# : (#= Math.round((count/calcAll(field,value))*100)#%)" }
                     ]
                 });
+              function calcAll(field,value){
+                  console.log(value);
+
+                  var result = 0;
+                  dataView =  dataSourceDB.view();
+                  for (var i = 0; i < dataView.length; i++){
+                     result =  result +selectCount(dataView[i],field,value);
+                  }
+
+                  return result;
+              }
+
+              function selectCount(object_,field,value){
+                  if(object_.field === field && object_.value === value ){
+                     return object_.aggregates.caclStatus.count;
+                  }
+                  if(object_.hasSubgroups){ for (k in object_.items){ return selectCount(object_.items[k],field)} }
+/*
+                  if(object_.field === field){ return object_.aggregates.caclStatus.count} else{
+                       if(object_.hasSubgroups){ }
+
+
+
+
+                   }
+*/
+                  return 0;
+              }
+
+
+              window.getGridGroupCells = function(id) {
+                  var cnt = $("#" + id).data("kendoGrid").dataSource.group().length,
+                          result = "";
+
+                  for (var j = 0; j < cnt; j++) {
+                      result += "<td class='k-group-cell'>&nbsp;</td>";
+                  }
+
+                  return result;
+              }
+
 
               $("#chart1").kendoChart({
                   dataSource: dataSourceGrapth,
