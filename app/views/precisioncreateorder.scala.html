@@ -159,7 +159,7 @@
               }
 
               function selectCount(object_,field,value){
-                  if(object_.field === field && object_.value === value ){
+                  if(object_.field === field && object_.value !== value ){
                      return object_.aggregates.caclStatus.count;
                   }
                   if(object_.hasSubgroups){ for (k in object_.items){ return selectCount(object_.items[k],field)} }
