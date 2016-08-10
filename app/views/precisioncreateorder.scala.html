@@ -137,32 +137,47 @@
                         { field: "orderNumber",title:"№ Заказа", width: "70px"},
                         { field: "orderLine", title: "№ Строки",  width: "30px" },
                         { field: "manager", title: "Менеджер", width: "70px" ,aggregates: ["count"],
-                            groupHeaderTemplate: "Состояние: #=value# : (#= calcAll(data)#)"},
+                            groupHeaderTemplate: "Менеджер: #=value# : (#=  Math.round((count/calcAll(data,field,value))*100)#%): Count : #=count#"},
                         { field: "customer", title: "Клиент",width: "130px" ,aggregates: ["count"],
-                            groupHeaderTemplate: "Состояние: #=value# : (#= calcAll(data)#)"},
+                            groupHeaderTemplate: "Состояние: #=value# : (#= count/calcAll(data,field,value)#)"},
                         { field: "itemDescription", title: "Наименование заказа",width: "130px" },
                         { field: "monthShip", title: "Месяц отгрузки",width: "50px",aggregates: ["count"],
-                                 groupHeaderTemplate: "Месяц отгрузки: #=value# : (#= calcAll(data)#)"    },
+                                 groupHeaderTemplate: "Месяц отгрузки: #=value# : (#= calcAll(data,field,value)#)"    },
                         { field: "dateCreateOrderFormat", title: "Дата открытия заказа",width: "150px"},
                         { field: "dateBeginProductionFormat", title: "Дата начала производства",width: "150px" },
                         { field: "deviation", title: "Отклонение",width: "130px" },
 
                         { field: "caclStatus", title: "Состояние",width: "130px" ,aggregates: ["count"],
-                                    groupHeaderTemplate: "Состояние: #=value# : (#= calcAll(data)#)" }
+                                    groupHeaderTemplate: "Состояние: #=value# : (#= calcAll(data,field,value)#)" }
 
                     ]
                 });
-              function calcAll(field,value){
+              var level1 ,level2 ,level3 ,level4,resultAll = 0  ;
+              function calcAll(data,field,value){
                   console.log(value);
 
-                  var result = 0;
-                  dataView =  dataSourceDB.view();
-                  for (var i = 0; i < dataView.length; i++){
-                    // result =  result +selectCount(dataView[i],field,value);
-                     console.log(loop(dataView[i]));
-                  }
 
-                  return result;
+                  dataView =  dataSourceDB.view();
+
+
+                  level1 = findObjectLevel0(data)
+
+
+
+
+                  if(!level1.hasSubgroups){ results =dataSourceDB.aggregates().caclStatus; resultAll = results.count;}
+                  if(level1.hasSubgroups){
+                      level2 = findObjectLevel1(level1,data);
+                  }
+                  console.log(level1);
+
+                  /*for (var i = 0; i < dataView.length; i++){
+
+                    // result =  result +selectCount(dataView[i],field,value);
+                     console.log(result += loop(dataView[i]));
+                  }*/
+
+                  return resultAll;
               }
 
               function selectCount(object_,field,value){
@@ -181,8 +196,22 @@
 */
                   return 0;
               }
+              function findObjectLevel0(data){
+                  var dataView =  dataSourceDB.view();
+                  var findObject =null;
+                  for (var i = 0; i < dataView.length; i++){
+
+                   if(dataView[i].field === data.field && dataView[i].value === data.value){ return dataView[i];}
+
+
+              }}
+              function findObjectLevel1(prevData,data){
+              }
+
+
+
               function loop(data) {
-                  return data.hasSubgroups ? loop(data.items) : data.items;
+                  return data.hasSubgroups ? loop(data.items) : data.items.length;
               }
 
               window.getGridGroupCells = function(id) {
