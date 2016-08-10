@@ -69,7 +69,10 @@
                        {field:"monthShip", aggregate:"count"}
                    ]
 
-
+                   ,change: function(e) {
+                       var data = this.data();
+                       console.log(data.length); // displays "77"
+                   }
 
                });
 
@@ -133,17 +136,20 @@
                     columns: [
                         { field: "orderNumber",title:"№ Заказа", width: "70px"},
                         { field: "orderLine", title: "№ Строки",  width: "30px" },
-                        { field: "manager", title: "Менеджер", width: "70px" },
-                        { field: "customer", title: "Клиент",width: "130px" },
+                        { field: "manager", title: "Менеджер", width: "70px" ,aggregates: ["count"],
+                            groupHeaderTemplate: "Состояние: #=value# : (#= calcAll(data)#)"},
+                        { field: "customer", title: "Клиент",width: "130px" ,aggregates: ["count"],
+                            groupHeaderTemplate: "Состояние: #=value# : (#= calcAll(data)#)"},
                         { field: "itemDescription", title: "Наименование заказа",width: "130px" },
                         { field: "monthShip", title: "Месяц отгрузки",width: "50px",aggregates: ["count"],
-                                 groupHeaderTemplate: "Месяц отгрузки: #=value# : (#= Math.round((count/calcAll(field,value))*100)#%)"    },
+                                 groupHeaderTemplate: "Месяц отгрузки: #=value# : (#= calcAll(data)#)"    },
                         { field: "dateCreateOrderFormat", title: "Дата открытия заказа",width: "150px"},
                         { field: "dateBeginProductionFormat", title: "Дата начала производства",width: "150px" },
                         { field: "deviation", title: "Отклонение",width: "130px" },
 
                         { field: "caclStatus", title: "Состояние",width: "130px" ,aggregates: ["count"],
-                                    groupHeaderTemplate: "Состояние: #=value# : (#= Math.round((count/calcAll(field,value))*100)#%)" }
+                                    groupHeaderTemplate: "Состояние: #=value# : (#= calcAll(data)#)" }
+
                     ]
                 });
               function calcAll(field,value){
@@ -152,17 +158,18 @@
                   var result = 0;
                   dataView =  dataSourceDB.view();
                   for (var i = 0; i < dataView.length; i++){
-                     result =  result +selectCount(dataView[i],field,value);
+                    // result =  result +selectCount(dataView[i],field,value);
+                     console.log(loop(dataView[i]));
                   }
 
                   return result;
               }
 
               function selectCount(object_,field,value){
-                  if(object_.field === field && object_.value !== value ){
+                  if(object_.field === field  ){
                      return object_.aggregates.caclStatus.count;
                   }
-                  if(object_.hasSubgroups){ for (k in object_.items){ return selectCount(object_.items[k],field)} }
+                 // if(object_.hasSubgroups){ for (k in object_.items){ return selectCount(object_.items[k],field)} }
 /*
                   if(object_.field === field){ return object_.aggregates.caclStatus.count} else{
                        if(object_.hasSubgroups){ }
@@ -174,7 +181,9 @@
 */
                   return 0;
               }
-
+              function loop(data) {
+                  return data.hasSubgroups ? loop(data.items) : data.items;
+              }
 
               window.getGridGroupCells = function(id) {
                   var cnt = $("#" + id).data("kendoGrid").dataSource.group().length,
