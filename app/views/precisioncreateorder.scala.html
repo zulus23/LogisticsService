@@ -48,6 +48,7 @@
 
 
                var dataSourceDB = new kendo.data.DataSource({
+                   serverAggregates: true,
                    transport: {
                        read: function(options) {
                            $.ajax({
@@ -152,45 +153,66 @@
               var p = [];
               var groupLevel = -1;
               function calcAll(data,field,value){
-                  console.log(value);
+                  resultAll = 0
 
 
-                  dataView =  dataSourceDB.view();
+                  console.log(loopData(dataSourceDB.view()[0]))
 
-
-                  level1 = findObjectLevel0(level1,data)
-
-                  if(p.length === 0){
+                  /*if(p.length === 0){
+                      level1 = findObjectLevel0(level1,data)
                       level1.allCount = dataSourceDB.aggregates().caclStatus.count;
                       p.push(level1);
+                  } else{
+                      level1 = findObjectLevel0(p[groupLevel],data);
+                      level1.allCount = countForGroup(level1);
+                      p.push(level1);
                   }
-
                   groupLevel++;
+
 
                   if(!level1.hasSubgroups && groupLevel === 0){
                       resultAll = p[groupLevel].allCount;
                        p = [];
                        groupLevel =- 1;
                       return resultAll;
-                  } else { }
+                  } else {
+                      if(!level1.hasSubgroups){
+                          resultAll = p[groupLevel].allCount;
+                          p.length = p.length - groupLevel;  groupLevel = groupLevel-1;
+                          return resultAll;
+                      }
 
-                  if(!level1.hasSubgroups){
+                      /!*console.log(p[groupLevel]);
+                      resultAll = p[groupLevel].allCount;*!/
+                      return resultAll;
+                  }
+
+                 /!* if(!level1.hasSubgroups){
                       results =dataSourceDB.aggregates().caclStatus; resultAll = results.count;
-                  } else{ return  loop(level1)/*level1.items.count*/}
-                  /*if(level1.hasSubgroups){
-                      level2 = findObjectLevel1(level1,data);
-                  }*/
-                  console.log(level1);
+                  } else{
+                      level2 = findObjectLevel0(level1,data);
+                  }*!/
+                  console.log(p[groupLevel]);
 
-                  /*for (var i = 0; i < dataView.length; i++){
+                  /!*for (var i = 0; i < dataView.length; i++){
 
                     // result =  result +selectCount(dataView[i],field,value);
                      console.log(result += loop(dataView[i]));
-                  }*/
+                  }*!/*/
 
                   return resultAll;
               }
 
+              function loopData(data) {
+                  console.log( " Array "+ _.isArray(data));
+                  console.log( " Object "+ _.isObject(data));
+                  if (data.hasSubgroups) {
+
+                    return loopData(data.items)
+                  } else{
+                      return data.items
+                  }
+              }
                function findObjectLevel0(prev,data){
                   var dataView =  dataSourceDB.view();
                   var findObject =null;
@@ -202,21 +224,24 @@
                    }
                    for (var i = 0; i < prev.items.length; i++){
                        if(prev.items[i].field === data.field && prev.items[i].value === data.value){
-                              if(prev.items[i].hasSubgroups){
-                                  return prev.items[i];
-                              } else {
-                                  return prev;
-                              }
+
+                              return prev.items[i];
+
 
                    }}
 
               }
 
               function loop(data) {
-                  return data.hasSubgroups ? loop(data.items) : data.items.length;
+                  return data.hasSubgroups ? loop(data.items) : data.items;
               }
-
-
+              function countForGroup() {
+                  var tempCount = 0;
+                  for (var i = 0; i < p[groupLevel].items.length; i++) {
+                      tempCount = tempCount + p[groupLevel].items[i].items.length;
+                  }
+                  return tempCount;
+              }
 
 
               $("#chart1").kendoChart({
