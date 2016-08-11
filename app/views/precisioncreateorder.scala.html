@@ -69,10 +69,6 @@
                        {field:"monthShip", aggregate:"count"}
                    ]
 
-                   ,change: function(e) {
-                       var data = this.data();
-                       console.log(data.length); // displays "77"
-                   }
 
                });
 
@@ -152,7 +148,9 @@
 
                     ]
                 });
-              var level1 ,level2 ,level3 ,level4,resultAll = 0  ;
+              var level1 ,level2 ,level3 ,level4 ;
+              var p = [];
+              var groupLevel = -1;
               function calcAll(data,field,value){
                   console.log(value);
 
@@ -160,15 +158,28 @@
                   dataView =  dataSourceDB.view();
 
 
-                  level1 = findObjectLevel0(data)
+                  level1 = findObjectLevel0(level1,data)
 
-
-
-
-                  if(!level1.hasSubgroups){ results =dataSourceDB.aggregates().caclStatus; resultAll = results.count;}
-                  if(level1.hasSubgroups){
-                      level2 = findObjectLevel1(level1,data);
+                  if(p.length === 0){
+                      level1.allCount = dataSourceDB.aggregates().caclStatus.count;
+                      p.push(level1);
                   }
+
+                  groupLevel++;
+
+                  if(!level1.hasSubgroups && groupLevel === 0){
+                      resultAll = p[groupLevel].allCount;
+                       p = [];
+                       groupLevel =- 1;
+                      return resultAll;
+                  } else { }
+
+                  if(!level1.hasSubgroups){
+                      results =dataSourceDB.aggregates().caclStatus; resultAll = results.count;
+                  } else{ return  loop(level1)/*level1.items.count*/}
+                  /*if(level1.hasSubgroups){
+                      level2 = findObjectLevel1(level1,data);
+                  }*/
                   console.log(level1);
 
                   /*for (var i = 0; i < dataView.length; i++){
@@ -180,50 +191,32 @@
                   return resultAll;
               }
 
-              function selectCount(object_,field,value){
-                  if(object_.field === field  ){
-                     return object_.aggregates.caclStatus.count;
-                  }
-                 // if(object_.hasSubgroups){ for (k in object_.items){ return selectCount(object_.items[k],field)} }
-/*
-                  if(object_.field === field){ return object_.aggregates.caclStatus.count} else{
-                       if(object_.hasSubgroups){ }
-
-
-
-
-                   }
-*/
-                  return 0;
-              }
-              function findObjectLevel0(data){
+               function findObjectLevel0(prev,data){
                   var dataView =  dataSourceDB.view();
                   var findObject =null;
                   for (var i = 0; i < dataView.length; i++){
 
-                   if(dataView[i].field === data.field && dataView[i].value === data.value){ return dataView[i];}
+                   if(dataView[i].field === data.field && dataView[i].value === data.value){
+                       return dataView[i];
+                   }
+                   }
+                   for (var i = 0; i < prev.items.length; i++){
+                       if(prev.items[i].field === data.field && prev.items[i].value === data.value){
+                              if(prev.items[i].hasSubgroups){
+                                  return prev.items[i];
+                              } else {
+                                  return prev;
+                              }
 
+                   }}
 
-              }}
-              function findObjectLevel1(prevData,data){
               }
-
-
 
               function loop(data) {
                   return data.hasSubgroups ? loop(data.items) : data.items.length;
               }
 
-              window.getGridGroupCells = function(id) {
-                  var cnt = $("#" + id).data("kendoGrid").dataSource.group().length,
-                          result = "";
 
-                  for (var j = 0; j < cnt; j++) {
-                      result += "<td class='k-group-cell'>&nbsp;</td>";
-                  }
-
-                  return result;
-              }
 
 
               $("#chart1").kendoChart({
