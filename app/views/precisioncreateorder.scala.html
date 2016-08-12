@@ -159,7 +159,7 @@
                         { field: "manager", title: "Менеджер", width: "70px" ,aggregates: ["count"],
                             groupHeaderTemplate: "Менеджер: #=value# : (#=  Math.round((count/calcAll(data,field,value))*100)#%): Count : #=count#"},
                         { field: "customer", title: "Клиент",width: "130px" ,aggregates: ["count"],
-                            groupHeaderTemplate: "Состояние: #=value# : (#= count/calcAll(data,field,value)#)"},
+                            groupHeaderTemplate: "Клиент: #=value# : (#= Math.round((count/calcAll(data,field,value))*100)#%)"},
                         { field: "itemDescription", title: "Наименование заказа",width: "130px" },
                         { field: "monthShip", title: "Месяц отгрузки",width: "50px",aggregates: ["count"],
                                  groupHeaderTemplate: "Месяц отгрузки: #=value# : (#= calcAll(data,field,value)#)"    },
@@ -168,29 +168,76 @@
                         { field: "deviation", title: "Отклонение",width: "130px" },
 
                         { field: "caclStatus", title: "Состояние",width: "130px" ,aggregates: ["count"],
-                                    groupHeaderTemplate: "Состояние: #=value# : (#= calcAll(data,field,value)#)" }
+                                    groupHeaderTemplate: "Состояние: #=value# : (#= Math.round((count/calcAll(data,field,value))*100)#%)" }
 
                     ]
                 });
               var level1 ,level2 ,level3 ,level4 ;
               var p = [];
-              var groupLevel = -1;
+              var groupLevel = 0;
+              _filters_ = [];
+              filterTemp ={};
+              levelFilter = [];
+              var allCountInGroup = 0;
+              prevData=[];
               function calcAll(data,field,value){
                   resultAll = 0
 
-                  if (dataSourceDB.group().length === 1){filterTemp = {}}
-                  if (dataSourceDB.group().length === 2){ filterTemp= {filters: [{
-                                                                               field: dataSourceDB.group()[0].field,
-                                                                                value: value,
-                                                                               operator: "eq"
-                  }]}}
-                  var query = kendo.data.Query.process(dataSourceDB, {
-                       filter:filterTemp
+
+
+                  for (var i = 0; i < dataSourceDB.group().length; i++) {
+
+
+                      if (dataSourceDB.group()[i].field === field && dataSourceDB.group().length > 1 && i !== dataSourceDB.group().length-1) {
+                          _filters_[i] = {field:  field,
+                                       value: value,
+                                       operator: "eq"};
+
+                           //filterTemp = {filters:_filters_}
+                          levelFilter[groupLevel] = {filters:_filters_}
+                      }
+                      if(groupLevel == 0){ levelFilter[groupLevel]={}; levelFilter[groupLevel+1]= _filters_}
+                      /*if (dataSourceDB.group().length === 2) {
+                          filterTemp = {
+                              filters: [{
+                                  field: field,
+                                  value: value,
+                                  operator: "eq"
+                              }]
+                          }
+                      }*/
+
+                  }
+
+
+                  query = kendo.data.Query.process(dataSourceDB.data(), {
+                      filter: levelFilter[groupLevel]
                   });
+                  resultAll = query.total;
+                  prevData[groupLevel] = resultAll;
 
-                  console.log(query.data);
+                  if((prevData[groupLevel] - data.count) !== 0 && groupLevel > 0){
+                      allCountInGroup = allCountInGroup + data.count;
+                  } else{allCountInGroup = 0;}
+                  if(allCountInGroup !== 0){
+                      if(prevData[groupLevel] !== allCountInGroup) {
+                          groupLevel--;
+                      } else{ allCountInGroup = 0;}
+                  }
+
+                  groupLevel++;
 
 
+                  /*if(dataSourceDB.group().length > 0 && allCountInGroup !== 0){ groupLevel--} else {allCountInGroup = allCountInGroup + data.count;}
+                  if(predField !== field){ predField = field;}
+
+
+                  if(predField === field && groupLevel > 0) {
+                      allCountInGroup = allCountInGroup + data.count;
+                  }else{ allCountInGroup = 0; predField =""}
+*/
+
+                  if(groupLevel > dataSourceDB.group().length - 1 && allCountInGroup === 0){ _filter_=[]; filterTemp ={}; groupLevel =0,levelFilter =[],allCountInGroup = 0;}
                   /*if(p.length === 0){
                       level1 = findObjectLevel0(level1,data)
                       level1.allCount = dataSourceDB.aggregates().caclStatus.count;
