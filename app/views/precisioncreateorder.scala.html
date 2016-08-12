@@ -63,12 +63,35 @@
                            });
                        }
                    },
-                 //  pageSize:20,
+                   schema: {
+                       model: {
+                           id:"id",
+
+                           fields: {
+                               /* site:{type:"string"},*/
+                               orderNumber: { type: "string" },
+                               orderLine: { type: "number" },
+                               manager: { type: "string" },
+                               customer: { type: "string" },
+                               itemDescription:{type:"string"},
+                               monthShip:{type:"string"},
+                               dateCreateOrderFormat:{type:"string"},
+                               dateBeginProductionFormat:{type:"string"},
+                               deviation:{type:"number"},
+                               caclStatus:{type:"string"}
+                           }
+                       }
+                   },
+                   //  pageSize:20,
                    aggregate:[
                        {field:"caclStatus",aggregate:"count"},
                        {field:"customer", aggregate:"count"},
                        {field:"monthShip", aggregate:"count"}
-                   ]
+                   ],
+                   change: function(e) {
+                       var data = this.data();
+                           console.log(data.length); // displays "77"
+                   }
 
 
                });
@@ -100,13 +123,13 @@
                        allPages: true
                    },
 
-                    dataSource: dataSourceDB,
-                        schema: {
+                    dataSource: dataSourceDB
+                       /* schema: {
                             model: {
                                 id:"id",
 
                                 fields: {
-                                    /* site:{type:"string"},*/
+                                    /!* site:{type:"string"},*!/
                                     orderNumber: { type: "string" },
                                     orderLine: { type: "number" },
                                     manager: { type: "string" },
@@ -119,7 +142,7 @@
                                     caclStatus:{type:"string"}
                                 }
                             }
-                        }                    ,
+                        }      */              ,
                     height: '100%',
                     groupable: true,
 
@@ -155,8 +178,18 @@
               function calcAll(data,field,value){
                   resultAll = 0
 
+                  if (dataSourceDB.group().length === 1){filterTemp = {}}
+                  if (dataSourceDB.group().length === 2){ filterTemp= {filters: [{
+                                                                               field: dataSourceDB.group()[0].field,
+                                                                                value: value,
+                                                                               operator: "eq"
+                  }]}}
+                  var query = kendo.data.Query.process(dataSourceDB, {
+                       filter:filterTemp
+                  });
 
-                  console.log(loopData(dataSourceDB.view()[0]))
+                  console.log(query.data);
+
 
                   /*if(p.length === 0){
                       level1 = findObjectLevel0(level1,data)
