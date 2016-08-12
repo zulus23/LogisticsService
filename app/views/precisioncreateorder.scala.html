@@ -211,8 +211,16 @@
 
 
                   query = kendo.data.Query.process(dataSourceDB.data(), {
-                      filter: levelFilter[groupLevel]
+                      filter: {
+                          filters:levelFilter[groupLevel]
+                      }
                   });
+                  /*query = kendo.data.Query.process(dataSourceDB.data(), {
+                      filter: {
+                          filters:[{ field: "manger", operator: "eq", value: "Гализин, Андрей В." },
+                              { field: "customer", operator: "eq", value: "КОРОЧА ЗАО" }]
+                      }
+                  });*/
                   resultAll = query.total;
                   prevData[groupLevel] = resultAll;
 
@@ -237,7 +245,7 @@
                   }else{ allCountInGroup = 0; predField =""}
 */
 
-                  if(groupLevel > dataSourceDB.group().length - 1 && allCountInGroup === 0){ _filter_=[]; filterTemp ={}; groupLevel =0,levelFilter =[],allCountInGroup = 0;}
+                  if(groupLevel > dataSourceDB.group().length - 1 && allCountInGroup === 0){ _filters_=[]; filterTemp ={}; groupLevel =0,levelFilter =[],allCountInGroup = 0;}
                   /*if(p.length === 0){
                       level1 = findObjectLevel0(level1,data)
                       level1.allCount = dataSourceDB.aggregates().caclStatus.count;
