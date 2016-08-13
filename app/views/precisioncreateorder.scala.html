@@ -89,8 +89,12 @@
                        {field:"monthShip", aggregate:"count"}
                    ],
                    change: function(e) {
-                       var data = this.data();
-                           console.log(data.length); // displays "77"
+
+                       var query = new kendo.data.Query(dataSourceDB.data());
+                       var filters = dataSourceDB.filter();
+                       var filteredData = query.filter(filters).data;
+                       allDataCount = filteredData.length;
+                       console.log(allDataCount); // displays "77"
                    }
 
 
@@ -157,9 +161,9 @@
                         { field: "orderNumber",title:"№ Заказа", width: "70px"},
                         { field: "orderLine", title: "№ Строки",  width: "30px" },
                         { field: "manager", title: "Менеджер", width: "70px" ,aggregates: ["count"],
-                            groupHeaderTemplate: "Менеджер: #=value# : (#=  Math.round((count/calcAll(data,field,value))*100)#%): Count : #=count#"},
+                            groupHeaderTemplate: "Менеджер: #=value#: #=count# : (#=  Math.round((count/calcAll(data,field,value))*100)#%): Count : #=count#"},
                         { field: "customer", title: "Клиент",width: "130px" ,aggregates: ["count"],
-                            groupHeaderTemplate: "Клиент: #=value# : (#= Math.round((count/calcAll(data,field,value))*100)#%)"},
+                            groupHeaderTemplate: "Клиент: #=value# : #=count#: (#= Math.round((count/calcAll(data,field,value))*100)#%)"},
                         { field: "itemDescription", title: "Наименование заказа",width: "130px" },
                         { field: "monthShip", title: "Месяц отгрузки",width: "50px",aggregates: ["count"],
                                  groupHeaderTemplate: "Месяц отгрузки: #=value# : (#= calcAll(data,field,value)#)"    },
@@ -168,7 +172,7 @@
                         { field: "deviation", title: "Отклонение",width: "130px" },
 
                         { field: "caclStatus", title: "Состояние",width: "130px" ,aggregates: ["count"],
-                                    groupHeaderTemplate: "Состояние: #=value# : (#= Math.round((count/calcAll(data,field,value))*100)#%)" }
+                                    groupHeaderTemplate: "Состояние: #=value#: #=count# : (#= Math.round((count/calcAll(data,field,value))*100)#%)" }
 
                     ]
                 });
@@ -179,8 +183,8 @@
               prevLevelValue = [];
               prevLevelCount = [];
               function calcAll(data,field,value){
-                  tree[-1] = {prevLevel : -1,level: -1,value:"",countAll:dataSourceDB.total()};
-                  prevLevelCount[-1] = dataSourceDB.total();
+                  tree[-1] = {prevLevel : -1,level: -1,value:"",countAll:allDataCount/*dataSourceDB.total()*/};
+                  prevLevelCount[-1] = allDataCount;/*dataSourceDB.total();*/
                   prevLevelValue[-1] = "";
                   var levelTree = indexGroup(dataSourceDB.group(),field);
                   prevLevelValue[levelTree] = data.value;
