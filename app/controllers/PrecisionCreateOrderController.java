@@ -3,6 +3,8 @@ package controllers;
 import com.fasterxml.jackson.databind.JsonNode;
 import model.GrapthPrecisionCreateOrder;
 import model.ReportPrecisionCreateOrder;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.cglib.core.Local;
 import play.data.Form;
 import play.libs.Json;
 import play.mvc.BodyParser;
@@ -15,13 +17,16 @@ import views.html.*;
 
 
 import javax.inject.Inject;
+import java.sql.Date;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
+
 
 /**
  * Created by Zhukov on 05.08.2016.
@@ -86,18 +91,33 @@ public class PrecisionCreateOrderController extends Controller {
             tempSite = helperForInterface.siteName(Integer.parseInt(site.get()));
         }
 
-        Map<String,Long> longMap =  reportService.precisionCreateOrders(tempdateBegin,tempdateEnd,tempSite,"").stream().collect(Collectors.groupingBy(e-> e.getMonthShip(),Collectors.counting()));
+        Map<String,Long> longMap =  reportService.precisionCreateOrders(tempdateBegin,tempdateEnd,tempSite,"").stream()
+                                                 .filter(e -> e.getMonthActualShip() != null)
+                                                 .sorted((a,b) -> a.getMonthActualShip().compareTo(b.getMonthActualShip()))
+                                                 .collect(Collectors.groupingBy(e-> String.format("%s-%s", e.getMonthIntShip(),e.getYearShip()),Collectors.counting()));
 
-        longMap.forEach((k,v) -> {
+        longMap.entrySet().stream()
+                          .sorted((a,b)-> a.getKey().compareToIgnoreCase(b.getKey()))
+                          .map(e -> new GrapthPrecisionCreateOrder(e.getValue().intValue(), getDateFrom(e)))
+                                  //
+                                   .forEach(e-> grapthPrecisionCreateOrders.add(e));
+        /*forEach((k, v) -> {
               grapthPrecisionCreateOrders.add(new GrapthPrecisionCreateOrder(v.intValue(),k));
-        });
+        });*/
 
 
         return ok(Json.toJson(grapthPrecisionCreateOrders));
 
     }
 
+    @NotNull
+    private Date getDateFrom(Map.Entry<String, Long> e) {
+        LocalDate localDate = LocalDate.of(Integer.parseInt(e.getKey().split("-")[1]),
+                Integer.parseInt(e.getKey().split("-")[0]),1);
+        Date temp = Date.valueOf (localDate);
 
+        return temp;
+    }
 
 
     public  Result show() {

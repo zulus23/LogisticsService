@@ -14,7 +14,8 @@
             <div class="col-md-offset-4 col-md-4">
                 <h2 class="text-primary text-center">Точность открытия заказов</h2>
             </div>
-
+            <div id="loading">
+            </div>
 
             <div id="graph" class="col-md-offset-1 col-md-10" >
                 <div class="demo-section k-content wide">
@@ -40,9 +41,9 @@
 */             $("#vertical").kendoSplitter({
                   orientation: "vertical",
                   panes: [
-                      { collapsible: true, size: "60px" },
+                      { collapsible: false, size: "50%" },
                       { collapsible: false },
-                      { collapsible: false, resizable: false, size: "15%" }
+                      { collapsible: false, resizable: false, size: "35%" }
                   ]
               });
 
@@ -63,6 +64,7 @@
                            });
                        }
                    },
+                   pageSize:20,
                    schema: {
                        model: {
                            id:"id",
@@ -109,13 +111,18 @@
                               contentType: "application/json; charset=utf-8",
                               dataType: 'json',
                               data:{dateBegin: '@select.getDateBegin',dateEnd:'@select.getDateEnd', site:'@select.getEnterprise'},
+                              beforeSend: function() { $('#loading').show(); },
                               success: function(data) {
+
+                                  $('#loading').hide();
                                   options.success(data);
                               }
                           });
                       }
                   },
-                  pageSize:20
+                  sort: [
+                      { "field": "categoryAxis", "dir": "asc" }
+                  ],
               });
 
 
@@ -154,9 +161,9 @@
                        altRowTemplate: "<tr class='k-alt'>" +                  "#= getGridGroupCells('gridTest') #" +              "<td>...</td><td>...</td><td>...</td></tr>",*/
                     sortable: true,
                     filterable: true,
-                   /* pageable: {
+                    pageable: {
                          pageSizes: true
-                    },*/
+                    },
                     columns: [
                         { field: "orderNumber",title:"№ Заказа", width: "70px"},
                         { field: "orderLine", title: "№ Строки",  width: "30px" },
@@ -179,9 +186,9 @@
 
               var tree = [];
 
-              level1 = [{}]
-              prevLevelValue = [];
-              prevLevelCount = [];
+              var level1 = [{}]
+              var prevLevelValue = [];
+              var prevLevelCount = [];
               function calcAll(data,field,value){
                   tree[-1] = {prevLevel : -1,level: -1,value:"",countAll:allDataCount/*dataSourceDB.total()*/};
                   prevLevelCount[-1] = allDataCount;/*dataSourceDB.total();*/
@@ -229,10 +236,20 @@
 
                   }],
                   categoryAxis: {
-                      field: "categoryAxis"
+                      field: "categoryAxis",
+                      labels: {
+                          template: labelTemplate
+                      }
                   }
               });
+              function labelTemplate(e) {
+                  var ds = dataSourceGrapth;
+                  var date = new Date(e.value);
+                  var label = (date.getMonth()+1) + '-'+ date.getFullYear();
 
+
+                  return label;
+              }
 
         </script>
 

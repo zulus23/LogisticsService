@@ -1,6 +1,7 @@
 package model;
 
 import com.avaje.ebean.Model;
+import scala.Predef;
 
 import javax.persistence.*;
 import java.time.Duration;
@@ -54,6 +55,10 @@ public class ReportPrecisionCreateOrder  extends Model{
 
     @Transient
     private String monthShip;
+    @Transient
+    private int yearShip;
+    @Transient
+    private int monthIntShip;
     @Transient
     private String dateCreateOrderFormat;
     @Transient
@@ -174,6 +179,19 @@ public class ReportPrecisionCreateOrder  extends Model{
             return monthActualShip.getMonth().getDisplayName(TextStyle.FULL_STANDALONE, Locale.forLanguageTag("ru-RU"));
         }
         return "";
+    }
+    public int getYearShip() {
+        if(monthActualShip != null) {
+            return monthActualShip.getYear();
+        }
+        return 0;
+    }
+
+    public int getMonthIntShip() {
+        if(monthActualShip != null) {
+            return monthActualShip.getMonthValue();
+        }
+        return 0;
     }
 
     public String getDateCreateOrderFormat() {
