@@ -4,6 +4,7 @@ import com.avaje.ebean.Model;
 import scala.Predef;
 
 import javax.persistence.*;
+import java.sql.Date;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.Period;
@@ -38,7 +39,7 @@ public class ReportPrecisionCreateOrder  extends Model{
     @Column(name = "Item_Desc")
     private String itemDescription;
     @Column(name = "DateActual_Ship")
-    private LocalDate monthActualShip;
+    private Date monthActualShip;
     @Column(name = "DateCreate_Row")
     private LocalDate dateCreateOrder;
     @Column(name = "DatePlan_Mnfg")
@@ -126,11 +127,11 @@ public class ReportPrecisionCreateOrder  extends Model{
         this.itemDescription = itemDescription;
     }
 
-    public LocalDate getMonthActualShip() {
+    public Date getMonthActualShip() {
         return monthActualShip;
     }
 
-    public void setMonthActualShip(LocalDate monthActualShip) {
+    public void setMonthActualShip(Date monthActualShip) {
         this.monthActualShip = monthActualShip;
     }
 
@@ -176,7 +177,8 @@ public class ReportPrecisionCreateOrder  extends Model{
 
     public String getMonthShip() {
         if(monthActualShip != null) {
-            return monthActualShip.getMonth().getDisplayName(TextStyle.FULL_STANDALONE, Locale.forLanguageTag("ru-RU"));
+
+            return monthActualShip.toLocalDate().getMonth().getDisplayName(TextStyle.FULL_STANDALONE, Locale.forLanguageTag("ru-RU"));
         }
         return "";
     }
@@ -189,7 +191,7 @@ public class ReportPrecisionCreateOrder  extends Model{
 
     public int getMonthIntShip() {
         if(monthActualShip != null) {
-            return monthActualShip.getMonthValue();
+            return monthActualShip.toLocalDate().getMonthValue();
         }
         return 0;
     }

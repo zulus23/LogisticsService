@@ -80,7 +80,8 @@
                                dateCreateOrderFormat:{type:"string"},
                                dateBeginProductionFormat:{type:"string"},
                                deviation:{type:"number"},
-                               caclStatus:{type:"string"}
+                               caclStatus:{type:"string"},
+                               monthActualShip:{type:"date"}
                            }
                        }
                    },
@@ -228,29 +229,44 @@
 
 
               $("#chart1").kendoChart({
-                  dataSource: dataSourceGrapth,
+                  dataSource: dataSourceDB,
                   series: [{
-
-
-                      field: "series"
+                     aggregate: 'count',
+                      type: "column",
+                      field: "orderLine",
+                      categoryField:"monthActualShip"
 
                   }],
-                  categoryAxis: {
-                      field: "categoryAxis",
+                  valueAxis: {
+
                       labels: {
-                          template: labelTemplate
+                          format: "{0}%",
+                          skip: 2,
+                          step: 2
+                      }
+                  },
+                  categoryAxis: {
+
+                      baseUnit:"months",
+                      field: "monthActualShip",
+                      labels: {
+
+                          format: "MMM"
+                         /* template: labelTemplate*/
                       }
                   }
               });
               function labelTemplate(e) {
-                  var ds = dataSourceGrapth;
+                  var ds = dataSourceDB;
                   var date = new Date(e.value);
                   var label = (date.getMonth()+1) + '-'+ date.getFullYear();
 
 
                   return label;
               }
-
+              function aggr(values, series){
+                  console.log("======================"); return values;
+              }
         </script>
 
 }
