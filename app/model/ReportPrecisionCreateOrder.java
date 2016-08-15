@@ -184,7 +184,7 @@ public class ReportPrecisionCreateOrder  extends Model{
     }
     public int getYearShip() {
         if(monthActualShip != null) {
-            return monthActualShip.getYear();
+            return monthActualShip.toLocalDate().getYear();
         }
         return 0;
     }

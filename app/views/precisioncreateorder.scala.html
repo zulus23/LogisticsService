@@ -97,7 +97,8 @@
                        var filters = dataSourceDB.filter();
                        var filteredData = query.filter(filters).data;
                        allDataCount = filteredData.length;
-                       console.log(allDataCount); // displays "77"
+
+                       createGraph();
                    }
 
 
@@ -236,7 +237,7 @@
                       field: "orderLine",
                       categoryField:"monthActualShip"
 
-                  }],
+                  },{aggregate: "count",type:"column",field:"manager",categoryField:"monthActualShip"}],
                   valueAxis: {
 
                       labels: {
@@ -251,7 +252,7 @@
                       field: "monthActualShip",
                       labels: {
 
-                          format: "MMM"
+                          format: "MMMM-yyyy"
                          /* template: labelTemplate*/
                       }
                   }
@@ -267,6 +268,26 @@
               function aggr(values, series){
                   console.log("======================"); return values;
               }
+
+              function createGraph(){
+                  var chart = $("#chart1").data("kendoChart");
+                  var series = chart.options.series;
+                /*  var copyS = deepcopy(series[0]);*/
+
+                /*  chart.dataSource.group().length > 0? series.length = 0:null;
+                  for (var i = 0, length = chart.dataSource.group().length; i < length; i++) {
+
+
+                         var p =  deepcopy(copyS);
+                             p.type = "column";
+                             p.field = chart.dataSource.group()[i].field;
+                             p.aggregate = "count";
+                             p.categoryField = "monthActualShip";
+                         series.push(p);
+                  };
+                  chart.refresh();*/
+              }
+
         </script>
 
 }
