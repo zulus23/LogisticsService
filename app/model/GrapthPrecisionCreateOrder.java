@@ -1,33 +1,51 @@
 package model;
 
-import java.util.Date;
+import com.avaje.ebean.annotation.Sql;
+
+import javax.persistence.Entity;
+import java.sql.Date;
 
 /**
  * Created by Gukov on 08.08.2016.
  */
+
+@Entity
+@Sql
 public class GrapthPrecisionCreateOrder {
+    private String deviation;
+    private Date monthActualShip;
+    private String customer;
+    private Double procent;
 
-    private Integer series;
-    private Date categoryAxis;
-
-    public GrapthPrecisionCreateOrder(Integer series, Date categoryAxis) {
-        this.series = series;
-        this.categoryAxis = categoryAxis;
+    public String getDeviation() {
+        return deviation;
     }
 
-    public Integer getSeries() {
-        return series;
+    public void setDeviation(String deviation) {
+        this.deviation = deviation;
     }
 
-    public void setSeries(Integer series) {
-        this.series = series;
+    public Date getMonthActualShip() {
+        return monthActualShip;
     }
 
-    public Date getCategoryAxis() {
-        return categoryAxis;
+    public void setMonthActualShip(Date monthActualShip) {
+        this.monthActualShip = monthActualShip;
     }
 
-    public void setCategoryAxis(Date categoryAxis) {
-        this.categoryAxis = categoryAxis;
+    public String getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(String customer) {
+        this.customer = customer;
+    }
+
+    public Double getProcent() {
+        return procent;
+    }
+
+    public void setProcent(Double procent) {
+        this.procent = procent;
     }
 }

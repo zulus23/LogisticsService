@@ -1,10 +1,13 @@
 package services;
 
+import com.avaje.ebean.*;
+import model.GrapthPrecisionCreateOrder;
 import model.ReportPrecisionCreateOrder;
 import play.mvc.PathBindable;
 import scala.Function1;
 import scala.util.Either;
 
+import javax.inject.Inject;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -13,7 +16,38 @@ import java.util.List;
  */
 public class ReportService {
 
+
     public List<ReportPrecisionCreateOrder> precisionCreateOrders(LocalDate dateBegin, LocalDate dateEnd, String site, String mode){
         return ReportPrecisionCreateOrder.find.where().eq("site",site).between("dateCreateOrder",dateBegin,dateEnd).findList();
     }
+
+    public List<GrapthPrecisionCreateOrder> precisionCreateOrdersGrapth(LocalDate dateBegin, LocalDate dateEnd, String site, String mode){
+
+        String sql = "SELECT p.dif_ as deviation,p.DateActual_Ship as monthActualShip,cust_name as customer,\n" +
+                     "CAST(100.0* COUNT(p.id) OVER(PARTITION BY p.dat_,p.dif_)/COUNT(p.id) OVER(PARTITION BY p.dat_) AS NUMERIC(15,2)) as procent" +
+                         " FROM (\n" +
+                "SELECT CASE WHEN ABS(DATEDIFF(DAY,r.datecreate_row,r.datePlan_Mnfg)) > 2 THEN 'Без отклонений' ELSE 'С отклонением' END AS dif_,\n" +
+                "DATEDIFF(DAY,r.datecreate_row,r.datePlan_Mnfg)AS t, CAST(CONVERT(CHAR(6),dateactual_ship,112)+'01'AS DATE) AS dat_,* FROM dbo.GTK_RPT_LOGIST_ r\n" +
+                "WHERE r.site = :site AND r.dateactual_ship BETWEEN :dateBegin AND :dateEnd\n" +
+                ") AS p\n";
+        SqlQuery sqlQuery = Ebean.createSqlQuery(sql);
+        RawSql rawSql =  RawSqlBuilder
+                .parse(sql)
+               /* .columnMapping("deviation", "deviation")
+                .columnMapping("dateBeginProduction", "dateBeginProduction")
+                .columnMapping("customer", "customer")
+                .columnMapping("procent", "procent")*/
+                .create();
+
+        List<GrapthPrecisionCreateOrder> precisionCreateOrders =  Ebean.find(GrapthPrecisionCreateOrder.class).setRawSql(rawSql).setParameter("site", site).setParameter("dateBegin", dateBegin).setParameter("dateEnd", dateEnd).findList();
+
+        /*sqlQuery.setParameter("site", site);
+        sqlQuery.setParameter("dateBegin", dateBegin);
+        sqlQuery.setParameter("dateEnd", dateEnd);*/
+
+
+        /*List<SqlRow> sqlRows =  sqlQuery.findList();*/
+        return precisionCreateOrders;
+    }
+
 }

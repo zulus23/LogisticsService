@@ -1,31 +1,29 @@
 package controllers;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import model.GrapthPrecisionCreateOrder;
 import model.ReportPrecisionCreateOrder;
+import model.dto.GraphDto;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.cglib.core.Local;
 import play.data.Form;
 import play.libs.Json;
-import play.mvc.BodyParser;
 import play.mvc.Controller;
 import play.mvc.Result;
 import scala.Option;
 import services.HelperForInterface;
 import services.ReportService;
-import views.html.*;
 
 
 import javax.inject.Inject;
 import java.sql.Date;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.*;
 
 
 /**
@@ -72,7 +70,7 @@ public class PrecisionCreateOrderController extends Controller {
 
         return ok(Json.toJson(reportService.precisionCreateOrders(tempdateBegin,tempdateEnd,tempSite,"")));
     }
-    public  Result grapth(Option<String> dateBegin, Option<String> dateEnd, Option<String> site, Option<String> mode ) {
+    public  Result grapth(Option<String> dateBegin, Option<String> dateEnd, Option<String> site, Option<String> mode, Option<String> groupField ) {
 
         List<GrapthPrecisionCreateOrder> grapthPrecisionCreateOrders = new ArrayList<>();
 
@@ -91,12 +89,20 @@ public class PrecisionCreateOrderController extends Controller {
             tempSite = helperForInterface.siteName(Integer.parseInt(site.get()));
         }
 
-        Map<String,Long> longMap =  reportService.precisionCreateOrders(tempdateBegin,tempdateEnd,tempSite,"").stream()
-                                                 .filter(e -> e.getMonthActualShip() != null)
+        List<GrapthPrecisionCreateOrder> longMap = reportService.precisionCreateOrdersGrapth(tempdateBegin,tempdateEnd,tempSite,"").stream()
+                                                 .filter(e -> e.getDeviation().equals("Без отклонений"))
                                                  .sorted((a,b) -> a.getMonthActualShip().compareTo(b.getMonthActualShip()))
-                                                 .collect(Collectors.groupingBy(e-> String.format("%s-%s", e.getMonthIntShip(),e.getYearShip()),Collectors.counting()));
+                                                 .collect(toList());
+        longMap.stream().forEach(e -> convertDate(e));
 
-        longMap.entrySet().stream()
+        Map<Date,List<Double>> dateListMap =  longMap.stream().collect(Collectors.groupingBy(GrapthPrecisionCreateOrder::getMonthActualShip,mapping(GrapthPrecisionCreateOrder::getProcent,toList())));
+
+        List<GraphDto> graphDtos = dateListMap.entrySet().stream()
+                .sorted((a,b)-> a.getKey().compareTo(b.getKey()))
+                .map(e -> new GraphDto(e.getKey(), e.getValue().get(0)))
+                .collect(toList());
+        //longMap.entrySet().stream().
+        /*longMap.entrySet().stream()
                           .sorted((a,b)-> a.getKey().compareToIgnoreCase(b.getKey()))
                           .map(e -> new GrapthPrecisionCreateOrder(e.getValue().intValue(), getDateFrom(e)))
                                   //
@@ -106,7 +112,14 @@ public class PrecisionCreateOrderController extends Controller {
         });*/
 
 
-        return ok(Json.toJson(grapthPrecisionCreateOrders));
+        return ok(Json.toJson(graphDtos));
+
+    }
+
+    private void convertDate(GrapthPrecisionCreateOrder e) {
+        Date temp =  e.getMonthActualShip();
+        LocalDate localDate = temp.toLocalDate();
+        e.setMonthActualShip(Date.valueOf(LocalDate.of(localDate.getYear(),localDate.getMonth(),1)));
 
     }
 

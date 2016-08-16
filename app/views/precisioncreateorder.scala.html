@@ -112,7 +112,7 @@
                               url: "api/grapth",
                               contentType: "application/json; charset=utf-8",
                               dataType: 'json',
-                              data:{dateBegin: '@select.getDateBegin',dateEnd:'@select.getDateEnd', site:'@select.getEnterprise'},
+                              data:{dateBegin: '@select.getDateBegin',dateEnd:'@select.getDateEnd', site:'@select.getEnterprise',groupField:''},
                               beforeSend: function() { $('#loading').show(); },
                               success: function(data) {
 
@@ -136,31 +136,9 @@
                        allPages: true
                    },
 
-                    dataSource: dataSourceDB
-                       /* schema: {
-                            model: {
-                                id:"id",
-
-                                fields: {
-                                    /!* site:{type:"string"},*!/
-                                    orderNumber: { type: "string" },
-                                    orderLine: { type: "number" },
-                                    manager: { type: "string" },
-                                    customer: { type: "string" },
-                                    itemDescription:{type:"string"},
-                                    monthShip:{type:"string"},
-                                    dateCreateOrderFormat:{type:"string"},
-                                    dateBeginProductionFormat:{type:"string"},
-                                    deviation:{type:"number"},
-                                    caclStatus:{type:"string"}
-                                }
-                            }
-                        }      */              ,
+                    dataSource: dataSourceDB,
                     height: '100%',
                     groupable: true,
-
-                   /*    rowTemplate: "<tr>" + "#= getGridGroupCells('gridTest') #" + "<td>...</td><td>...</td><td>...</td></tr>",
-                       altRowTemplate: "<tr class='k-alt'>" +                  "#= getGridGroupCells('gridTest') #" +              "<td>...</td><td>...</td><td>...</td></tr>",*/
                     sortable: true,
                     filterable: true,
                     pageable: {
@@ -230,17 +208,22 @@
 
 
               $("#chart1").kendoChart({
-                  dataSource: dataSourceDB,
+                  dataSource: dataSourceGrapth,
+                  legend: {
+                      position: "top"
+                  },
                   series: [{
-                     aggregate: calcProcent,
                       type: "column",
-                      field: "caclStatus",
-                      categoryField:"monthActualShip"
+                      field: "procent",
 
-                  },{aggregate: "count",type:"column",field:"manager",categoryField:"monthActualShip"}],
+
+                  }],
                   valueAxis: {
 
                       labels: {
+
+                          min:0,
+                          max:100,
                           format: "{0}%",
                           skip: 2,
                           step: 2
@@ -249,12 +232,17 @@
                   categoryAxis: {
 
                       baseUnit:"months",
-                      field: "monthActualShip",
+                      field: "date",
                       labels: {
 
                           format: "MMMM-yyyy"
-                         /* template: labelTemplate*/
+
                       }
+                  },
+                  tooltip: {
+                      visible: true,
+                      format: "{0}%",
+                      template: "#= value #"
                   }
               });
               function labelTemplate(e) {
@@ -271,6 +259,8 @@
 
               function createGraph(){
                   var chart = $("#chart1").data("kendoChart");
+                  if(dataSourceDB.group().length > 0 ){ chart.datasource = createDatasourceForgraph(dataSourceDB.group()[0].field)}
+                  chart.dataSource.read();
                   var series = chart.options.series;
                 /*  var copyS = deepcopy(series[0]);*/
 
@@ -287,7 +277,31 @@
                   };
                   chart.refresh();*/
               }
+              function createDatasourceForgraph(groupField){
+                  var datasource =
+                   new kendo.data.DataSource({
+                  transport: {
+                      read: function(options) {
+                          $.ajax({
+                              type: "GET",
+                              url: "api/grapth",
+                              contentType: "application/json; charset=utf-8",
+                              dataType: 'json',
+                              data:{dateBegin: '@select.getDateBegin',dateEnd:'@select.getDateEnd', site:'@select.getEnterprise',groupField:groupField},
+                              beforeSend: function() { $('#loading').show(); },
+                              success: function(data) {
 
+                                  $('#loading').hide();
+                                  options.success(data);
+                              }
+                          });
+                      }
+                  },
+                  sort: [
+                      { "field": "categoryAxis", "dir": "asc" }
+                  ],
+              });
+                  return datasource;}
         </script>
 
 }
