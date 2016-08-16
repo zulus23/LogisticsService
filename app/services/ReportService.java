@@ -21,16 +21,28 @@ public class ReportService {
         return ReportPrecisionCreateOrder.find.where().eq("site",site).between("dateCreateOrder",dateBegin,dateEnd).findList();
     }
 
-    public List<GrapthPrecisionCreateOrder> precisionCreateOrdersGrapth(LocalDate dateBegin, LocalDate dateEnd, String site, String mode){
+    public List<GrapthPrecisionCreateOrder> precisionCreateOrdersGrapth(LocalDate dateBegin, LocalDate dateEnd, String site, String mode,String groupField){
 
-        String sql = "SELECT p.dif_ as deviation,p.DateActual_Ship as monthActualShip,cust_name as customer,\n" +
+        String sqlAll = "SELECT DISTINCT deviation,monthActualShip as monthActualShip,customer,procent FROM (" +
+                       "SELECT p.dif_ as deviation,p.dat_ as monthActualShip,\'\' as customer,\n" +
                      "CAST(100.0* COUNT(p.id) OVER(PARTITION BY p.dat_,p.dif_)/COUNT(p.id) OVER(PARTITION BY p.dat_) AS NUMERIC(15,2)) as procent" +
-                         " FROM (\n" +
-                "SELECT CASE WHEN ABS(DATEDIFF(DAY,r.datecreate_row,r.datePlan_Mnfg)) > 2 THEN 'Без отклонений' ELSE 'С отклонением' END AS dif_,\n" +
-                "DATEDIFF(DAY,r.datecreate_row,r.datePlan_Mnfg)AS t, CAST(CONVERT(CHAR(6),dateactual_ship,112)+'01'AS DATE) AS dat_,* FROM dbo.GTK_RPT_LOGIST_ r\n" +
-                "WHERE r.site = :site AND r.dateactual_ship BETWEEN :dateBegin AND :dateEnd\n" +
-                ") AS p\n";
-        SqlQuery sqlQuery = Ebean.createSqlQuery(sql);
+                     " FROM (SELECT CASE WHEN ABS(DATEDIFF(DAY,r.datecreate_row,r.datePlan_Mnfg)) > 2 THEN 'Без отклонений' ELSE 'С отклонением' END AS dif_,\n" +
+                     "DATEDIFF(DAY,r.datecreate_row,r.datePlan_Mnfg)AS t, CAST(CONVERT(CHAR(6),dateactual_ship,112)+'01'AS DATE) AS dat_,* FROM dbo.GTK_RPT_LOGIST r\n" +
+                     "WHERE r.site = :site AND r.dateactual_ship BETWEEN :dateBegin AND :dateEnd) AS p) as allRecord\n";
+
+        String sqlClientGroup = "SELECT DISTINCT deviation,monthActualShip as monthActualShip,customer,procent FROM (SELECT p.dif_ as deviation,p.dat_ as monthActualShip,cust_name as customer,\n" +
+                   "  CAST(100.0* COUNT(p.id) OVER( PARTITION BY p.cust_name,p.dat_,p.dif_)/COUNT(p.id) OVER( PARTITION BY p.dat_,p.cust_num) AS NUMERIC(15,2)) AS procent " +
+                    " FROM( SELECT CASE WHEN ABS(DATEDIFF(DAY,r.datecreate_row,r.datePlan_Mnfg)) > 2 THEN 'Без отклонений' ELSE 'С отклонением' END AS dif_,\n" +
+                                "DATEDIFF(DAY,r.datecreate_row,r.datePlan_Mnfg)AS t,\n" +
+                                "CAST(CONVERT(CHAR(6),dateactual_ship,112)+'01'AS DATE) AS dat_,* FROM dbo.GTK_RPT_LOGIST r\n" +
+                                "WHERE r.site = :site AND r.dateactual_ship BETWEEN :dateBegin AND :dateEnd) AS p) as allRecord \n";
+
+        String sql=sqlAll;
+        if(groupField.equals("\'customer\'") ) {
+            sql = sqlClientGroup;
+        }
+
+        //SqlQuery sqlQuery = Ebean.createSqlQuery(sql);
         RawSql rawSql =  RawSqlBuilder
                 .parse(sql)
                /* .columnMapping("deviation", "deviation")

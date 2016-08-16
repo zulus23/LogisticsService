@@ -18,7 +18,7 @@ import java.util.Optional;
  */
 
 @Entity
-@Table(name = "GTK_RPT_LOGIST_")
+@Table(name = "GTK_RPT_LOGIST")
 public class ReportPrecisionCreateOrder  extends Model{
 
     @Id

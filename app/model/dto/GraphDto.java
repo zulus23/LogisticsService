@@ -9,7 +9,7 @@ public class GraphDto {
 
     private Date date;
     private Double procent;
-
+    private String customer;
     public Date getDate() {
         return date;
     }
@@ -18,8 +18,20 @@ public class GraphDto {
         return procent;
     }
 
-    public GraphDto(Date date, Double procent) {
+    public String getCustomer() {
+        return customer;
+    }
+
+    public GraphDto(Date date, Double procent, String customer) {
         this.date = date;
         this.procent = procent;
+        this.customer = customer;
+    }
+
+
+
+    public GraphDto(Date date, Double procent) {
+        this(date,procent,"");
+
     }
 }

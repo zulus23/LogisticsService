@@ -89,18 +89,25 @@ public class PrecisionCreateOrderController extends Controller {
             tempSite = helperForInterface.siteName(Integer.parseInt(site.get()));
         }
 
-        List<GrapthPrecisionCreateOrder> longMap = reportService.precisionCreateOrdersGrapth(tempdateBegin,tempdateEnd,tempSite,"").stream()
+        String tempGroup ="";
+        if(site.isDefined()){
+            tempGroup = groupField.get();
+            System.out.println(tempGroup);
+        }
+
+        List<GrapthPrecisionCreateOrder> longMap = reportService.precisionCreateOrdersGrapth(tempdateBegin,tempdateEnd,tempSite,"",tempGroup).stream()
                                                  .filter(e -> e.getDeviation().equals("Без отклонений"))
                                                  .sorted((a,b) -> a.getMonthActualShip().compareTo(b.getMonthActualShip()))
                                                  .collect(toList());
-        longMap.stream().forEach(e -> convertDate(e));
+       /* longMap.stream().forEach(e -> convertDate(e));
 
         Map<Date,List<Double>> dateListMap =  longMap.stream().collect(Collectors.groupingBy(GrapthPrecisionCreateOrder::getMonthActualShip,mapping(GrapthPrecisionCreateOrder::getProcent,toList())));
 
         List<GraphDto> graphDtos = dateListMap.entrySet().stream()
                 .sorted((a,b)-> a.getKey().compareTo(b.getKey()))
-                .map(e -> new GraphDto(e.getKey(), e.getValue().get(0)))
-                .collect(toList());
+                .peek(System.out::println)
+                .map(e -> new GraphDto(e.getKey(), e.getValue().get(0))) //TODO необходимо убрать get(0)
+                .collect(toList());*/
         //longMap.entrySet().stream().
         /*longMap.entrySet().stream()
                           .sorted((a,b)-> a.getKey().compareToIgnoreCase(b.getKey()))
@@ -112,7 +119,7 @@ public class PrecisionCreateOrderController extends Controller {
         });*/
 
 
-        return ok(Json.toJson(graphDtos));
+        return ok(Json.toJson(longMap));
 
     }
 

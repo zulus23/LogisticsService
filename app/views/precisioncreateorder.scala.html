@@ -98,7 +98,9 @@
                        var filteredData = query.filter(filters).data;
                        allDataCount = filteredData.length;
 
-                       createGraph();
+                       if(dataSourceDB.group().length > 0 ){
+                        createGraph(dataSourceDB.group()[0].field);
+                       }
                    }
 
 
@@ -210,14 +212,20 @@
               $("#chart1").kendoChart({
                   dataSource: dataSourceGrapth,
                   legend: {
-                      position: "top"
+                      visible: false
                   },
                   series: [{
                       type: "column",
                       field: "procent",
 
 
+                  },{
+                      type: "line",
+                      field: "procent",
+
+
                   }],
+
                   valueAxis: {
 
                       labels: {
@@ -232,7 +240,7 @@
                   categoryAxis: {
 
                       baseUnit:"months",
-                      field: "date",
+                      field: "monthActualShip",
                       labels: {
 
                           format: "MMMM-yyyy"
@@ -257,9 +265,9 @@
                   console.log("======================"); return 80;
               }
 
-              function createGraph(){
+              function createGraph(groupField){
                   var chart = $("#chart1").data("kendoChart");
-                  if(dataSourceDB.group().length > 0 ){ chart.datasource = createDatasourceForgraph(dataSourceDB.group()[0].field)}
+                  chart.setDataSource(createDatasourceForgraph(groupField));
                   chart.dataSource.read();
                   var series = chart.options.series;
                 /*  var copyS = deepcopy(series[0]);*/
@@ -287,7 +295,7 @@
                               url: "api/grapth",
                               contentType: "application/json; charset=utf-8",
                               dataType: 'json',
-                              data:{dateBegin: '@select.getDateBegin',dateEnd:'@select.getDateEnd', site:'@select.getEnterprise',groupField:groupField},
+                              data:{dateBegin: '@select.getDateBegin',dateEnd:'@select.getDateEnd', site:'@select.getEnterprise',groupField:"'"+groupField+"'"},
                               beforeSend: function() { $('#loading').show(); },
                               success: function(data) {
 
@@ -297,6 +305,9 @@
                           });
                       }
                   },
+                  group: {
+                           field: groupField
+                       },
                   sort: [
                       { "field": "categoryAxis", "dir": "asc" }
                   ],
