@@ -232,9 +232,9 @@
               $("#chart1").kendoChart({
                   dataSource: dataSourceDB,
                   series: [{
-                     aggregate: 'count',
+                     aggregate: calcProcent,
                       type: "column",
-                      field: "orderLine",
+                      field: "caclStatus",
                       categoryField:"monthActualShip"
 
                   },{aggregate: "count",type:"column",field:"manager",categoryField:"monthActualShip"}],
@@ -265,8 +265,8 @@
 
                   return label;
               }
-              function aggr(values, series){
-                  console.log("======================"); return values;
+              function calcProcent(values, series, dataItems, category){
+                  console.log("======================"); return 80;
               }
 
               function createGraph(){
