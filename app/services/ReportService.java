@@ -18,7 +18,7 @@ public class ReportService {
 
 
     public List<ReportPrecisionCreateOrder> precisionCreateOrders(LocalDate dateBegin, LocalDate dateEnd, String site, String mode){
-        return ReportPrecisionCreateOrder.find.where().eq("site",site).between("datePlanShip",dateBegin,dateEnd).findList();
+        return ReportPrecisionCreateOrder.find.where().eq("site",site).between("datePlanShip",dateBegin,dateEnd).isNotNull("customer").findList();
     }
 
     public List<GrapthPrecisionCreateOrder> precisionCreateOrdersGrapth(LocalDate dateBegin, LocalDate dateEnd, String site, String mode,String groupField){

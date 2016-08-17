@@ -215,8 +215,8 @@ public class ReportPrecisionCreateOrder  extends Model{
     public int getDeviation() {
         if(dateBeginProduction != null && dateCreateOrder != null) {
 
-            int temp = Period.between(dateBeginProduction, dateCreateOrder).getDays();
-            return temp < 3 && temp > 0 ? temp : 0;
+            int temp = Period.between(dateCreateOrder,dateBeginProduction ).getDays();
+            return /*temp < 3 && */temp > 2 ? 0:temp ;
         }
         return 0;
     }
