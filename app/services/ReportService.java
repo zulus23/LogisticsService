@@ -18,7 +18,7 @@ public class ReportService {
 
 
     public List<ReportPrecisionCreateOrder> precisionCreateOrders(LocalDate dateBegin, LocalDate dateEnd, String site, String mode){
-        return ReportPrecisionCreateOrder.find.where().eq("site",site).between("dateCreateOrder",dateBegin,dateEnd).findList();
+        return ReportPrecisionCreateOrder.find.where().eq("site",site).between("datePlanShip",dateBegin,dateEnd).findList();
     }
 
     public List<GrapthPrecisionCreateOrder> precisionCreateOrdersGrapth(LocalDate dateBegin, LocalDate dateEnd, String site, String mode,String groupField){
@@ -27,15 +27,15 @@ public class ReportService {
                        "SELECT p.dif_ as deviation,p.dat_ as monthActualShip,\'\' as customer,\n" +
                      "CAST(100.0* COUNT(p.id) OVER(PARTITION BY p.dat_,p.dif_)/COUNT(p.id) OVER(PARTITION BY p.dat_) AS NUMERIC(15,2)) as procent" +
                      " FROM (SELECT CASE WHEN ABS(DATEDIFF(DAY,r.datecreate_row,r.datePlan_Mnfg)) > 2 THEN 'Без отклонений' ELSE 'С отклонением' END AS dif_,\n" +
-                     "DATEDIFF(DAY,r.datecreate_row,r.datePlan_Mnfg)AS t, CAST(CONVERT(CHAR(6),dateactual_ship,112)+'01'AS DATE) AS dat_,* FROM dbo.GTK_RPT_LOGIST r\n" +
-                     "WHERE r.site = :site AND r.dateactual_ship BETWEEN :dateBegin AND :dateEnd) AS p) as allRecord\n";
+                     "DATEDIFF(DAY,r.DatePlan_Ship,r.datePlan_Mnfg)AS t, CAST(CONVERT(CHAR(6),DatePlan_Ship,112)+'01'AS DATE) AS dat_,* FROM dbo.GTK_RPT_LOGIST r\n" +
+                     "WHERE r.site = :site AND r.DatePlan_Ship BETWEEN :dateBegin AND :dateEnd) AS p) as allRecord\n";
 
         String sqlClientGroup = "SELECT DISTINCT deviation,monthActualShip as monthActualShip,customer,procent FROM (SELECT p.dif_ as deviation,p.dat_ as monthActualShip,cust_name as customer,\n" +
-                   "  CAST(100.0* COUNT(p.id) OVER( PARTITION BY p.cust_num,p.dat_,p.dif_)/COUNT(p.id) OVER( PARTITION BY p.cust_num,p.dat_) AS NUMERIC(15,2)) AS procent " +
-                    " FROM( SELECT CASE WHEN ABS(DATEDIFF(DAY,r.datecreate_row,r.datePlan_Mnfg)) > 2 THEN 'Без отклонений' ELSE 'С отклонением' END AS dif_,\n" +
-                                "DATEDIFF(DAY,r.datecreate_row,r.datePlan_Mnfg)AS t,\n" +
-                                "CAST(CONVERT(CHAR(6),dateactual_ship,112)+'01'AS DATE) AS dat_,* FROM dbo.GTK_RPT_LOGIST r\n" +
-                                "WHERE r.site = :site AND r.dateactual_ship BETWEEN :dateBegin AND :dateEnd) AS p) as allRecord \n";
+                                "CAST(100.0* COUNT(p.id) OVER( PARTITION BY p.cust_name,p.dat_,p.dif_)/COUNT(p.id) OVER( PARTITION BY p.cust_name,p.dat_) AS NUMERIC(15,2)) AS procent " +
+                                "FROM( SELECT CASE WHEN ABS(DATEDIFF(DAY,r.datecreate_row,r.datePlan_Mnfg)) > 2 THEN 'Без отклонений' ELSE 'С отклонением' END AS dif_,\n" +
+                                "DATEDIFF(DAY,r.DatePlan_Ship,r.datePlan_Mnfg)AS t,\n" +
+                                "CAST(CONVERT(CHAR(6),DatePlan_Ship,112)+'01'AS DATE) AS dat_,* FROM dbo.GTK_RPT_LOGIST r\n" +
+                                "WHERE r.site = :site AND r.DatePlan_Ship BETWEEN :dateBegin AND :dateEnd) AS p) as allRecord \n";
 
         String sql=sqlAll;
         if(groupField.equals("\'customer\'") ) {
