@@ -95,7 +95,7 @@
 
                        var query = new kendo.data.Query(dataSourceDB.data());
                        var filters = dataSourceDB.filter();
-                       var filteredData = query.filter(filters).data;
+                       filteredData = query.filter(filters).data;
 
                        allDataCount = filteredData.length;
 
@@ -220,10 +220,15 @@
 //                  }
 //                  return findCountPrevObject(level1,data.value,prevLevelValue[levelTree-1]);
 
-                  var pT = {"'"+field+"'":value};
-
-                  var lll = _.groupBy(_.pluck(_.where(dataSourceDB.data(),{field:value}),field),function(n){return "count"})
-                  var count = 0;//_.groupBy(_.pluck(_.where(dataSourceDB.data(),{field:value}),field),function(n){return "count"}).count.length
+                  var fieldObject = {};
+                  fieldObject[field]=value;
+                  var count = 0;
+                  if ( indexGroup(dataSourceDB.group(),field) === 0 ){
+                   count = _.groupBy(_.pluck(filteredData,field),function(n){return "count"}).count.length;
+                  } else {
+                   count = _.groupBy(_.pluck(_.where(filteredData,fieldObject),field),function(n){return "count"}).count.length;
+                  }
+                  //var count = temp.count.length;//_.groupBy(_.pluck(_.where(dataSourceDB.data(),{field:value}),field),function(n){return "count"}).count.length
 
                   return count;
               }
