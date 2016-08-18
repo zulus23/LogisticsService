@@ -47,10 +47,6 @@ public class ReportPrecisionCreateOrder  extends Model{
     @Column(name = "DatePlan_Ship")
     private LocalDate datePlanShip;
 
-    /*@Column(name = "Item_Desc")
-    private int deviation;
-    @Column(name = "Item_Desc")
-    private String deviationReason;*/
     @Column(name = "StatusRow")
     private String statusOrder;
 
@@ -178,7 +174,8 @@ public class ReportPrecisionCreateOrder  extends Model{
     public String getMonthShip() {
         if(monthActualShip != null) {
 
-            return monthActualShip.toLocalDate().getMonth().getDisplayName(TextStyle.FULL_STANDALONE, Locale.forLanguageTag("ru-RU"));
+            return String.format("%s-%s",  monthActualShip.toLocalDate().getMonth().getDisplayName(TextStyle.FULL_STANDALONE, Locale.forLanguageTag("ru-RU")),
+                                           monthActualShip.toLocalDate().getYear());
         }
         return "";
     }
