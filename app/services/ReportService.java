@@ -34,7 +34,7 @@ public class ReportService {
                                 "CAST(100.0* COUNT(p.id) OVER( PARTITION BY p.cust_name,p.dat_,p.dif_)/COUNT(p.id) OVER( PARTITION BY p.cust_name,p.dat_) AS NUMERIC(15,2)) AS procent \n" +
                                 " FROM( SELECT CASE WHEN ABS(DATEDIFF(DAY,r.datecreate_row,r.datePlan_Mnfg)) > 2 THEN 'Без отклонений' ELSE 'С отклонением' END AS dif_,\n" +
                                 " DATEDIFF(DAY,r.DatePlan_Ship,r.datePlan_Mnfg)AS t,\n" +
-                                " CAST(CONVERT(CHAR(6),DatePlan_Ship,112)+'01'AS DATE) AS dat_,* FROM dbo.GTK_R PT_LOGIST r\n" +
+                                " CAST(CONVERT(CHAR(6),DatePlan_Ship,112)+'01'AS DATE) AS dat_,* FROM dbo.GTK_RPT_LOGIST r\n" +
                                 " WHERE r.site = :site AND r.DatePlan_Ship BETWEEN :dateBegin AND :dateEnd) AS p) as allRecord \n";
 
         String sql=sqlAll;

@@ -182,7 +182,9 @@
                                 ui : createMultiSelect,
                                 extra: false
                             },
-                            groupHeaderTemplate: "Клиент: #=value# : #=count#: (#= Math.round((count/calcAll(data,field,value))*100)#%)"},
+                            /*groupHeaderTemplate: "Клиент: #=value# : #=count#: (#= Math.round((count/calcAll(data,field,value))*100)#%)"*/
+                            groupHeaderTemplate: "Клиент: #=value# : #=count#: (#= calcAll(data,field,value,count)#)"
+                        },
                         { field: "itemDescription", title: "Наименование заказа",width: "130px" ,headerAttributes: headerFormat,attributes: columnFormat,filterable: false,groupable: false },
                         { field: "monthShip", title: "Месяц отгрузки",width: "50px",headerAttributes: headerFormat ,attributes: columnFormat, aggregates: ["count"],
                                  groupHeaderTemplate: "Месяц отгрузки: #=value# : (#= calcAll(data,field,value)#)"    },
@@ -196,7 +198,8 @@
                         { /*field: "deviation",*/ title: "Причина отклонений",width: "65px",headerAttributes: headerFormat,attributes: columnFormat,groupable: false },
 
                         { field: "caclStatus", title: "Состояние",width: "80px" ,aggregates: ["count"],headerAttributes: headerFormat,attributes: columnFormat,
-                          groupHeaderTemplate: "Состояние: #=value#: #=count# : (#= Math.round((count/calcAll(data,field,value))*100)#%)"
+                          //groupHeaderTemplate: "Состояние: #=value#: #=count# : (#= Math.round((count/calcAll(data,field,value))*100)#%)"
+                            groupHeaderTemplate: "Состояние: #=value#: #=count# : (#= calcAll(data,field,value,count)#)"
                         }
 
                     ]
@@ -207,30 +210,45 @@
               var level1 = [{}]
               var prevLevelValue = [];
               var prevLevelCount = [];
-              function calcAll(data,field,value){
-//                  tree[-1] = {prevLevel : -1,level: -1,value:"",countAll:allDataCount/*dataSourceDB.total()*/};
-//                  prevLevelCount[-1] = allDataCount;/*dataSourceDB.total();*/
-//                  prevLevelValue[-1] = "";
-//                  var levelTree = indexGroup(dataSourceDB.group(),field);
-//                  prevLevelValue[levelTree] = data.value;
-//                  prevLevelCount[levelTree] = data.count;
-//                  if(!findObject(level1,levelTree,data.value,prevLevelValue[levelTree-1])){
-//                     level1.push({prevLevel : levelTree - 1,level: levelTree,value:data.value, prevValue:prevLevelValue[levelTree - 1],
-//                                  countAll:data.count, prevCount:prevLevelCount[levelTree - 1]});
-//                  }
-//                  return findCountPrevObject(level1,data.value,prevLevelValue[levelTree-1]);
+              function calcAll(data,field,value,count_){
+                  //tree[-1] = {prevLevel : -1,level: -1,value:"",countAll:allDataCount/*dataSourceDB.total()*/};
+                  //prevLevelCount[-1] = allDataCount;/*dataSourceDB.total();*/
+                  prevLevelValue[-1] = "";
+                  var levelTree = indexGroup(dataSourceDB.group(),field);
+                  prevLevelValue[levelTree] = data.value;
+                  //prevLevelCount[levelTree] = data.count;
+                  if(!findObject(level1,levelTree,data.value,prevLevelValue[levelTree-1])){
+                     level1.push({prevLevel : levelTree - 1,level: levelTree,value:data.value, prevValue:prevLevelValue[levelTree - 1]
+                                  /*countAll:data.count, prevCount:prevLevelCount[levelTree - 1]*/});
+                  }
+                //  return findCountPrevObject(level1,data.value,prevLevelValue[levelTree-1]);
 
                   var fieldObject = {};
                   fieldObject[field]=value;
-                  var count = 0;
+                  fieldObject["caclStatus"]="Без отклонений";
+                  var allCount = 0;
                   if ( indexGroup(dataSourceDB.group(),field) === 0 ){
-                   count = _.groupBy(_.pluck(filteredData,field),function(n){return "count"}).count.length;
+                      /*var queryTemp = new kendo.data.Query(filteredData);
+                      var filter = dataSourceDB.filter()||{ logic: "and", filters: [] };
+                      var prevValue = findPrevObject(level1,data.value,prevLevelValue[levelTree-1]);
+                      filter.filters.push({field: field, operator: "eq", value: prevValue.value });
+                      var temp = queryTemp.filter(filter).data;
+                    */
+                   allCount = _.groupBy(_.pluck(_.where(filteredData,fieldObject),"caclStatus"),function(n){return "count"});
+                      allCount = _.isUndefined(allCount.count)? 1:allCount.count.length;
+
                   } else {
-                   count = _.groupBy(_.pluck(_.where(filteredData,fieldObject),field),function(n){return "count"}).count.length;
+                      var queryTemp = new kendo.data.Query(filteredData);
+                      var filter = dataSourceDB.filter()||{ logic: "and", filters: [] };
+                      var prevValue = findPrevObject(level1,data.value,prevLevelValue[levelTree-1]);
+                      filter.filters.push({field: field, operator: "eq", value: prevValue.value });
+                      var temp = queryTemp.filter(filter).data;
+
+                      allCount = _.groupBy(_.pluck(_.where(temp,fieldObject),field),function(n){return "count"}).count.length;
                   }
                   //var count = temp.count.length;//_.groupBy(_.pluck(_.where(dataSourceDB.data(),{field:value}),field),function(n){return "count"}).count.length
 
-                  return count;
+                  return Math.round((allCount/count_)*100)+" %";
               }
 
               function indexGroup(dataGroup, findElement){
@@ -254,6 +272,15 @@
                       }
                   }
                   return -1;
+              }
+
+              function findPrevObject(data,value,prevValue){
+                  for(var i = 0, len = data.length;  i < len; i++){
+                      if(data[i].value === value && data[i].prevValue === prevValue){
+                          return data[i];
+                      }
+                  }
+                  return {};
               }
 
               function filterCount(){
