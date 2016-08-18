@@ -92,7 +92,6 @@ public class PrecisionCreateOrderController extends Controller {
         String tempGroup ="";
         if(site.isDefined()){
             tempGroup = groupField.get();
-            System.out.println(tempGroup);
         }
 
         List<GrapthPrecisionCreateOrder> longMap = reportService.precisionCreateOrdersGrapth(tempdateBegin,tempdateEnd,tempSite,"",tempGroup).stream()

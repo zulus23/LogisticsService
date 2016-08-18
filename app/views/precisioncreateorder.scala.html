@@ -208,17 +208,24 @@
               var prevLevelValue = [];
               var prevLevelCount = [];
               function calcAll(data,field,value){
-                  tree[-1] = {prevLevel : -1,level: -1,value:"",countAll:allDataCount/*dataSourceDB.total()*/};
-                  prevLevelCount[-1] = allDataCount;/*dataSourceDB.total();*/
-                  prevLevelValue[-1] = "";
-                  var levelTree = indexGroup(dataSourceDB.group(),field);
-                  prevLevelValue[levelTree] = data.value;
-                  prevLevelCount[levelTree] = data.count;
-                  if(!findObject(level1,levelTree,data.value,prevLevelValue[levelTree-1])){
-                     level1.push({prevLevel : levelTree - 1,level: levelTree,value:data.value, prevValue:prevLevelValue[levelTree - 1],
-                                  countAll:data.count, prevCount:prevLevelCount[levelTree - 1]});
-                  }
-                  return findCountPrevObject(level1,data.value,prevLevelValue[levelTree-1]);
+//                  tree[-1] = {prevLevel : -1,level: -1,value:"",countAll:allDataCount/*dataSourceDB.total()*/};
+//                  prevLevelCount[-1] = allDataCount;/*dataSourceDB.total();*/
+//                  prevLevelValue[-1] = "";
+//                  var levelTree = indexGroup(dataSourceDB.group(),field);
+//                  prevLevelValue[levelTree] = data.value;
+//                  prevLevelCount[levelTree] = data.count;
+//                  if(!findObject(level1,levelTree,data.value,prevLevelValue[levelTree-1])){
+//                     level1.push({prevLevel : levelTree - 1,level: levelTree,value:data.value, prevValue:prevLevelValue[levelTree - 1],
+//                                  countAll:data.count, prevCount:prevLevelCount[levelTree - 1]});
+//                  }
+//                  return findCountPrevObject(level1,data.value,prevLevelValue[levelTree-1]);
+
+                  var pT = {"'"+field+"'":value};
+
+                  var lll = _.groupBy(_.pluck(_.where(dataSourceDB.data(),{field:value}),field),function(n){return "count"})
+                  var count = 0;//_.groupBy(_.pluck(_.where(dataSourceDB.data(),{field:value}),field),function(n){return "count"}).count.length
+
+                  return count;
               }
 
               function indexGroup(dataGroup, findElement){
@@ -244,7 +251,11 @@
                   return -1;
               }
 
-
+              function filterCount(){
+                  var query = new kendo.data.Query(dataSourceDB.data());
+                  var filters = dataSourceDB.filter();
+                  var filteredData = query.filter(filters).data;
+              }
 
               function labelTemplate(e) {
                   var ds = dataSourceDB;
