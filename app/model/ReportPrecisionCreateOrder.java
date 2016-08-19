@@ -1,11 +1,9 @@
 package model;
 
 import com.avaje.ebean.Model;
-import scala.Predef;
 
 import javax.persistence.*;
 import java.sql.Date;
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
@@ -48,7 +46,7 @@ public class ReportPrecisionCreateOrder  extends Model{
     private LocalDate datePlanShip;
 
     @Column(name = "StatusRow")
-    private String statusOrder;
+    private String reasonDeviation;
 
     @Transient
     private String monthShip;
@@ -147,12 +145,12 @@ public class ReportPrecisionCreateOrder  extends Model{
         this.dateBeginProduction = dateBeginProduction;
     }
 
-    public String getStatusOrder() {
-        return statusOrder;
+    public String getReasonDeviation() {
+        return reasonDeviation;
     }
 
-    public void setStatusOrder(String statusOrder) {
-        this.statusOrder = statusOrder;
+    public void setReasonDeviation(String reasonDeviation) {
+        this.reasonDeviation = reasonDeviation;
     }
 
     public Long getId() {
@@ -219,9 +217,9 @@ public class ReportPrecisionCreateOrder  extends Model{
     }
 
     public String getCaclStatus() {
-        Optional<String> status = Optional.ofNullable(statusOrder);
-        //String temp =   Optional.ofNullable(statusOrder).orElseGet(()-> getDeviation() !=0 ? "С отклонением":"");
-        return getDeviation() !=0 ? "С отклонением":"Без отклонений";
+        Optional<String> status = Optional.ofNullable(reasonDeviation);
+        //String temp =   Optional.ofNullable(reasonDeviation).orElseGet(()-> getDeviation() !=0 ? "С отклонением":"");
+        return getDeviation() !=0 ? Deviation.YES.getName():Deviation.NO.getName();
     }
 
     public static Finder<Long, ReportPrecisionCreateOrder> find = new Finder<Long,ReportPrecisionCreateOrder>(ReportPrecisionCreateOrder.class);

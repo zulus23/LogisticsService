@@ -80,6 +80,7 @@
                                dateCreateOrderFormat:{type:"string"},
                                dateBeginProductionFormat:{type:"string"},
                                deviation:{type:"number"},
+                               reasonDeviation:{type:"string"},
                                caclStatus:{type:"string"},
                                monthActualShip:{type:"date"}
                            }
@@ -195,7 +196,7 @@
                             headerAttributes: headerFormat,attributes: columnFormat,filterable: false,groupable: false
                         },
                         { field: "deviation", title: "Отклонение",width: "65px",headerAttributes: headerFormat,attributes: columnFormat,groupable: false },
-                        { /*field: "deviation",*/ title: "Причина отклонений",width: "65px",headerAttributes: headerFormat,attributes: columnFormat,groupable: false },
+                        { field: "reasonDeviation", title: "Причина отклонений",width: "65px",headerAttributes: headerFormat,attributes: columnFormat,groupable: false },
 
                         { field: "caclStatus", title: "Состояние",width: "80px" ,aggregates: ["count"],headerAttributes: headerFormat,attributes: columnFormat,
                           //groupHeaderTemplate: "Состояние: #=value#: #=count# : (#= Math.round((count/calcAll(data,field,value))*100)#%)"
