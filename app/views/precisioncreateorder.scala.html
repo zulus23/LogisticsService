@@ -82,7 +82,8 @@
                                deviation:{type:"number"},
                                reasonDeviation:{type:"string"},
                                caclStatus:{type:"string"},
-                               monthActualShip:{type:"date"}
+                               monthActualShip:{type:"date"},
+                               nornalizeGroupDate:{type:"date"}
                            }
                        }
                    },
@@ -342,16 +343,31 @@
                   return label;
               }
 
-
+              function localDataForDeviation(){
+                  var data = [];
+                  var query = new kendo.data.Query(dataSourceDB.data());
+                  var filters = dataSourceDB.filter();
+                  var filteredData = query.filter(filters).data;
+                  var uniqDate =  _.uniq(filteredData,false,function(p){ return p.monthShip} ).map(function(e){return e.monthShip});
+                  _.each(uniqDate,function (e) {
+                                                  var all = _.where(filteredData,{monthShip:e}).length;
+                                                  var countPre = _.where(filteredData,{monthShip:e,caclStatus:"Без отклонений"}).length;
+                                                  var _procent = Math.round((countPre/all)*100);
+                                                  var myDate = moment(e, "MMM-YYYY","ru");
+                                                  data.push({deviation:"Без отклонений",monthActualShip:myDate,procent:_procent });
+                                                 // data.push({deviation:"C отклонениями",monthActualShip:myDate,procent:100-_procent });
+                                                 });
+                  return data;
+              }
               function createGraph(groupField){
-                  //var chart = $("#chart1").data("kendoChart");
-                  var datasource_ = createDatasourceForgraph(groupField);
-                  datasource_.filter(dataSourceDB.filter());
-                  var visibleLegend = !!dataSourceDB.filter()? (dataSourceDB.filter().filters.length > 0 ? true : false): false ;
+
+                  var _datasource = createLocalDatasourceForgraph(groupField);
+                  /*datasource_.filter(dataSourceDB.filter());
+                  var visibleLegend = !!dataSourceDB.filter()? (dataSourceDB.filter().filters.length > 0 ? true : false): false ;*/
                   $("#chart1").kendoChart({
-                      dataSource: datasource_,
+                      dataSource: _datasource,
                       legend: {
-                          visible: visibleLegend,
+                          visible: true,
                           position:"top"
                       },
                       series: [/*{
@@ -446,6 +462,12 @@
                   });
               }
               function createDatasourceForgraph(groupField){
+                  /*var str = Object.keys(dataSourceDB.filter().filters).map(function(key){
+                      return encodeURIComponent(key) + '=' + encodeURIComponent(obj[key]);
+                  }).join('&');*/
+
+                  var str = dataSourceDB.filter().filters.map(function(obj){return encodeURIComponent(obj.field)+'='+encodeURIComponent(obj.value)}).join('&');
+
                   var datasource =
                    new kendo.data.DataSource({
                   transport: {
@@ -472,6 +494,19 @@
                       { "field": "categoryAxis", "dir": "asc" }
                   ]
               });
+                  return datasource;}
+              function createLocalDatasourceForgraph(groupField){
+                  var mydata =  localDataForDeviation();
+                  var datasource =
+                          new kendo.data.DataSource({
+                              data:mydata,
+                              group: {
+                                  field: "deviation"
+                              },
+                              sort: [
+                                  { "field": "monthActualShip", "dir": "asc" }
+                              ]
+                          });
                   return datasource;}
         </script>
 }

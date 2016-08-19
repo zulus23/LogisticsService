@@ -64,6 +64,9 @@ public class ReportPrecisionCreateOrder  extends Model{
     @Transient
     private String caclStatus;
 
+    @Transient
+    private Date nornalizeGroupDate;
+
 
     public String getSite() {
         return site;
@@ -214,6 +217,17 @@ public class ReportPrecisionCreateOrder  extends Model{
             return /*temp < 3 && */temp > 2 ? 0:temp ;
         }
         return 0;
+    }
+
+    public Date getNornalizeGroupDate() {
+        LocalDate temp;
+        if(monthActualShip != null) {
+           temp = monthActualShip.toLocalDate();
+
+        } else {
+            temp = LocalDate.now();
+        }
+        return  Date.valueOf(LocalDate.of(temp.getYear(),temp.getMonth(),1));
     }
 
     public String getCaclStatus() {
