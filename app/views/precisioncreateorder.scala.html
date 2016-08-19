@@ -105,8 +105,8 @@
                        } else {
                            createDefaultGraph();
                        }
-                       var chart = $("#chart1").data("kendoChart");
-                       chart.dataSource.filter(dataSourceDB.filter());
+                       /*var chart = $("#chart1").data("kendoChart");
+                       chart.dataSource.filter(dataSourceDB.filter());*/
                    }
 
 
@@ -185,10 +185,13 @@
                             },
                             /*groupHeaderTemplate: "Клиент: #=value# : #=count#: (#= Math.round((count/calcAll(data,field,value))*100)#%)"*/
                             groupHeaderTemplate: "Клиент: #=value# : #=count#: (#= calcAll(data,field,value,count)#)"
+                            //groupHeaderTemplate: "Клиент: #=value# : #=count#"
                         },
                         { field: "itemDescription", title: "Наименование заказа",width: "130px" ,headerAttributes: headerFormat,attributes: columnFormat,filterable: false,groupable: false },
-                        { field: "monthShip", title: "Месяц отгрузки",width: "50px",headerAttributes: headerFormat ,attributes: columnFormat, aggregates: ["count"],
-                                 groupHeaderTemplate: "Месяц отгрузки: #=value# : (#= calcAll(data,field,value)#)"    },
+                        { field: "monthShip", title: "Месяц отгрузки",width: "50px",headerAttributes: headerFormat ,attributes: columnFormat,groupable: false, aggregates: ["count"],
+                                 groupHeaderTemplate: "Месяц отгрузки: #=value# : (#= calcAll(data,field,value)#)"
+                            //groupHeaderTemplate: "Месяц отгрузки: #=value# : (#= count#)"
+                        },
                         { field: "dateCreateOrderFormat", title: "Дата открытия заказа",width: "80px",
                             headerAttributes: headerFormat,attributes: columnFormat,filterable: false,groupable: false
                         },
@@ -196,11 +199,13 @@
                             headerAttributes: headerFormat,attributes: columnFormat,filterable: false,groupable: false
                         },
                         { field: "deviation", title: "Отклонение",width: "65px",headerAttributes: headerFormat,attributes: columnFormat,groupable: false },
-                        { field: "reasonDeviation", title: "Причина отклонений",width: "65px",headerAttributes: headerFormat,attributes: columnFormat,groupable: false },
+                        { field: "reasonDeviation", title: "Причина отклонений",width: "65px",headerAttributes: headerFormat,attributes: columnFormat,groupable: true,aggregates: ["count"],
+                            groupHeaderTemplate: "Причина отклонений: #=value#: #=count# : (#= calcAll(data,field,value,count)#)"},
 
                         { field: "caclStatus", title: "Состояние",width: "80px" ,aggregates: ["count"],headerAttributes: headerFormat,attributes: columnFormat,
                           //groupHeaderTemplate: "Состояние: #=value#: #=count# : (#= Math.round((count/calcAll(data,field,value))*100)#%)"
-                            groupHeaderTemplate: "Состояние: #=value#: #=count# : (#= calcAll(data,field,value,count)#)"
+                           groupHeaderTemplate: "Состояние: #=value#: #=count# : (#= calcAll(data,field,value,count)#)"
+                            //groupHeaderTemplate: "Состояние: #=value#: #=count# "
                         }
 
                     ]
@@ -211,46 +216,84 @@
               var level1 = [{}]
               var prevLevelValue = [];
               var prevLevelCount = [];
-              function calcAll(data,field,value,count_){
+              var fieldObject = {};
+              function calcAll(data,field,value,count_) {
                   //tree[-1] = {prevLevel : -1,level: -1,value:"",countAll:allDataCount/*dataSourceDB.total()*/};
                   //prevLevelCount[-1] = allDataCount;/*dataSourceDB.total();*/
                   prevLevelValue[-1] = "";
-                  var levelTree = indexGroup(dataSourceDB.group(),field);
+                  var levelTree = indexGroup(dataSourceDB.group(), field);
                   prevLevelValue[levelTree] = data.value;
                   //prevLevelCount[levelTree] = data.count;
-                  if(!findObject(level1,levelTree,data.value,prevLevelValue[levelTree-1])){
-                     level1.push({prevLevel : levelTree - 1,level: levelTree,value:data.value, prevValue:prevLevelValue[levelTree - 1]
-                                  /*countAll:data.count, prevCount:prevLevelCount[levelTree - 1]*/});
+                  if (!findObject(level1, levelTree, data.value, prevLevelValue[levelTree - 1])) {
+                      level1.push({
+                          prevLevel: levelTree - 1,
+                          level: levelTree,
+                          value: data.value,
+                          prevValue: prevLevelValue[levelTree - 1]
+                          /*countAll:data.count, prevCount:prevLevelCount[levelTree - 1]*/
+                      });
                   }
-                //  return findCountPrevObject(level1,data.value,prevLevelValue[levelTree-1]);
+                  //  return findCountPrevObject(level1,data.value,prevLevelValue[levelTree-1]);
 
-                  var fieldObject = {};
-                  fieldObject[field]=value;
-                  fieldObject["caclStatus"]="Без отклонений";
+
                   var allCount = 0;
-                  if ( indexGroup(dataSourceDB.group(),field) === 0 ){
-                      /*var queryTemp = new kendo.data.Query(filteredData);
-                      var filter = dataSourceDB.filter()||{ logic: "and", filters: [] };
-                      var prevValue = findPrevObject(level1,data.value,prevLevelValue[levelTree-1]);
-                      filter.filters.push({field: field, operator: "eq", value: prevValue.value });
-                      var temp = queryTemp.filter(filter).data;
-                    */
-                   allCount = _.groupBy(_.pluck(_.where(filteredData,fieldObject),"caclStatus"),function(n){return "count"});
-                      allCount = _.isUndefined(allCount.count)? 1:allCount.count.length;
 
-                  } else {
-                      var queryTemp = new kendo.data.Query(filteredData);
-                      var filter = dataSourceDB.filter()||{ logic: "and", filters: [] };
-                      var prevValue = findPrevObject(level1,data.value,prevLevelValue[levelTree-1]);
-                      filter.filters.push({field: field, operator: "eq", value: prevValue.value });
-                      var temp = queryTemp.filter(filter).data;
-
-                      allCount = _.groupBy(_.pluck(_.where(temp,fieldObject),field),function(n){return "count"}).count.length;
+                  function getPrecisionCustomer(field, value, isPrecision) {
+                      var fieldObjectLocal = {};
+                      fieldObjectLocal["customer"] = value;
+                      var tempAll = _.groupBy(_.pluck(_.where(filteredData, fieldObjectLocal), "caclStatus"), function (n) {
+                          return "count"
+                      });
+                      tempAll = _.isUndefined(tempAll.count) ? 1 : tempAll.count.length
+                      fieldObjectLocal["caclStatus"] = "Без отклонений";
+                      var temp = _.groupBy(_.pluck(_.where(filteredData, fieldObjectLocal), "caclStatus"), function (n) {
+                          return "count"
+                      });
+                      temp = _.isUndefined(temp.count) ? 1 : temp.count.length;
+                      return isPrecision ? Math.round((temp / tempAll) * 100) + " %" : Math.round((1 - (temp / tempAll)) * 100) + " %";
                   }
-                  //var count = temp.count.length;//_.groupBy(_.pluck(_.where(dataSourceDB.data(),{field:value}),field),function(n){return "count"}).count.length
 
-                  return Math.round((allCount/count_)*100)+" %";
-              }
+                      if (indexGroup(dataSourceDB.group(), field) === 0) {
+                          fieldObject = {};
+                          // fieldObject[field]=value;
+                          if (field === "customer") {
+                              return getPrecisionCustomer(field, value, true);
+                          } else {
+                              allCount = _.groupBy(_.pluck(_.where(filteredData, fieldObject), "caclStatus"), function (n) {
+                                  return "count"
+                              });
+                              allCount = _.isUndefined(allCount.count) ? 1 : allCount.count.length;
+                          }
+
+                      }
+                      if (indexGroup(dataSourceDB.group(), field) === 1) {
+
+                          fieldObject ={};
+                          //   if(field === "customer"){   return  getPrecisionCustomer(field,value);
+                          var prevValue = findPrevObject(level1, data.value, prevLevelValue[levelTree - 1]);
+                          if (dataSourceDB.group()[0].field === "customer") {
+                              fieldObject[dataSourceDB.group()[0].field] = prevValue.prevValue;
+                          } else { fieldObject[field] = prevValue.value; }
+                           var tempAll = _.groupBy(_.pluck(_.where(filteredData, fieldObject), field), function (n) {
+                                    return "count"
+                          });
+                          allCount = _.isUndefined(tempAll.count) ? 1 : tempAll.count.length;
+                      }
+                      if (indexGroup(dataSourceDB.group(), field) === 2) {
+                          fieldObject ={};
+
+                          fieldObject[dataSourceDB.group()[0].field] = prevLevelValue[0];
+                          fieldObject[dataSourceDB.group()[1].field] = prevLevelValue[1];
+
+                          var prevValue = findPrevObject(level1, data.value, prevLevelValue[levelTree - 1]);
+                          var tempAll = _.groupBy(_.pluck(_.where(filteredData, fieldObject), field), function (n) {
+                              return "count"
+                          });
+                          allCount = _.isUndefined(tempAll.count) ? 1 : tempAll.count.length;
+                      }
+
+                      return (allCount <= count_ ) ? Math.round((allCount / count_) * 100) + " %" : Math.round((count_ / allCount) * 100) + " %";
+                  }
 
               function indexGroup(dataGroup, findElement){
                   for(var i = 0, len = dataGroup.length;  i < len; i++){
@@ -303,6 +346,7 @@
               function createGraph(groupField){
                   //var chart = $("#chart1").data("kendoChart");
                   var datasource_ = createDatasourceForgraph(groupField);
+                  datasource_.filter(dataSourceDB.filter());
                   var visibleLegend = !!dataSourceDB.filter()? (dataSourceDB.filter().filters.length > 0 ? true : false): false ;
                   $("#chart1").kendoChart({
                       dataSource: datasource_,
@@ -430,5 +474,5 @@
               });
                   return datasource;}
         </script>
-
+}
 }
