@@ -272,9 +272,9 @@
                           fieldObject ={};
                           //   if(field === "customer"){   return  getPrecisionCustomer(field,value);
                           var prevValue = findPrevObject(level1, data.value, prevLevelValue[levelTree - 1]);
-                          if (dataSourceDB.group()[0].field === "customer") {
-                              fieldObject[dataSourceDB.group()[0].field] = prevValue.prevValue;
-                          } else { fieldObject[field] = prevValue.value; }
+                          if (field === "customer") {
+                              return getPrecisionCustomer(field, value, true);//fieldObject[dataSourceDB.group()[0].field] = prevValue.prevValue;
+                          } else { fieldObject[dataSourceDB.group()[0].field] = prevLevelValue[0];/*fieldObject[field] = prevValue.value; */}
                            var tempAll = _.groupBy(_.pluck(_.where(filteredData, fieldObject), field), function (n) {
                                     return "count"
                           });
@@ -343,7 +343,7 @@
                   return label;
               }
 
-              function localDataForDeviation(){
+            /*  function localDataForDeviation(){
                   var data = [];
                   var query = new kendo.data.Query(dataSourceDB.data());
                   var filters = dataSourceDB.filter();
@@ -358,10 +358,10 @@
                                                  // data.push({deviation:"C отклонениями",monthActualShip:myDate,procent:100-_procent });
                                                  });
                   return data;
-              }
+              }*/
               function createGraph(groupField){
 
-                  var _datasource = createLocalDatasourceForgraph(groupField);
+                  var _datasource =  createLocalDatasourceForgraph(groupField);
                   /*datasource_.filter(dataSourceDB.filter());
                   var visibleLegend = !!dataSourceDB.filter()? (dataSourceDB.filter().filters.length > 0 ? true : false): false ;*/
                   $("#chart1").kendoChart({
@@ -496,7 +496,11 @@
               });
                   return datasource;}
               function createLocalDatasourceForgraph(groupField){
-                  var mydata =  localDataForDeviation();
+
+                  if(groupField === 'customer') {var mydata =  graphUtils.localDataForCustomer(dataSourceDB);};
+                  if(groupField === 'caclStatus') {var mydata =  graphUtils.localDataForDeviation(dataSourceDB);};
+                  if(groupField === 'reasonDeviation') {var mydata =  graphUtils.localDataForReasonDeviation(dataSourceDB);};
+                  //var mydata =  graphUtils.localDataForDeviation(dataSourceDB);
                   var datasource =
                           new kendo.data.DataSource({
                               data:mydata,
