@@ -9,6 +9,7 @@ import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -62,7 +63,7 @@ public class ReportPrecisionCreateOrder  extends Model{
     @Transient
     private int deviation;
     @Transient
-    private String caclStatus;
+    private String calcStatus;
 
     @Transient
     private Date nornalizeGroupDate;
@@ -149,7 +150,8 @@ public class ReportPrecisionCreateOrder  extends Model{
     }
 
     public String getReasonDeviation() {
-        return reasonDeviation;
+        if( Objects.isNull(reasonDeviation)) return "";
+        return  reasonDeviation;
     }
 
     public void setReasonDeviation(String reasonDeviation) {
@@ -230,7 +232,7 @@ public class ReportPrecisionCreateOrder  extends Model{
         return  Date.valueOf(LocalDate.of(temp.getYear(),temp.getMonth(),1));
     }
 
-    public String getCaclStatus() {
+    public String getCalcStatus() {
         Optional<String> status = Optional.ofNullable(reasonDeviation);
         //String temp =   Optional.ofNullable(reasonDeviation).orElseGet(()-> getDeviation() !=0 ? "С отклонением":"");
         return getDeviation() !=0 ? Deviation.YES.getName():Deviation.NO.getName();

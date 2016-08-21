@@ -19,7 +19,7 @@
 
             <div id="graph" class="col-md-offset-1 col-md-10" >
                 <div class="demo-section k-content wide">
-                    <div id="chart1"></div>
+                    <div id="chartView"></div>
                 </div>
             </div>
         </div>
@@ -81,15 +81,15 @@
                                dateBeginProductionFormat:{type:"string"},
                                deviation:{type:"number"},
                                reasonDeviation:{type:"string"},
-                               caclStatus:{type:"string"},
+                               calcStatus:{type:"string"},
                                monthActualShip:{type:"date"},
-                               nornalizeGroupDate:{type:"date"}
+                               nornalizeGroupDate:{type:"string"}
                            }
                        }
                    },
                    //  pageSize:20,
                    aggregate:[
-                       {field:"caclStatus",aggregate:"count"},
+                       {field:"calcStatus",aggregate:"count"},
                        {field:"customer", aggregate:"count"},
                        {field:"monthShip", aggregate:"count"}
                    ],
@@ -102,7 +102,8 @@
                        allDataCount = filteredData.length;
 
                        if(dataSourceDB.group().length > 0 ){
-                        createGraph(dataSourceDB.group()[0].field);
+                        graphUtils.createBarGraph(dataSourceDB.group()[0].field,dataSourceDB)
+                           //createGraph(dataSourceDB.group()[0].field);
                        } else {
                            createDefaultGraph();
                        }
@@ -203,7 +204,7 @@
                         { field: "reasonDeviation", title: "Причина отклонений",width: "65px",headerAttributes: headerFormat,attributes: columnFormat,groupable: true,aggregates: ["count"],
                             groupHeaderTemplate: "Причина отклонений: #=value#: #=count# : (#= calcAll(data,field,value,count)#)"},
 
-                        { field: "caclStatus", title: "Состояние",width: "80px" ,aggregates: ["count"],headerAttributes: headerFormat,attributes: columnFormat,
+                        { field: "calcStatus", title: "Состояние",width: "80px" ,aggregates: ["count"],headerAttributes: headerFormat,attributes: columnFormat,
                           //groupHeaderTemplate: "Состояние: #=value#: #=count# : (#= Math.round((count/calcAll(data,field,value))*100)#%)"
                            groupHeaderTemplate: "Состояние: #=value#: #=count# : (#= calcAll(data,field,value,count)#)"
                             //groupHeaderTemplate: "Состояние: #=value#: #=count# "
@@ -242,12 +243,12 @@
                   function getPrecisionCustomer(field, value, isPrecision) {
                       var fieldObjectLocal = {};
                       fieldObjectLocal["customer"] = value;
-                      var tempAll = _.groupBy(_.pluck(_.where(filteredData, fieldObjectLocal), "caclStatus"), function (n) {
+                      var tempAll = _.groupBy(_.pluck(_.where(filteredData, fieldObjectLocal), "calcStatus"), function (n) {
                           return "count"
                       });
                       tempAll = _.isUndefined(tempAll.count) ? 1 : tempAll.count.length
-                      fieldObjectLocal["caclStatus"] = "Без отклонений";
-                      var temp = _.groupBy(_.pluck(_.where(filteredData, fieldObjectLocal), "caclStatus"), function (n) {
+                      fieldObjectLocal["calcStatus"] = "Без отклонений";
+                      var temp = _.groupBy(_.pluck(_.where(filteredData, fieldObjectLocal), "calcStatus"), function (n) {
                           return "count"
                       });
                       temp = _.isUndefined(temp.count) ? 1 : temp.count.length;
@@ -260,7 +261,7 @@
                           if (field === "customer") {
                               return getPrecisionCustomer(field, value, true);
                           } else {
-                              allCount = _.groupBy(_.pluck(_.where(filteredData, fieldObject), "caclStatus"), function (n) {
+                              allCount = _.groupBy(_.pluck(_.where(filteredData, fieldObject), "calcStatus"), function (n) {
                                   return "count"
                               });
                               allCount = _.isUndefined(allCount.count) ? 1 : allCount.count.length;
@@ -273,6 +274,9 @@
                           //   if(field === "customer"){   return  getPrecisionCustomer(field,value);
                           var prevValue = findPrevObject(level1, data.value, prevLevelValue[levelTree - 1]);
                           if (field === "customer") {
+                              var resDev =_.find(prevLevelValue,function(e){ e === graphUtils.WITHDEVIATION});
+
+
                               return getPrecisionCustomer(field, value, true);//fieldObject[dataSourceDB.group()[0].field] = prevValue.prevValue;
                           } else { fieldObject[dataSourceDB.group()[0].field] = prevLevelValue[0];/*fieldObject[field] = prevValue.value; */}
                            var tempAll = _.groupBy(_.pluck(_.where(filteredData, fieldObject), field), function (n) {
@@ -359,22 +363,22 @@
                                                  });
                   return data;
               }*/
-              function createGraph(groupField){
+             /* function createGraph(groupField){
 
                   var _datasource =  createLocalDatasourceForgraph(groupField);
-                  /*datasource_.filter(dataSourceDB.filter());
-                  var visibleLegend = !!dataSourceDB.filter()? (dataSourceDB.filter().filters.length > 0 ? true : false): false ;*/
-                  $("#chart1").kendoChart({
+                  /!*datasource_.filter(dataSourceDB.filter());
+                  var visibleLegend = !!dataSourceDB.filter()? (dataSourceDB.filter().filters.length > 0 ? true : false): false ;*!/
+                  $("#chartView").kendoChart({
                       dataSource: _datasource,
                       legend: {
                           visible: true,
                           position:"top"
                       },
-                      series: [/*{
+                      series: [/!*{
                           type: "column",
                           field: "procent",
 
-                      },*/{
+                      },*!/{
                           type: "column",
                           field: "procent",
                           tooltip: {
@@ -410,15 +414,15 @@
                               template: "#= kendo.format('{0:MMMM-yyyy}', new Date(value)) #"
 
                           }
-                      }/*,
+                      }/!*,
                       tooltip: {
                           visible: true,
                           template: "#:value#%"
-                      }*/
+                      }*!/
                   });
-              }
+              }*/
               function createDefaultGraph(){
-                  $("#chart1").kendoChart({
+                  $("#chartView").kendoChart({
                       dataSource: dataSourceGrapth,
                       legend: {
                           visible: false
@@ -495,10 +499,10 @@
                   ]
               });
                   return datasource;}
-              function createLocalDatasourceForgraph(groupField){
+              /*function createLocalDatasourceForgraph(groupField){
 
                   if(groupField === 'customer') {var mydata =  graphUtils.localDataForCustomer(dataSourceDB);};
-                  if(groupField === 'caclStatus') {var mydata =  graphUtils.localDataForDeviation(dataSourceDB);};
+                  if(groupField === 'calcStatus') {var mydata =  graphUtils.localDataForDeviation(dataSourceDB);};
                   if(groupField === 'reasonDeviation') {var mydata =  graphUtils.localDataForReasonDeviation(dataSourceDB);};
                   //var mydata =  graphUtils.localDataForDeviation(dataSourceDB);
                   var datasource =
@@ -511,7 +515,7 @@
                                   { "field": "monthActualShip", "dir": "asc" }
                               ]
                           });
-                  return datasource;}
+                  return datasource;}*/
         </script>
 }
 }
