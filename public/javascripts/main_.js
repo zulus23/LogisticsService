@@ -73,7 +73,7 @@ $(document).ready(function() {
     index: 0,
     change: onChange
   });*/
-  $("#reports").kendoDropDownList({
+  $("#report").kendoDropDownList({
     dataTextField: "name",
     dataValueField: "id",
     dataSource:dataSourceTypeReport/* {

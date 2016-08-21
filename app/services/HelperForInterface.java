@@ -40,4 +40,9 @@ public class HelperForInterface {
         listDB();
         return enterprises.stream().filter(s -> s.getId() == id).map(e -> e.getNameInDb()).findFirst().get();
     }
+
+    public String typeReport(int id){
+
+        return typeReports.stream().filter(s -> s.getId() == id).map(e -> e.getName()).findFirst().get();
+    }
 }

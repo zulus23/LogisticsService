@@ -6,6 +6,7 @@ import play.data.FormFactory;
 import play.libs.Json;
 import play.mvc.*;
 
+import services.HelperForInterface;
 import views.html.*;
 
 import javax.inject.Inject;
@@ -25,6 +26,9 @@ public class HomeController extends Controller {
 
 
     @Inject
+    HelperForInterface helperForInterface;
+
+    @Inject
     public HomeController(FormFactory formFactory) {
         this.paramReportSelectForm = formFactory.form(ParamReportSelect.class);
     }
@@ -33,11 +37,43 @@ public class HomeController extends Controller {
     WebJarAssets webJarAssets;
 
     public  Result runReport() {
-
+        Result temp = ok();
         Form<ParamReportSelect> selectForm = paramReportSelectForm.bindFromRequest();
         ParamReportSelect paramReportSelect = selectForm.get();
         List<ReportPrecisionCreateOrder> orderList = ReportPrecisionCreateOrder.find.all();
-        Result temp = ok(precisioncreateorder.render("",webJarAssets,selectForm, paramReportSelect));
+        switch (Integer.parseInt(paramReportSelect.getReport())){
+            case 1: {
+                temp = ok(allorders.render("",webJarAssets,selectForm, paramReportSelect));
+                break;
+            }
+            case 2: {
+                 temp = ok(precisioncreateorder.render("",webJarAssets,selectForm, paramReportSelect));
+                break;
+            }
+            case 3: {
+                 temp = ok(precisionplaneorder.render("",webJarAssets,selectForm, paramReportSelect));
+                break;
+            }
+            case 4: {
+                temp = ok(precisionproductionorder.render("",webJarAssets,selectForm, paramReportSelect));
+                break;
+            }
+            case 5: {
+                temp = ok(precisionstorageorders.render("",webJarAssets,selectForm, paramReportSelect));
+                break;
+            }
+            case 6: {
+                temp = ok(precisionshipmentorders.render("",webJarAssets,selectForm, paramReportSelect));
+                break;
+            }
+            case 7: {
+                temp = ok(precisiondeliveryorders.render("",webJarAssets,selectForm, paramReportSelect));
+                break;
+            }
+        }
+
+
+
 
         return temp;
     }

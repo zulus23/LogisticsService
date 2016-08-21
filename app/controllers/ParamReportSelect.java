@@ -10,7 +10,7 @@ public class ParamReportSelect {
     private String dateBegin;
     private String dateEnd;
     private String enterprise;
-    private String typeReport;
+    private String report;
     private String mode;
 
     public ParamReportSelect() {
@@ -21,7 +21,7 @@ public class ParamReportSelect {
         this.dateBegin = dateBegin;
         this.dateEnd = dateEnd;
         this.enterprise = enterprise;
-        this.typeReport = typeReport;
+        this.report = typeReport;
         this.mode = mode;
     }
 
@@ -49,12 +49,12 @@ public class ParamReportSelect {
         this.enterprise = enterprise;
     }
 
-    public String getTypeReport() {
-        return typeReport;
+    public String getReport() {
+        return report;
     }
 
-    public void setTypeReport(String typeReport) {
-        this.typeReport = typeReport;
+    public void setReport(String report) {
+        this.report = report;
     }
 
     public String getMode() {
@@ -72,7 +72,7 @@ public class ParamReportSelect {
                 "dateBegin=" + dateBegin +
                 ", dateEnd=" + dateEnd +
                 ", enterprise='" + enterprise + '\'' +
-                ", typeReport='" + typeReport + '\'' +
+                ", typeReport='" + report + '\'' +
                 ", mode='" + mode + '\'' +
                 '}';
     }

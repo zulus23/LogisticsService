@@ -1,0 +1,111 @@
+@*
+* This template takes a single argument, a String containing a
+* message to display.
+*@
+
+@import com.fasterxml.jackson.databind.JsonNode
+@(message: String)(implicit webJarAssets: WebJarAssets,paramReportSelectForm:Form[ParamReportSelect],select:ParamReportSelect)
+
+
+@main("Точность открытия заказов") {
+ @*   <div class="container-fluid">*@
+        <div id="vertical">
+        <div>
+            <div class="col-md-offset-4 col-md-4">
+                <h2 class="text-primary text-center">Точность доставки заказов</h2>
+            </div>
+            <div id="loading">
+            </div>
+
+            <div id="graph" class="col-md-offset-1 col-md-10" >
+                <div class="demo-section k-content wide">
+                    <div id="chartView"></div>
+                </div>
+            </div>
+        </div>
+        <div  id="t1" class="col-md-12" >
+            <div id="gridView"></div>
+        </div>
+        </div>
+        <script>
+
+             $("#vertical").kendoSplitter({
+                  orientation: "vertical",
+                  panes: [
+                      { collapsible: false, size: "50%" },
+                      { collapsible: false },
+                      { collapsible: false, resizable: false, size: "35%" }
+                  ]
+              });
+
+             var dataSourceDB = new kendo.data.DataSource({
+                 serverAggregates: true,
+                 transport: {
+                     read: function(options) {
+                         $.ajax({
+                             type: "GET",
+                             url: "api/listorder",
+                             contentType: "application/json; charset=utf-8",
+                             dataType: 'json',
+                             data:{dateBegin: '@select.getDateBegin',dateEnd:'@select.getDateEnd', site:'@select.getEnterprise'},
+                             success: function(data) {
+                                 options.success(data);
+                             }
+                         });
+                     }
+                 },
+                 pageSize:20,
+                 schema: {
+                     model: {
+                         id:"id",
+
+                         fields: {
+                             /* site:{type:"string"},*/
+                             orderNumber: { type: "string" },
+                             orderLine: { type: "number" },
+                             manager: { type: "string" },
+                             customer: { type: "string" },
+                             itemDescription:{type:"string"},
+                             monthShip:{type:"string"},
+                             dateCreateOrderFormat:{type:"string"},
+                             dateBeginProductionFormat:{type:"string"},
+                             deviation:{type:"number"},
+                             reasonDeviation:{type:"string"},
+                             calcStatus:{type:"string"},
+                             monthActualShip:{type:"date"},
+                             nornalizeGroupDate:{type:"string"}
+                         }
+                     }
+                 },
+                 //  pageSize:20,
+                 aggregate:[
+                     {field:"calcStatus",aggregate:"count"},
+                     {field:"customer", aggregate:"count"},
+                     {field:"monthShip", aggregate:"count"}
+                 ],
+                 change: function(e) {
+
+                     var query = new kendo.data.Query(dataSourceDB.data());
+                     var filters = dataSourceDB.filter();
+                     filteredData = query.filter(filters).data;
+
+                     allDataCount = filteredData.length;
+
+                   /*  if(dataSourceDB.group().length > 0 ){
+                         graphUtils.createBarGraph(dataSourceDB.group()[0].field,dataSourceDB)
+                         //createGraph(dataSourceDB.group()[0].field);
+                     } else {
+                         createDefaultGraph();
+                     }*/
+                     /*var chart = $("#chart1").data("kendoChart");
+                      chart.dataSource.filter(dataSourceDB.filter());*/
+                 }
+
+
+             });
+
+             // gridUtils.createGridAllOrders(dataSourceDB);
+
+        </script>
+
+}
