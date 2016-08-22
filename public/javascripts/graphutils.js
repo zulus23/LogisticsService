@@ -4,34 +4,34 @@
 'use strict';
 var  graphUtils = (function(){
 
-    var test = [{"deviation":"1","monthActualShip":new Date("2016/01/01"),"procent":73},
-                {"deviation":"2","monthActualShip":new Date("2016/01/01"),"procent":9},
-                {"deviation":"3","monthActualShip":new Date("2016/01/01"),"procent":18},
-                {"deviation":"1","monthActualShip":new Date("2016/03/01"),"procent":12},
-                {"deviation":"2","monthActualShip":new Date("2016/03/01"),"procent":80},
-                {"deviation":"3","monthActualShip":new Date("2016/03/01"),"procent":5},
-                {"deviation":"4","monthActualShip":new Date("2016/07/01"),"procent":7},
-                {"deviation":"5","monthActualShip":new Date("2016/03/01"),"procent":2},
-                {"deviation":"3","monthActualShip":new Date("2016/05/01"),"procent":50},
-                {"deviation":"3","monthActualShip":new Date("2016/05/01"),"procent":3},
-                {"deviation":"4","monthActualShip":new Date("2016/05/01"),"procent":1},
-                {"deviation":"3","monthActualShip":new Date("2016/05/01"),"procent":46},
-                {"deviation":"5","monthActualShip":new Date("2016/04/01"),"procent":6},
-                {"deviation":"2","monthActualShip":new Date("2016/04/01"),"procent":80},
-                {"deviation":"1","monthActualShip":new Date("2016/04/01"),"procent":3},
-                {"deviation":"3","monthActualShip":new Date("2016/04/01"),"procent":11},
-                {"deviation":"6","monthActualShip":new Date("2016/06/01"),"procent":43},
-                {"deviation":"1","monthActualShip":new Date("2016/06/01"),"procent":10},
-                {"deviation":"2","monthActualShip":new Date("2016/06/01"),"procent":14},
-                {"deviation":"4","monthActualShip":new Date("2016/06/01"),"procent":32},
-                {"deviation":"7","monthActualShip":new Date("2016/07/01"),"procent":17},
-                {"deviation":"2","monthActualShip":new Date("2016/07/01"),"procent":68},
-                {"deviation":"1","monthActualShip":new Date("2016/07/01"),"procent":2},
-                {"deviation":"4","monthActualShip":new Date("2016/07/01"),"procent":12},
-                {"deviation":"2","monthActualShip":new Date("2016-08-01"),"procent":7},
-                {"deviation":"6","monthActualShip":new Date("2016/08/01"),"procent":93}
+  /*  var test = [{"deviation":"1","dateActualShip":new Date("2016/01/01"),"procent":73},
+                {"deviation":"2","dateActualShip":new Date("2016/01/01"),"procent":9},
+                {"deviation":"3","dateActualShip":new Date("2016/01/01"),"procent":18},
+                {"deviation":"1","dateActualShip":new Date("2016/03/01"),"procent":12},
+                {"deviation":"2","dateActualShip":new Date("2016/03/01"),"procent":80},
+                {"deviation":"3","dateActualShip":new Date("2016/03/01"),"procent":5},
+                {"deviation":"4","dateActualShip":new Date("2016/07/01"),"procent":7},
+                {"deviation":"5","dateActualShip":new Date("2016/03/01"),"procent":2},
+                {"deviation":"3","dateActualShip":new Date("2016/05/01"),"procent":50},
+                {"deviation":"3","dateActualShip":new Date("2016/05/01"),"procent":3},
+                {"deviation":"4","dateActualShip":new Date("2016/05/01"),"procent":1},
+                {"deviation":"3","dateActualShip":new Date("2016/05/01"),"procent":46},
+                {"deviation":"5","dateActualShip":new Date("2016/04/01"),"procent":6},
+                {"deviation":"2","dateActualShip":new Date("2016/04/01"),"procent":80},
+                {"deviation":"1","dateActualShip":new Date("2016/04/01"),"procent":3},
+                {"deviation":"3","dateActualShip":new Date("2016/04/01"),"procent":11},
+                {"deviation":"6","dateActualShip":new Date("2016/06/01"),"procent":43},
+                {"deviation":"1","dateActualShip":new Date("2016/06/01"),"procent":10},
+                {"deviation":"2","dateActualShip":new Date("2016/06/01"),"procent":14},
+                {"deviation":"4","dateActualShip":new Date("2016/06/01"),"procent":32},
+                {"deviation":"7","dateActualShip":new Date("2016/07/01"),"procent":17},
+                {"deviation":"2","dateActualShip":new Date("2016/07/01"),"procent":68},
+                {"deviation":"1","dateActualShip":new Date("2016/07/01"),"procent":2},
+                {"deviation":"4","dateActualShip":new Date("2016/07/01"),"procent":12},
+                {"deviation":"2","dateActualShip":new Date("2016-08-01"),"procent":7},
+                {"deviation":"6","dateActualShip":new Date("2016/08/01"),"procent":93}
                 ];
-
+*/
     var NODEVIATION = 'Без отклонений';
     var DEVIATION = 'C отклонениями';
     var localDataForDeviation = function (dataSource){
@@ -45,7 +45,7 @@ var  graphUtils = (function(){
             var countPre = _.where(filteredData,{monthShip:e,calcStatus:NODEVIATION}).length;
             var _procent = Math.round((countPre/all)*100);
             var myDate = moment(e, "MMM-YYYY","ru");
-            data.push({deviation:NODEVIATION,monthActualShip:myDate,procent:_procent });
+            data.push({deviation:NODEVIATION,dateActualShip:myDate.toDate(),procent:_procent });
             // data.push({deviation:Deviation,monthActualShip:myDate,procent:100-_procent });
         });
         return data;
@@ -63,7 +63,7 @@ var  graphUtils = (function(){
                    var countPre = _.where(filteredData,{monthShip:e,customer:p,calcStatus:NODEVIATION}).length;
                    var _procent = Math.round((countPre/all)*100);
                    var myDate = moment(e, "MMM-YYYY","ru");
-                   data.push({deviation:p,monthActualShip:myDate.toDate(),procent:_procent });
+                   data.push({deviation:p,dateActualShip:myDate.toDate(),procent:_procent });
                });
 
 
@@ -90,7 +90,7 @@ var  graphUtils = (function(){
                 var _procent = Math.round((countPre/all)*100);
                 var myDate = moment(e, "MMM-YYYY");
 
-                 data.push({deviation:"\""+p+"\"",monthActualShip:e.nornalizeGroupDate/*myDate.toDate()*/,procent:_procent });
+                 data.push({deviation:"\""+p+"\"",dateActualShip:e.nornalizeGroupDate/*myDate.toDate()*/,procent:_procent });
             });
 
 
@@ -140,7 +140,7 @@ var  graphUtils = (function(){
             categoryAxis: {
 
                 baseUnit: "months",
-                field: "monthActualShip",
+                field: "dateActualShip",
                 labels: {
 
                     template: "#= kendo.format('{0:MMMM-yyyy}', new Date(value)) #"
@@ -179,7 +179,7 @@ var  graphUtils = (function(){
                     visible: true,
                     template: "#= kendo.format('{0}%', value) #"
                 },
-                categoryField: "monthActualShip"
+                categoryField: "dateActualShip"
 
             }],
 
@@ -219,6 +219,7 @@ var  graphUtils = (function(){
         if(groupField === 'customer') {var mydata =  graphUtils.localDataForCustomer(datasource);};
         if(groupField === 'calcStatus') {var mydata =  graphUtils.localDataForDeviation(datasource);};
         if(groupField === 'reasonDeviation') {var mydata =  graphUtils.localDataForReasonDeviation(datasource);};
+        if(groupField === '') {var mydata =  graphUtils.localDataForDeviation(datasource);};
          var _datasource =
             new kendo.data.DataSource({
                 data:mydata,
@@ -226,13 +227,13 @@ var  graphUtils = (function(){
                     field: "deviation"
                 },
                 sort: [
-                    { field: "monthActualShip", dir: "asc" }
+                    { field: "dateActualShip", dir: "asc" }
                 ],
                 schema: {
                     model: {
                         fields: {
                             deviation:{type: "string"},
-                            monthActualShip: {
+                            dateActualShip: {
                                 type: "date"
                             },
                             procent:{type: "number"}

@@ -9,12 +9,17 @@ GET     /count                      controllers.CountController.count
 # An example controller showing how to write asynchronous code
 GET     /message                    controllers.AsyncController.message
 
-GET    /report/precisioncreateorder controllers.PrecisionCreateOrderController.show
+GET    /report/precisioncreateorder controllers.PrecisionOrderController.show
 
 POST   /runreport                   controllers.HomeController.runReport
 
-GET  /api/listorder                    controllers.PrecisionCreateOrderController.listorder(dateBegin:Option[String], dateEnd:Option[String],site: Option[String] , mode :Option[String])
-GET  /api/grapth         controllers.PrecisionCreateOrderController.grapth(dateBegin:Option[String],dateEnd:Option[String],site: Option[String] , mode :Option[String],groupField:Option[String])
+
+GET  /api/listallorder              controllers.PrecisionOrderController.listAllOrder(dateBegin:Option[String], dateEnd:Option[String],site: Option[String] , mode :Option[String])
+GET  /api/listorder                 controllers.PrecisionOrderController.listorder(dateBegin:Option[String], dateEnd:Option[String],site: Option[String] , mode :Option[String])
+GET  /api/listcreateorder           controllers.PrecisionOrderController.listCreateOrder(dateBegin:Option[String], dateEnd:Option[String],site: Option[String] , mode :Option[String])
+GET  /api/listplanorder             controllers.PrecisionOrderController.listPlanOrder(dateBegin:Option[String], dateEnd:Option[String],site: Option[String] , mode :Option[String])
+
+GET  /api/grapth                    controllers.PrecisionOrderController.grapth(dateBegin:Option[String],dateEnd:Option[String],site: Option[String] , mode :Option[String],groupField:Option[String])
 
 
 

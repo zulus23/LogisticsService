@@ -46,7 +46,75 @@
                       { collapsible: false, resizable: false, size: "35%" }
                   ]
               });
-              gridUtils.createGridPlanPrecision();
+
+              var dataSourceDB = new kendo.data.DataSource({
+                  serverAggregates: true,
+                  transport: {
+                      read: function(options) {
+                          $.ajax({
+                              type: "GET",
+                              url: "api/listplanorder",
+                              contentType: "application/json; charset=utf-8",
+                              dataType: 'json',
+                              data:{dateBegin: '@select.getDateBegin',dateEnd:'@select.getDateEnd', site:'@select.getEnterprise',mode:'@select.getMode'},
+                              success: function(data) {
+                                  options.success(data);
+                              }
+                          });
+                      }
+                  },
+                  pageSize:20,
+                  schema: {
+                      model: {
+                          id:"id",
+
+                          fields: {
+                              /* site:{type:"string"},*/
+                              orderNumber: { type: "string" },
+                              orderLine: { type: "number" },
+                              manager: { type: "string" },
+                              customer: { type: "string" },
+                              itemDescription:{type:"string"},
+                              monthShip:{type:"string"},
+                              dateCreateOrderFormat:{type:"string"},
+                              dateBeginProductionFormat:{type:"string"},
+                              deviation:{type:"number"},
+                              reasonDeviation:{type:"string"},
+                              calcStatus:{type:"string"},
+                              dateActualShip:{type:"date"},
+                              dateActualShipFormat:{type:"string"},
+                              nornalizeGroupDate:{type:"string"}
+                          }
+                      }
+                  },
+                  //  pageSize:20,
+                  aggregate:[
+                      {field:"calcStatus",aggregate:"count"},
+                      {field:"customer", aggregate:"count"},
+                      {field:"monthShip", aggregate:"count"}
+                  ],
+                  change: function(e) {
+
+                      var query = new kendo.data.Query(dataSourceDB.data());
+                      var filters = dataSourceDB.filter();
+                      filteredData = query.filter(filters).data;
+
+                      allDataCount = filteredData.length;
+
+                       if(dataSourceDB.group().length > 0 ){
+                         graphUtils.createBarGraph(dataSourceDB.group()[0].field,dataSourceDB)
+
+                       } else {
+                           graphUtils.createBarGraph("",dataSourceDB)
+                       }
+
+                  }
+
+
+              });
+
+              gridUtils.createGridPlanPrecision(dataSourceDB);
+
 
         </script>
 

@@ -28,14 +28,34 @@ var  gridUtils = (function(){
     }*/
 
 
-  function createGridPlanPrecision() {
+  function createGridPlanPrecision(datasourceDB) {
+      var names = _.sortBy(_.uniq(_.pluck(dataSourceDB.data(), "customer")), function(n) { return n; });
+
+      function createMultiSelect(element) {
+          element.removeAttr("data-bind");
+
+          element.kendoMultiSelect({
+              dataSource: _.sortBy(_.uniq(_.pluck(dataSourceDB.data(), "customer")), function(n) { return n; }),
+              change: function(e) {
+                  var filter = { logic: "or", filters: [] };
+                  var values = this.value();
+                  $.each(values, function(i, v) {
+                      filter.filters.push({field: "customer", operator: "eq", value: v });
+                  });
+
+                  dataSourceDB.filter(filter);
+              }
+          });
+      }
+
+
       $("#gridView").kendoGrid({
           toolbar: ["excel"],
           excel: {
               allPages: true
           },
 
-          //dataSource: dataSourceDB,
+          dataSource: dataSourceDB,
           height: '100%',
           groupable: true,
           sortable: true,
@@ -78,10 +98,10 @@ var  gridUtils = (function(){
                   aggregates: ["count"],
                   headerAttributes: headerFormat,
                   attributes: columnFormat,
-                  /*filterable: {
+                  filterable: {
                       ui: createMultiSelect,
                       extra: false
-                  },*/
+                  },
                   /*groupHeaderTemplate: "Клиент: #=value# : #=count#: (#= Math.round((count/calcAll(data,field,value))*100)#%)"*/
                   groupHeaderTemplate: "Клиент: #=value# : #=count#: (#= calcAll(data,field,value,count)#)"
                   //groupHeaderTemplate: "Клиент: #=value# : #=count#"
@@ -107,11 +127,11 @@ var  gridUtils = (function(){
                   //groupHeaderTemplate: "Месяц отгрузки: #=value# : (#= count#)"
               },
               {
-                  /*field: "dateCreateOrderFormat",*/ title: "Дата доставки план", width: "80px",
+                  field: "datePlanShipFormat", title: "Дата доставки план", width: "80px",
                   headerAttributes: headerFormat, attributes: columnFormat, filterable: false, groupable: false
               },
               {
-                  field: "dateBeginProductionFormat", title: "Дата доставки актуал.", width: "80px",
+                  field: "dateActualShipFormat", title: "Дата доставки актуал.", width: "80px",
                   headerAttributes: headerFormat, attributes: columnFormat, filterable: false, groupable: false
               },
               {
@@ -145,7 +165,25 @@ var  gridUtils = (function(){
                   //groupHeaderTemplate: "Состояние: #=value#: #=count# "
               }
 
-          ]
+          ],
+          change: function(e) {
+
+              var query = new kendo.data.Query(dataSourceDB.data());
+              var filters = dataSourceDB.filter();
+              filteredData = query.filter(filters).data;
+
+              allDataCount = filteredData.length;
+
+              if(dataSourceDB.group().length > 0 ){
+                  graphUtils.createBarGraph(dataSourceDB.group()[0].field,dataSourceDB)
+                  //createGraph(dataSourceDB.group()[0].field);
+              } else {
+                  gridUtils.createBarGraph("",dataSourceDB);
+              }
+
+              /*var chart = $("#chart1").data("kendoChart");
+               chart.dataSource.filter(dataSourceDB.filter());*/
+          }
       });
   };
   function createGridPrecisionProduction() {
@@ -383,23 +421,23 @@ var  gridUtils = (function(){
                     headerAttributes: headerFormat,attributes: columnFormat,filterable: false,groupable: false
                 },
                 {
-                    /*field: "dateCreateOrderFormat",*/ title: "Дата отгрузки план", width: "80px",
+                    field: "datePlanShipFormat", title: "Дата отгрузки план", width: "80px",
                     headerAttributes: headerFormat, attributes: columnFormat, filterable: false, groupable: false
                 },
                 {
-                    field: "dateBeginProductionFormat", title: "Дата отгрузки факт.", width: "80px",
+                    field: "dateActualShipFormat", title: "Дата отгрузки факт.", width: "80px",
                     headerAttributes: headerFormat, attributes: columnFormat, filterable: false, groupable: false
                 },
                 {
-                    /*field: "dateCreateOrderFormat",*/ title: "Дата доставки план", width: "80px",
+                    /*field: "datePlanShipFormat",*/ title: "Дата доставки план", width: "80px",
                     headerAttributes: headerFormat, attributes: columnFormat, filterable: false, groupable: false
                 },
                 {
-                    field: "dateBeginProductionFormat", title: "Дата доставки актуал.", width: "80px",
+                    /*field: "dateBeginProductionFormat",*/ title: "Дата доставки актуал.", width: "80px",
                     headerAttributes: headerFormat, attributes: columnFormat, filterable: false, groupable: false
                 },
                 {
-                    field: "dateBeginProductionFormat", title: "Дата доставки факт.", width: "80px",
+                    /*field: "dateBeginProductionFormat",*/ title: "Дата доставки факт.", width: "80px",
                     headerAttributes: headerFormat, attributes: columnFormat, filterable: false, groupable: false
                 }
 
@@ -408,8 +446,8 @@ var  gridUtils = (function(){
         });
     };
 
-    var  createGridPlanPrecision_ = function(){
-       createGridPlanPrecision();
+    var  createGridPlanPrecision_ = function(datasourceDB){
+       createGridPlanPrecision(datasourceDB);
     }
     var  createGridPrecisionProduction_ = function(){
         createGridPrecisionProduction();

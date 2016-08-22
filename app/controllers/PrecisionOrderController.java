@@ -29,7 +29,7 @@ import static java.util.stream.Collectors.*;
 /**
  * Created by Zhukov on 05.08.2016.
  */
-public class PrecisionCreateOrderController extends Controller {
+public class PrecisionOrderController extends Controller {
 
     private Form<ParamReportSelect> paramReportSelectForm;
 
@@ -44,7 +44,7 @@ public class PrecisionCreateOrderController extends Controller {
     ReportService reportService;
 
 
-    public PrecisionCreateOrderController() {
+    public PrecisionOrderController() {
 
 
     }
@@ -70,6 +70,85 @@ public class PrecisionCreateOrderController extends Controller {
 
         return ok(Json.toJson(reportService.precisionCreateOrders(tempdateBegin,tempdateEnd,tempSite,"")));
     }
+
+    public  Result listCreateOrder(Option<String> dateBegin, Option<String> dateEnd, Option<String> site, Option<String> mode ) {
+
+        LocalDate tempdateBegin = LocalDate.now(),tempdateEnd = LocalDate.now();
+
+        if(dateBegin.isDefined()){
+            tempdateBegin = LocalDate.parse(dateBegin.get(), DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+        }
+        if(dateEnd.isDefined()){
+            tempdateEnd = LocalDate.parse(dateEnd.get(), DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+        }
+
+        String tempSite = "";
+
+        if(site.isDefined()){
+            tempSite = helperForInterface.siteName(Integer.parseInt(site.get()));
+        }
+
+         String tempMode = "1";
+        if(mode.isDefined()){
+          tempMode = mode.get();
+        }
+
+        return ok(Json.toJson(reportService.precisionCreateOrders(tempdateBegin,tempdateEnd,tempSite,tempMode)));
+    }
+
+    public  Result listPlanOrder(Option<String> dateBegin, Option<String> dateEnd, Option<String> site, Option<String> mode ) {
+
+        LocalDate tempdateBegin = LocalDate.now(),tempdateEnd = LocalDate.now();
+
+        if(dateBegin.isDefined()){
+            tempdateBegin = LocalDate.parse(dateBegin.get(), DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+        }
+        if(dateEnd.isDefined()){
+            tempdateEnd = LocalDate.parse(dateEnd.get(), DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+        }
+
+        String tempSite = "";
+
+        if(site.isDefined()){
+            tempSite = helperForInterface.siteName(Integer.parseInt(site.get()));
+        }
+        String tempMode = "1";
+        if(mode.isDefined()){
+            tempMode = mode.get();
+        }
+
+
+
+        return ok(Json.toJson(reportService.precisionPlanOrders(tempdateBegin,tempdateEnd,tempSite,tempMode)));
+    }
+
+    public  Result listAllOrder(Option<String> dateBegin, Option<String> dateEnd, Option<String> site, Option<String> mode ) {
+
+        LocalDate tempdateBegin = LocalDate.now(),tempdateEnd = LocalDate.now();
+
+        if(dateBegin.isDefined()){
+            tempdateBegin = LocalDate.parse(dateBegin.get(), DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+        }
+        if(dateEnd.isDefined()){
+            tempdateEnd = LocalDate.parse(dateEnd.get(), DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+        }
+
+        String tempSite = "";
+
+        if(site.isDefined()){
+            tempSite = helperForInterface.siteName(Integer.parseInt(site.get()));
+        }
+        String tempMode = "1";
+        if(mode.isDefined()){
+            tempMode = mode.get();
+        }
+
+
+
+        return ok(Json.toJson(reportService.allOrders(tempdateBegin,tempdateEnd,tempSite,tempMode)));
+    }
+
+
     public  Result grapth(Option<String> dateBegin, Option<String> dateEnd, Option<String> site, Option<String> mode, Option<String> groupField ) {
 
         List<GrapthPrecisionCreateOrder> grapthPrecisionCreateOrders = new ArrayList<>();

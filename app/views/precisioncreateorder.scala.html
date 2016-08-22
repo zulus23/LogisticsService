@@ -54,10 +54,10 @@
                        read: function(options) {
                            $.ajax({
                                type: "GET",
-                               url: "api/listorder",
+                               url: "api/listcreateorder",
                                contentType: "application/json; charset=utf-8",
                                dataType: 'json',
-                               data:{dateBegin: '@select.getDateBegin',dateEnd:'@select.getDateEnd', site:'@select.getEnterprise'},
+                               data:{dateBegin: '@select.getDateBegin',dateEnd:'@select.getDateEnd', site:'@select.getEnterprise',mode:'@select.getMode'},
                                success: function(data) {
                                    options.success(data);
                                }
@@ -82,7 +82,7 @@
                                deviation:{type:"number"},
                                reasonDeviation:{type:"string"},
                                calcStatus:{type:"string"},
-                               monthActualShip:{type:"date"},
+                               dateActualShip:{type:"date"},
                                nornalizeGroupDate:{type:"string"}
                            }
                        }

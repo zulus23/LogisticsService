@@ -44,7 +44,7 @@
                      read: function(options) {
                          $.ajax({
                              type: "GET",
-                             url: "api/listorder",
+                             url: "api/listallorder",
                              contentType: "application/json; charset=utf-8",
                              dataType: 'json',
                              data:{dateBegin: '@select.getDateBegin',dateEnd:'@select.getDateEnd', site:'@select.getEnterprise'},
@@ -72,7 +72,8 @@
                              deviation:{type:"number"},
                              reasonDeviation:{type:"string"},
                              calcStatus:{type:"string"},
-                             monthActualShip:{type:"date"},
+                             dateActualShip:{type:"date"},
+                             dateActualShipFormat:{type:"string"},
                              nornalizeGroupDate:{type:"string"}
                          }
                      }
