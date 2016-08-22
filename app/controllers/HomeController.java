@@ -59,7 +59,7 @@ public class HomeController extends Controller {
                 break;
             }
             case 5: {
-                temp = ok(precisionstorageorders.render("",webJarAssets,selectForm, paramReportSelect));
+                temp = ok(precisionwhseorders.render("",webJarAssets,selectForm, paramReportSelect));
                 break;
             }
             case 6: {
@@ -85,7 +85,7 @@ public class HomeController extends Controller {
      * <code>GET</code> request with a path of <code>/</code>.
      */
     public Result index() {
-        paramReportSelectForm.fill(new ParamReportSelect(LocalDate.now().toString(),LocalDate.now().toString(),"1","1","1"));
+        paramReportSelectForm = paramReportSelectForm.fill(new ParamReportSelect());
         return ok(index.render("Your new application is ready.",webJarAssets,paramReportSelectForm));
     }
 

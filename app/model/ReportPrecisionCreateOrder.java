@@ -20,21 +20,5 @@ import java.util.Optional;
 @Table(name = "GTK_RPT_LOGIST")
 public class ReportPrecisionCreateOrder extends PrecisionOrder {
 
-
-/*
-    public int getDeviation() {
-        if(getDateBeginProduction() != null && getDateCreateOrder() != null) {
-
-            int temp = Period.between(getDateCreateOrder(),getDateBeginProduction() ).getDays();
-            return *//*temp < 3 && *//*temp > 2 ? 0:temp ;
-        }
-        return 0;
-    }
-
-    public String getCalcStatus() {
-
-        return getDeviation() !=0 ? Deviation.YES.getName():Deviation.NO.getName();
-    }*/
-
     public static Finder<Long, ReportPrecisionCreateOrder> find = new Finder<Long,ReportPrecisionCreateOrder>(ReportPrecisionCreateOrder.class);
 }

@@ -1,5 +1,6 @@
 package controllers;
 
+import java.sql.Date;
 import java.time.LocalDate;
 
 /**
@@ -14,7 +15,7 @@ public class ParamReportSelect {
     private String mode;
 
     public ParamReportSelect() {
-        this(LocalDate.now().toString(),LocalDate.now().toString(),"1","1","1");
+        this(Date.valueOf(LocalDate.now()).toString(),Date.valueOf(LocalDate.now()).toString(),"1","1","1");
     }
 
     public ParamReportSelect(String dateBegin, String dateEnd, String enterprise, String typeReport, String mode) {
