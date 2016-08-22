@@ -18,26 +18,9 @@ import java.util.Optional;
 
 @Entity
 @Table(name = "GTK_RPT_LOGIST")
-public class ReportPrecisionCreateOrder  extends Model{
+public class ReportPrecisionCreateOrder extends PrecisionOrder {
 
-    @Id
-    @Column(name = "id")
-    private Long id;
-    @Column(name = "site")
-    private String site;
-    @Column(name = "co_num")
-    private String orderNumber;
-    @Column(name = "co_line")
-    private String orderLine;
-    @Column(name = "cust_name")
-    private String customer;
-    @Column(name = "FrontSlsmanName")
-    private String manager;
-    @Column(name = "item")
-    private String item;
-    @Column(name = "Item_Desc")
-    private String itemDescription;
-    @Column(name = "DateActual_Ship")
+   /* @Column(name = "DateActual_Ship")
     private Date monthActualShip;
     @Column(name = "DateCreate_Row")
     private LocalDate dateCreateOrder;
@@ -47,7 +30,7 @@ public class ReportPrecisionCreateOrder  extends Model{
     private LocalDate datePlanShip;
 
     @Column(name = "StatusRow")
-    private String reasonDeviation;
+    private String reasonDeviation;*/
 
     @Transient
     private String monthShip;
@@ -68,63 +51,7 @@ public class ReportPrecisionCreateOrder  extends Model{
     @Transient
     private Date nornalizeGroupDate;
 
-
-    public String getSite() {
-        return site;
-    }
-
-    public void setSite(String site) {
-        this.site = site;
-    }
-
-    public String getOrderNumber() {
-        return orderNumber;
-    }
-
-    public void setOrderNumber(String orderNumber) {
-        this.orderNumber = orderNumber;
-    }
-
-    public String getOrderLine() {
-        return orderLine;
-    }
-
-    public void setOrderLine(String orderLine) {
-        this.orderLine = orderLine;
-    }
-
-    public String getCustomer() {
-        return customer;
-    }
-
-    public void setCustomer(String customer) {
-        this.customer = customer;
-    }
-
-    public String getManager() {
-        return manager;
-    }
-
-    public void setManager(String manager) {
-        this.manager = manager;
-    }
-
-    public String getItem() {
-        return item;
-    }
-
-    public void setItem(String item) {
-        this.item = item;
-    }
-
-    public String getItemDescription() {
-        return itemDescription;
-    }
-
-    public void setItemDescription(String itemDescription) {
-        this.itemDescription = itemDescription;
-    }
-
+/*
     public Date getMonthActualShip() {
         return monthActualShip;
     }
@@ -158,31 +85,23 @@ public class ReportPrecisionCreateOrder  extends Model{
         this.reasonDeviation = reasonDeviation;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public LocalDate getDatePlanShip() {
         return datePlanShip;
     }
 
     public void setDatePlanShip(LocalDate datePlanShip) {
         this.datePlanShip = datePlanShip;
-    }
+    }*/
 
     public String getMonthShip() {
-        if(monthActualShip != null) {
+        if(getMonthActualShip() != null) {
 
-            return String.format("%s-%s",  monthActualShip.toLocalDate().getMonth().getDisplayName(TextStyle.FULL_STANDALONE, Locale.forLanguageTag("ru-RU")),
-                                           monthActualShip.toLocalDate().getYear());
+            return String.format("%s-%s",  getMonthActualShip().toLocalDate().getMonth().getDisplayName(TextStyle.FULL_STANDALONE, Locale.forLanguageTag("ru-RU")),
+                                          getMonthActualShip().toLocalDate().getYear());
         }
         return "";
     }
-    public int getYearShip() {
+   /* public int getYearShip() {
         if(monthActualShip != null) {
             return monthActualShip.toLocalDate().getYear();
         }
@@ -194,28 +113,28 @@ public class ReportPrecisionCreateOrder  extends Model{
             return monthActualShip.toLocalDate().getMonthValue();
         }
         return 0;
-    }
+    }*/
 
     public String getDateCreateOrderFormat() {
 
-        if(dateCreateOrder != null) {
-            return dateCreateOrder.format(DateTimeFormatter.ofPattern("dd-MM-yyyy", Locale.forLanguageTag("ru-RU")));
+        if(getDateCreateOrder() != null) {
+            return getDateCreateOrder().format(DateTimeFormatter.ofPattern("dd-MM-yyyy", Locale.forLanguageTag("ru-RU")));
         }
 
          return "";
     }
 
     public String getDateBeginProductionFormat() {
-        if(dateBeginProduction != null) {
-            return dateBeginProduction.format(DateTimeFormatter.ofPattern("dd-MM-yyyy", Locale.forLanguageTag("ru-RU")));
+        if(getDateBeginProduction() != null) {
+            return getDateBeginProduction().format(DateTimeFormatter.ofPattern("dd-MM-yyyy", Locale.forLanguageTag("ru-RU")));
         }
          return "";
     }
 
     public int getDeviation() {
-        if(dateBeginProduction != null && dateCreateOrder != null) {
+        if(getDateBeginProduction() != null && getDateCreateOrder() != null) {
 
-            int temp = Period.between(dateCreateOrder,dateBeginProduction ).getDays();
+            int temp = Period.between(getDateCreateOrder(),getDateBeginProduction() ).getDays();
             return /*temp < 3 && */temp > 2 ? 0:temp ;
         }
         return 0;
@@ -223,8 +142,8 @@ public class ReportPrecisionCreateOrder  extends Model{
 
     public Date getNornalizeGroupDate() {
         LocalDate temp;
-        if(monthActualShip != null) {
-           temp = monthActualShip.toLocalDate();
+        if(getMonthActualShip() != null) {
+           temp = getMonthActualShip().toLocalDate();
 
         } else {
             temp = LocalDate.now();
@@ -233,8 +152,7 @@ public class ReportPrecisionCreateOrder  extends Model{
     }
 
     public String getCalcStatus() {
-        Optional<String> status = Optional.ofNullable(reasonDeviation);
-        //String temp =   Optional.ofNullable(reasonDeviation).orElseGet(()-> getDeviation() !=0 ? "С отклонением":"");
+
         return getDeviation() !=0 ? Deviation.YES.getName():Deviation.NO.getName();
     }
 
