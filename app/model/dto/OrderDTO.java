@@ -4,6 +4,7 @@ import javax.persistence.Column;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
 import java.util.Locale;
 
 /**
@@ -185,31 +186,39 @@ public class OrderDTO {
     }
 
     public String getMonthShip() {
-        return monthShip;
+        if(dateActualShip != null) {
+
+            return String.format("%s-%s",  dateActualShip.toLocalDate().getMonth().getDisplayName(TextStyle.FULL_STANDALONE, Locale.forLanguageTag("ru-RU")),
+                    dateActualShip.toLocalDate().getYear());
+        }
+        return "";
     }
 
-    public void setMonthShip(String monthShip) {
-        this.monthShip = monthShip;
-    }
 
     public String getDateCreateOrderFormat() {
-        return dateCreateOrderFormat;
+        if(getDateCreateOrder() != null) {
+            return getDateCreateOrder().format(DateTimeFormatter.ofPattern("dd-MM-yyyy", Locale.forLanguageTag("ru-RU")));
+        }
+
+        return "";
     }
 
-    public void setDateCreateOrderFormat(String dateCreateOrderFormat) {
-        this.dateCreateOrderFormat = dateCreateOrderFormat;
-    }
+
 
     public String getDateBeginProductionFormat() {
-        return dateBeginProductionFormat;
+        if(getDateBeginProduction() != null) {
+            return getDateBeginProduction().format(DateTimeFormatter.ofPattern("dd-MM-yyyy", Locale.forLanguageTag("ru-RU")));
+        }
+        return "";
     }
 
-    public void setDateBeginProductionFormat(String dateBeginProductionFormat) {
-        this.dateBeginProductionFormat = dateBeginProductionFormat;
-    }
+
 
     public String getDatePlanToWhseFormat() {
-        return datePlanToWhseFormat;
+        if(getDatePlanWhse() != null) {
+            return getDatePlanWhse().format(DateTimeFormatter.ofPattern("dd-MM-yyyy", Locale.forLanguageTag("ru-RU")));
+        }
+        return "";
     }
 
     public void setDatePlanToWhseFormat(String datePlanToWhseFormat) {
@@ -236,7 +245,14 @@ public class OrderDTO {
 
 
     public Date getNornalizeGroupDate() {
-        return nornalizeGroupDate;
+        LocalDate temp;
+        if(dateActualShip != null) {
+            temp = dateActualShip.toLocalDate();
+
+        } else {
+            temp = LocalDate.now();
+        }
+        return  Date.valueOf(LocalDate.of(temp.getYear(),temp.getMonth(),1));
     }
 
     public void setNornalizeGroupDate(Date nornalizeGroupDate) {

@@ -10,6 +10,7 @@ import scala.Function1;
 import scala.util.Either;
 
 import javax.inject.Inject;
+import java.sql.Date;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
@@ -35,7 +36,7 @@ public class ReportService {
    public List<OrderDTO> allOrders(LocalDate dateBegin, LocalDate dateEnd, String site, String mode){
 
 
-       List<ReportPrecisionCreateOrder> listAllOrders = ReportPrecisionCreateOrder.find.where().eq("site",site).between("DateActual_Ship",dateBegin,dateEnd).isNotNull("customer").findList();
+       List<ReportPrecisionCreateOrder> listAllOrders = getListOrders(dateBegin, dateEnd, site);
 
        List<OrderDTO> listOrders =   listAllOrders.stream().map(this::createOrderDTO).collect(toList());
 
@@ -48,7 +49,7 @@ public class ReportService {
     public List<OrderDTO> precisionCreateOrders(LocalDate dateBegin, LocalDate dateEnd, String site, String mode){
 
 
-         List<ReportPrecisionCreateOrder> listAllOrders = ReportPrecisionCreateOrder.find.where().eq("site",site).between("DateActual_Ship",dateBegin,dateEnd).isNotNull("customer").findList();
+         List<ReportPrecisionCreateOrder> listAllOrders = getListOrders(dateBegin, dateEnd, site);
 
         List<OrderDTO> listOrders =   listAllOrders.stream().map(this::createOrderDTO)
 
@@ -67,7 +68,7 @@ public class ReportService {
     public List<OrderDTO> precisionPlanOrders(LocalDate dateBegin, LocalDate dateEnd, String site, String mode){
 
 
-        List<ReportPrecisionCreateOrder> listAllOrders = ReportPrecisionCreateOrder.find.where().eq("site",site).between("DateActual_Ship",dateBegin,dateEnd).isNotNull("customer").findList();
+        List<ReportPrecisionCreateOrder> listAllOrders = getListOrders(dateBegin, dateEnd, site);
 
         List<OrderDTO> listOrders =   listAllOrders.stream().map(this::createOrderDTO).collect(toList());
         listOrders.stream().forEach( e -> setDeviationPlanOrder(e,Integer.parseInt(mode)));
@@ -75,6 +76,165 @@ public class ReportService {
 
         return listOrders;
     }
+
+    private List<ReportPrecisionCreateOrder> getListOrders(LocalDate dateBegin, LocalDate dateEnd, String site) {
+        return ReportPrecisionCreateOrder.find.where().eq("site",site).between("DateActual_Ship",dateBegin,dateEnd).isNotNull("customer").findList();
+    }
+
+    public List<OrderDTO> precisionProductionOrders(LocalDate dateBegin, LocalDate dateEnd, String site, String mode) {
+        List<ReportPrecisionCreateOrder> listAllOrders = getListOrders(dateBegin, dateEnd, site);
+
+        List<OrderDTO> listOrders =   listAllOrders.stream().map(this::createOrderDTO).collect(toList());
+        listOrders.stream().forEach( e -> setDeviationProductionOrder(e,Integer.parseInt(mode)));
+
+
+        return listOrders;
+
+
+    }
+
+    public List<OrderDTO> precisionWhseOrders(LocalDate dateBegin, LocalDate dateEnd, String site, String mode) {
+
+        List<ReportPrecisionCreateOrder> listAllOrders = getListOrders(dateBegin, dateEnd, site);
+
+        List<OrderDTO> listOrders =   listAllOrders.stream().map(this::createOrderDTO).collect(toList());
+        listOrders.stream().forEach( e -> setDeviationWhseOrder(e,Integer.parseInt(mode)));
+
+
+        return listOrders;
+
+
+    }
+
+    public List<OrderDTO> precisionShipmentOrders(LocalDate dateBegin, LocalDate dateEnd, String site, String mode) {
+        List<ReportPrecisionCreateOrder> listAllOrders = getListOrders(dateBegin, dateEnd, site);
+
+        List<OrderDTO> listOrders =   listAllOrders.stream().map(this::createOrderDTO).collect(toList());
+        listOrders.stream().forEach( e -> setDeviationShipmentOrder(e,Integer.parseInt(mode)));
+
+
+        return listOrders;
+    }
+
+    public List<OrderDTO> precisionDeliveryOrders(LocalDate dateBegin, LocalDate dateEnd, String site, String mode) {
+        List<ReportPrecisionCreateOrder> listAllOrders = getListOrders(dateBegin, dateEnd, site);
+
+        List<OrderDTO> listOrders =   listAllOrders.stream().map(this::createOrderDTO).collect(toList());
+        listOrders.stream().forEach( e -> setDeviationDeliveryOrder(e,Integer.parseInt(mode)));
+
+
+        return listOrders;
+    }
+
+    private void setDeviationDeliveryOrder(OrderDTO orderDTO, int mode) {
+
+        int tempDeviation = 0;
+        switch (mode) {
+            case 1: {
+                /*Разница между датой поступления на склад и датой сдачи на склад*/
+                /*TODO Нет даты поступления на склад*/
+               /* if (orderDTO.getDateActualShip() != null && orderDTO.getDatePlanShip() != null) {
+                    tempDeviation = Period.between(orderDTO.getDateActualShip().toLocalDate(), orderDTO.getDatePlanShip()).getDays();
+                    tempDeviation = tempDeviation > 0 ? 0 : Math.abs(tempDeviation);
+                }
+*/
+                break;
+            }
+        }
+    }
+
+
+    private void setDeviationShipmentOrder(OrderDTO orderDTO, int mode) {
+        int tempDeviation = 0;
+        switch (mode) {
+            case 1: {
+                /*Разница между датой поступления на склад и датой сдачи на склад*/
+                /*TODO Нет даты поступления на склад*/
+                if (orderDTO.getDateActualShip() != null && orderDTO.getDatePlanShip() != null) {
+                    tempDeviation = Period.between(orderDTO.getDateActualShip().toLocalDate(), orderDTO.getDatePlanShip()).getDays();
+                    tempDeviation = tempDeviation > 0 ? 0 : Math.abs(tempDeviation);
+                }
+
+                break;
+            }
+             /* Расчет даты по второму варианту*/
+            case 2: {
+                  /*TODO Нет даты поступления на склад*/
+                int productionDeviation = 0;
+                int whseDeviation = 0;
+                 /* ----Взять отклонение с предыдущего шага -----*/
+                if (orderDTO.getDateActualShip() != null && orderDTO.getDateBeginProduction() != null) {
+
+                    productionDeviation = Period.between(orderDTO.getDateActualShip().toLocalDate(), orderDTO.getDateBeginProduction()).getDays();
+                    productionDeviation = tempDeviation > 0 ? 0 : tempDeviation;
+                }
+                if (productionDeviation > 0) {
+                    orderDTO.setDateBeginProduction(orderDTO.getDateBeginProduction().plusDays(productionDeviation));
+                }
+
+                if (orderDTO.getDateBeginProduction() != null && orderDTO.getDatePlanWhse() != null) {
+                    whseDeviation = Period.between(orderDTO.getDateBeginProduction(), orderDTO.getDatePlanWhse()).getDays();
+                    whseDeviation = whseDeviation > 0 ? 0 : whseDeviation;
+
+                }
+                if (whseDeviation > 0) {
+                    orderDTO.setDateActualShip(Date.valueOf(orderDTO.getDateActualShip().toLocalDate().plusDays(whseDeviation)));
+                }
+                tempDeviation = Period.between(orderDTO.getDateActualShip().toLocalDate(), orderDTO.getDatePlanShip()).getDays();
+                tempDeviation = tempDeviation > 0 ? 0 : Math.abs(tempDeviation);
+                break;
+            }
+
+
+
+        }
+        orderDTO.setDeviation(tempDeviation);
+        setCalcStatusNameByDeviation(orderDTO, tempDeviation);
+
+    }
+
+
+    private void setDeviationWhseOrder(OrderDTO orderDTO,int mode) {
+         int tempDeviation = 0;
+         switch (mode) {
+            case  1: {
+                /*Разница между датой поступления на склад и датой сдачи на склад*/
+                /*TODO Нет даты поступления на склад*/
+                if(orderDTO.getDateBeginProduction() != null && orderDTO.getDatePlanWhse() != null) {
+                    tempDeviation = Period.between(orderDTO.getDateBeginProduction(),orderDTO.getDatePlanWhse() ).getDays();
+                    tempDeviation =   tempDeviation > 0 ? 0:tempDeviation ; ;
+                }
+
+                break;
+             }
+             /* Расчет даты по второму варианту*/
+             case 2: {
+                  /*TODO Нет даты поступления на склад*/
+                 int productionDeviation =0;
+                 /* ----Взять отклонение с предыдущего шага -----*/
+                 if(orderDTO.getDateActualShip() != null && orderDTO.getDateBeginProduction() != null) {
+
+                     productionDeviation = Period.between(orderDTO.getDateActualShip().toLocalDate(),orderDTO.getDateBeginProduction() ).getDays();
+                     productionDeviation =   tempDeviation > 0 ? 0:tempDeviation ;
+                 }
+                 if(productionDeviation > 0 ) {
+                     orderDTO.setDateBeginProduction(orderDTO.getDateBeginProduction().plusDays(productionDeviation));
+                 }
+                 /* --------------------------------------------------------------------------------------*/
+                 if(orderDTO.getDateBeginProduction() != null && orderDTO.getDatePlanWhse() != null) {
+                     tempDeviation = Period.between(orderDTO.getDateBeginProduction(),orderDTO.getDatePlanWhse() ).getDays();
+                     tempDeviation =   tempDeviation > 0 ? 0:tempDeviation ;;
+                 }
+
+                 orderDTO.setDeviation(tempDeviation);
+                 setCalcStatusNameByDeviation(orderDTO, tempDeviation);
+
+                 break;
+             }
+         }
+
+     }
+
 
     private void setDeviationCreateOrder(OrderDTO orderDTO,int mode ) {
         /* Расчет отклонения */
@@ -96,14 +256,27 @@ public class ReportService {
         if(orderDTO.getDateActualShip() != null && orderDTO.getDatePlanShip() != null) {
 
             tempDeviation = Period.between(orderDTO.getDateActualShip().toLocalDate(),orderDTO.getDatePlanShip() ).getDays();
-            //tempDeviation =   tempDeviation ===0 ? 0:tempDeviation ;
+            tempDeviation =   tempDeviation > 0 ? 0:tempDeviation ;
         }
         orderDTO.setDeviation(tempDeviation);
         setCalcStatusNameByDeviation(orderDTO, tempDeviation);
 
 
     }
+    private void setDeviationProductionOrder(OrderDTO orderDTO,int mode ) {
+        /* Расчет отклонения */
+        int tempDeviation = 0;
+        /*TODO нет даты начала производства в плане на сутки*/
+        if(orderDTO.getDateActualShip() != null && orderDTO.getDateBeginProduction() != null) {
 
+            tempDeviation = Period.between(orderDTO.getDateActualShip().toLocalDate(),orderDTO.getDateBeginProduction() ).getDays();
+            tempDeviation =   tempDeviation > 0 ? 0:tempDeviation ;
+        }
+        orderDTO.setDeviation(tempDeviation);
+        setCalcStatusNameByDeviation(orderDTO, tempDeviation);
+
+
+    }
 
 
     private void setCalcStatusNameByDeviation(OrderDTO orderDTO, int tempDeviation) {
@@ -128,11 +301,11 @@ public class ReportService {
         orderDTO.setReasonDeviation(order.getReasonDeviation());
      /*   orderDTO.setDeviation(order.getDeviation());
         orderDTO.setCalcStatus(order.getCalcStatus());*/
-        orderDTO.setMonthShip(order.getMonthShip());
-        orderDTO.setDateCreateOrderFormat(order.getDateCreateOrderFormat());
-        orderDTO.setDateBeginProductionFormat(order.getDateBeginProductionFormat());
-        orderDTO.setDatePlanToWhseFormat(order.getDatePlanWhseFormat());
-        orderDTO.setNornalizeGroupDate(order.getNornalizeGroupDate());
+       // orderDTO.setMonthShip(order.getMonthShip());
+        //orderDTO.setDateCreateOrderFormat(order.getDateCreateOrderFormat());
+        //orderDTO.setDateBeginProductionFormat(order.getDateBeginProductionFormat());
+       // orderDTO.setDatePlanToWhseFormat(order.getDatePlanWhseFormat());
+       // orderDTO.setNornalizeGroupDate(order.getNornalizeGroupDate());
 
 
         return  orderDTO;
@@ -190,5 +363,7 @@ public class ReportService {
         /*List<SqlRow> sqlRows =  sqlQuery.findList();*/
         return precisionCreateOrders;
     }
+
+
 
 }
