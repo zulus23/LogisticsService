@@ -47,7 +47,7 @@
                              url: "api/listdeliveryorder",
                              contentType: "application/json; charset=utf-8",
                              dataType: 'json',
-                             data:{dateBegin: '@select.getDateBegin',dateEnd:'@select.getDateEnd', site:'@select.getEnterprise'},
+                             data:{dateBegin: '@select.getDateBegin',dateEnd:'@select.getDateEnd', site:'@select.getEnterprise',mode:'@select.getMode'},
                              success: function(data) {
                                  options.success(data);
                              }
@@ -68,12 +68,13 @@
                              itemDescription:{type:"string"},
                              monthShip:{type:"string"},
                              dateCreateOrderFormat:{type:"string"},
-                             dateBeginProductionFormat:{type:"string"},
+                             datePlanBeginProductionFormat:{type:"string"},
                              deviation:{type:"number"},
                              reasonDeviation:{type:"string"},
                              calcStatus:{type:"string"},
                              dateActualShip:{type:"date"},
-                             nornalizeGroupDate:{type:"string"}
+                             nornalizeGroupDate:{type:"string"},
+                             deviationHide:{type:"number"}
                          }
                      }
                  },
@@ -91,20 +92,270 @@
 
                      allDataCount = filteredData.length;
 
-                   /*  if(dataSourceDB.group().length > 0 ){
+                     if(dataSourceDB.group().length > 0 ){
                          graphUtils.createBarGraph(dataSourceDB.group()[0].field,dataSourceDB)
-                         //createGraph(dataSourceDB.group()[0].field);
+
                      } else {
-                         createDefaultGraph();
-                     }*/
-                     /*var chart = $("#chart1").data("kendoChart");
-                      chart.dataSource.filter(dataSourceDB.filter());*/
+                         graphUtils.createBarGraph("",dataSourceDB)
+                     }
                  }
 
 
              });
+             var names = _.sortBy(_.uniq(_.pluck(dataSourceDB.data(), "customer")), function(n) { return n; });
 
-             // gridUtils.createGridAllOrders(dataSourceDB);
+             function createMultiSelect(element) {
+                 element.removeAttr("data-bind");
+
+                 element.kendoMultiSelect({
+                     dataSource: _.sortBy(_.uniq(_.pluck(dataSourceDB.data(), "customer")), function(n) { return n; }),
+                     change: function(e) {
+                         var filter = { logic: "or", filters: [] };
+                         var values = this.value();
+                         $.each(values, function(i, v) {
+                             filter.filters.push({field: "customer", operator: "eq", value: v });
+                         });
+
+                         dataSourceDB.filter(filter);
+                     }
+                 });
+             }
+
+
+
+             /* ========================================== Grid ======================================= */
+
+             $("#gridView").kendoGrid({
+                 toolbar: ["excel"],
+                 excel: {
+                     allPages: true
+                 },
+
+                 dataSource: dataSourceDB,
+                 height: '100%',
+                 groupable: true,
+                 sortable: true,
+                 filterable: true,
+                 //resizable:true,
+                 pageable: {
+                     pageSizes: true
+                 },
+                 columns: [
+                     {
+                         field: "orderNumber",
+                         title: "№ Заказа",
+                         width: "70px",
+                         headerAttributes: gridUtils.headerFormat,
+                         attributes: gridUtils.columnFormat,
+                         groupable: false
+                     },
+                     {
+                         field: "orderLine",
+                         title: "№ Строки",
+                         width: "60px",
+                         headerAttributes: gridUtils.headerFormat,
+                         attributes: gridUtils.columnFormat,
+                         filterable: false,
+                         groupable: false
+                     },
+                     {
+                         field: "manager",
+                         title: "Менеджер",
+                         width: "80px",
+                         headerAttributes: gridUtils.headerFormat,
+                         attributes: gridUtils.columnFormat,
+                         aggregates: ["count"],
+                         groupHeaderTemplate: "Менеджер: #=value#: #=count# : (#=  Math.round((count/calcAll(data,field,value))*100)#%): Count : #=count#"
+                     },
+                     {
+                         field: "customer",
+                         title: "Клиент",
+                         width: "180px",
+                         aggregates: ["count"],
+                         headerAttributes: gridUtils.headerFormat,
+                         attributes: gridUtils.columnFormat,
+                         filterable: {
+                             ui: createMultiSelect,
+                             extra: false
+                         },
+                         /*groupHeaderTemplate: "Клиент: #=value# : #=count#: (#= Math.round((count/calcAll(data,field,value))*100)#%)"*/
+                         groupHeaderTemplate: "Клиент: #=value# : #=count#: (#= calcAll(data,field,value,count)#)"
+                         //groupHeaderTemplate: "Клиент: #=value# : #=count#"
+                     },
+                     {
+                         field: "itemDescription",
+                         title: "Наименование заказа",
+                         width: "130px",
+                         headerAttributes: gridUtils.headerFormat,
+                         attributes: gridUtils.columnFormat,
+                         filterable: false,
+                         groupable: false
+                     },
+                     {
+                         field: "monthShip",
+                         title: "Месяц отгрузки",
+                         width: "50px",
+                         headerAttributes: gridUtils.headerFormat,
+                         attributes: gridUtils.columnFormat,
+                         groupable: false,
+                         aggregates: ["count"],
+                         groupHeaderTemplate: "Месяц отгрузки: #=value# : (#= calcAll(data,field,value)#)"
+                         //groupHeaderTemplate: "Месяц отгрузки: #=value# : (#= count#)"
+                     },
+                     {
+                         field: "datePlanShipFormat", title: "Дата доставки план", width: "80px",
+                         headerAttributes: gridUtils.headerFormat, attributes: gridUtils.columnFormat, filterable: false, groupable: false
+                     },
+                     {
+                         field: "dateActualShipFormat", title: "Дата доставки факт.", width: "80px",
+                         headerAttributes: gridUtils.headerFormat, attributes: gridUtils.columnFormat, filterable: false, groupable: false
+                     },
+                     {
+                         field: "deviation",
+                         title: "Отклонение",
+                         width: "65px",
+                         headerAttributes: gridUtils.headerFormat,
+                         attributes: gridUtils.columnFormat,
+                         groupable: false
+                     },
+                     {
+                         field: "reasonDeviation",
+                         title: "Причина отклонений",
+                         width: "65px",
+                         headerAttributes: gridUtils.headerFormat,
+                         attributes: gridUtils.columnFormat,
+                         groupable: true,
+                         aggregates: ["count"],
+                         groupHeaderTemplate: "Причина отклонений: #=value#: #=count# : (#= calcAll(data,field,value,count)#)"
+                     },
+
+                     {
+                         field: "calcStatus",
+                         title: "Состояние",
+                         width: "80px",
+                         aggregates: ["count"],
+                         headerAttributes: gridUtils.headerFormat,
+                         attributes: gridUtils.columnFormat,
+                         //groupHeaderTemplate: "Состояние: #=value#: #=count# : (#= Math.round((count/calcAll(data,field,value))*100)#%)"
+                         groupHeaderTemplate: "Состояние: #=value#: #=count# : (#= calcAll(data,field,value,count)#)"
+                         //groupHeaderTemplate: "Состояние: #=value#: #=count# "
+                     }
+
+                 ],
+                 change: function(e) {
+
+                     var query = new kendo.data.Query(dataSourceDB.data());
+                     var filters = dataSourceDB.filter();
+                     filteredData = query.filter(filters).data;
+
+                     allDataCount = filteredData.length;
+
+                     if(dataSourceDB.group().length > 0 ){
+                         graphUtils.createBarGraph(dataSourceDB.group()[0].field,dataSourceDB)
+
+                     } else {
+                         gridUtils.createBarGraph("",dataSourceDB);
+                     }
+
+
+                 }
+             });
+             /* ======================================================================================= */
+
+
+             var level1 = [{}]
+             var prevLevelValue = [];
+             var prevLevelCount = [];
+             var fieldObject = {};
+             function calcAll(data,field,value,count_) {
+                 prevLevelValue[-1] = "";
+                 var levelTree = gridUtils.indexGroup(dataSourceDB.group(), field);
+                 prevLevelValue[levelTree] = data.value;
+                 //prevLevelCount[levelTree] = data.count;
+                 if (!gridUtils.findObject(level1, levelTree, data.value, prevLevelValue[levelTree - 1])) {
+                     level1.push({
+                         prevLevel: levelTree - 1,
+                         level: levelTree,
+                         value: data.value,
+                         prevValue: prevLevelValue[levelTree - 1]
+
+                     });
+                 }
+                 //  return findCountPrevObject(level1,data.value,prevLevelValue[levelTree-1]);
+
+
+                 var allCount = 0;
+
+                 function getPrecisionCustomer(field, value, isPrecision) {
+                     var fieldObjectLocal = {};
+                     fieldObjectLocal["customer"] = value;
+                     var tempAll = _.groupBy(_.pluck(_.where(filteredData, fieldObjectLocal), "calcStatus"), function (n) {
+                         return "count"
+                     });
+                     tempAll = _.isUndefined(tempAll.count) ? 1 : tempAll.count.length
+                     fieldObjectLocal["calcStatus"] = graphUtils.WITHDEVIATION;
+                     var temp = _.groupBy(_.pluck(_.where(filteredData, fieldObjectLocal), "calcStatus"), function (n) {
+                         return "count"
+                     });
+                     temp = _.isUndefined(temp.count) ? 0 : temp.count.length;
+                     return isPrecision ? Math.round((temp / tempAll) * 100) + " %" : Math.round((1 - (temp / tempAll)) * 100) + " %";
+                 }
+
+                 /* ----*/
+
+                 if (gridUtils.indexGroup(dataSourceDB.group(), field) === 0) {
+                     fieldObject = {};
+                     // fieldObject[field]=value;
+                     if (field === "customer") {
+                         return getPrecisionCustomer(field, value, true);
+                     } else {
+                         allCount = _.groupBy(_.pluck(_.where(filteredData, fieldObject), "calcStatus"), function (n) {
+                             return "count"
+                         });
+                         allCount = _.isUndefined(allCount.count) ? 1 : allCount.count.length;
+                     }
+
+                 }
+
+                 if (gridUtils.indexGroup(dataSourceDB.group(), field) === 1) {
+
+                     fieldObject ={};
+                     var prevValue = gridUtils.findPrevObject(level1, data.value, prevLevelValue[levelTree - 1]);
+                     if (field === "customer") {
+                         var resDev =_.find(prevLevelValue,function(e){ e === graphUtils.WITHDEVIATION});
+
+
+                         return getPrecisionCustomer(field, value, true);
+                     } else { fieldObject[dataSourceDB.group()[0].field] = prevLevelValue[0];}
+                     var tempAll = _.groupBy(_.pluck(_.where(filteredData, fieldObject), field), function (n) {
+                         return "count"
+                     });
+                     allCount = _.isUndefined(tempAll.count) ? 1 : tempAll.count.length;
+
+                 };
+
+                 if (gridUtils.indexGroup(dataSourceDB.group(), field) === 2) {
+                     fieldObject ={};
+
+                     fieldObject[dataSourceDB.group()[0].field] = prevLevelValue[0];
+                     fieldObject[dataSourceDB.group()[1].field] = prevLevelValue[1];
+
+                     //var prevValue = gridUtils.findPrevObject(level1, data.value, prevLevelValue[levelTree - 1]);
+                     var tempAll = _.groupBy(_.pluck(_.where(filteredData, fieldObject), field), function (n) {
+                         return "count"
+                     });
+                     allCount = _.isUndefined(tempAll.count) ? 1 : tempAll.count.length;
+                 }
+
+
+                 /*======*/
+
+
+                 return (allCount <= count_ ) ? Math.round((allCount / count_) * 100) + " %" : Math.round((count_ / allCount) * 100) + " %";
+
+             }
+
+
 
         </script>
 

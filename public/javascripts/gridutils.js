@@ -8,456 +8,62 @@ var  gridUtils = (function(){
     var headerFormat = {"class": "table-header-cell",
         style: " overflow: visible; white-space: normal; text-align: center; vertical-align:top; font-size: 10px"};
     var columnFormat  = { "class": "table-cell",         style: "text-align: center; font-size: 11px" };
-   /* var names = _.sortBy(_.uniq(_.pluck(dataSourceDB.data(), "customer")), function(n) { return n; });
 
-    function createMultiSelect(element) {
-        element.removeAttr("data-bind");
-
-        element.kendoMultiSelect({
-            dataSource: _.sortBy(_.uniq(_.pluck(dataSourceDB.data(), "customer")), function(n) { return n; }),
-            change: function(e) {
-                var filter = { logic: "or", filters: [] };
-                var values = this.value();
-                $.each(values, function(i, v) {
-                    filter.filters.push({field: "customer", operator: "eq", value: v });
-                });
-
-                dataSourceDB.filter(filter);
+    var indexGroup = function (dataGroup, findElement){
+        for(var i = 0, len = dataGroup.length;  i < len; i++){
+            if(dataGroup[i].field === findElement){ return i;}
+        }
+        return -1;
+    }
+    var findObject = function (data,currentLevel,value, prevValue){
+        for(var i = 0, len = data.length;  i < len; i++){
+            if(data[i].level === currentLevel && data[i].value === value && data[i].prevValue === prevValue){
+                return true;
             }
-        });
-    }*/
-
-
-  function createGridPlanPrecision(datasourceDB) {
-      var names = _.sortBy(_.uniq(_.pluck(dataSourceDB.data(), "customer")), function(n) { return n; });
-
-      function createMultiSelect(element) {
-          element.removeAttr("data-bind");
-
-          element.kendoMultiSelect({
-              dataSource: _.sortBy(_.uniq(_.pluck(dataSourceDB.data(), "customer")), function(n) { return n; }),
-              change: function(e) {
-                  var filter = { logic: "or", filters: [] };
-                  var values = this.value();
-                  $.each(values, function(i, v) {
-                      filter.filters.push({field: "customer", operator: "eq", value: v });
-                  });
-
-                  dataSourceDB.filter(filter);
-              }
-          });
-      }
-
-
-      $("#gridView").kendoGrid({
-          toolbar: ["excel"],
-          excel: {
-              allPages: true
-          },
-
-          dataSource: dataSourceDB,
-          height: '100%',
-          groupable: true,
-          sortable: true,
-          filterable: true,
-          //resizable:true,
-          pageable: {
-              pageSizes: true
-          },
-          columns: [
-              {
-                  field: "orderNumber",
-                  title: "№ Заказа",
-                  width: "70px",
-                  headerAttributes: headerFormat,
-                  attributes: columnFormat,
-                  groupable: false
-              },
-              {
-                  field: "orderLine",
-                  title: "№ Строки",
-                  width: "60px",
-                  headerAttributes: headerFormat,
-                  attributes: columnFormat,
-                  filterable: false,
-                  groupable: false
-              },
-              {
-                  field: "manager",
-                  title: "Менеджер",
-                  width: "80px",
-                  headerAttributes: headerFormat,
-                  attributes: columnFormat,
-                  aggregates: ["count"],
-                  groupHeaderTemplate: "Менеджер: #=value#: #=count# : (#=  Math.round((count/calcAll(data,field,value))*100)#%): Count : #=count#"
-              },
-              {
-                  field: "customer",
-                  title: "Клиент",
-                  width: "180px",
-                  aggregates: ["count"],
-                  headerAttributes: headerFormat,
-                  attributes: columnFormat,
-                  filterable: {
-                      ui: createMultiSelect,
-                      extra: false
-                  },
-                  /*groupHeaderTemplate: "Клиент: #=value# : #=count#: (#= Math.round((count/calcAll(data,field,value))*100)#%)"*/
-                  groupHeaderTemplate: "Клиент: #=value# : #=count#: (#= calcAll(data,field,value,count)#)"
-                  //groupHeaderTemplate: "Клиент: #=value# : #=count#"
-              },
-              {
-                  field: "itemDescription",
-                  title: "Наименование заказа",
-                  width: "130px",
-                  headerAttributes: headerFormat,
-                  attributes: columnFormat,
-                  filterable: false,
-                  groupable: false
-              },
-              {
-                  field: "monthShip",
-                  title: "Месяц отгрузки",
-                  width: "50px",
-                  headerAttributes: headerFormat,
-                  attributes: columnFormat,
-                  groupable: false,
-                  aggregates: ["count"],
-                  groupHeaderTemplate: "Месяц отгрузки: #=value# : (#= calcAll(data,field,value)#)"
-                  //groupHeaderTemplate: "Месяц отгрузки: #=value# : (#= count#)"
-              },
-              {
-                  field: "datePlanShipFormat", title: "Дата доставки план", width: "80px",
-                  headerAttributes: headerFormat, attributes: columnFormat, filterable: false, groupable: false
-              },
-              {
-                  field: "dateActualShipFormat", title: "Дата доставки актуал.", width: "80px",
-                  headerAttributes: headerFormat, attributes: columnFormat, filterable: false, groupable: false
-              },
-              {
-                  field: "deviation",
-                  title: "Отклонение",
-                  width: "65px",
-                  headerAttributes: headerFormat,
-                  attributes: columnFormat,
-                  groupable: false
-              },
-              {
-                  field: "reasonDeviation",
-                  title: "Причина отклонений",
-                  width: "65px",
-                  headerAttributes: headerFormat,
-                  attributes: columnFormat,
-                  groupable: true,
-                  aggregates: ["count"],
-                  groupHeaderTemplate: "Причина отклонений: #=value#: #=count# : (#= calcAll(data,field,value,count)#)"
-              },
-
-              {
-                  field: "calcStatus",
-                  title: "Состояние",
-                  width: "80px",
-                  aggregates: ["count"],
-                  headerAttributes: headerFormat,
-                  attributes: columnFormat,
-                  //groupHeaderTemplate: "Состояние: #=value#: #=count# : (#= Math.round((count/calcAll(data,field,value))*100)#%)"
-                  groupHeaderTemplate: "Состояние: #=value#: #=count# : (#= calcAll(data,field,value,count)#)"
-                  //groupHeaderTemplate: "Состояние: #=value#: #=count# "
-              }
-
-          ],
-          change: function(e) {
-
-              var query = new kendo.data.Query(dataSourceDB.data());
-              var filters = dataSourceDB.filter();
-              filteredData = query.filter(filters).data;
-
-              allDataCount = filteredData.length;
-
-              if(dataSourceDB.group().length > 0 ){
-                  graphUtils.createBarGraph(dataSourceDB.group()[0].field,dataSourceDB)
-                  //createGraph(dataSourceDB.group()[0].field);
-              } else {
-                  gridUtils.createBarGraph("",dataSourceDB);
-              }
-
-              /*var chart = $("#chart1").data("kendoChart");
-               chart.dataSource.filter(dataSourceDB.filter());*/
-          }
-      });
-  };
-  function createGridPrecisionProduction() {
-        $("#gridView").kendoGrid({
-            toolbar: ["excel"],
-            excel: {
-                allPages: true
-            },
-
-            //dataSource: dataSourceDB,
-            height: '100%',
-            groupable: true,
-            sortable: true,
-            filterable: true,
-            //resizable:true,
-            pageable: {
-                pageSizes: true
-            },
-            columns: [
-                {
-                    field: "orderNumber",
-                    title: "№ Заказа",
-                    width: "70px",
-                    headerAttributes: headerFormat,
-                    attributes: columnFormat,
-                    groupable: false
-                },
-                {
-                    field: "orderLine",
-                    title: "№ Строки",
-                    width: "60px",
-                    headerAttributes: headerFormat,
-                    attributes: columnFormat,
-                    filterable: false,
-                    groupable: false
-                },
-                {
-                    field: "manager",
-                    title: "Менеджер",
-                    width: "80px",
-                    headerAttributes: headerFormat,
-                    attributes: columnFormat,
-                    aggregates: ["count"],
-                    groupHeaderTemplate: "Менеджер: #=value#: #=count# : (#=  Math.round((count/calcAll(data,field,value))*100)#%): Count : #=count#"
-                },
-                {
-                    field: "customer",
-                    title: "Клиент",
-                    width: "180px",
-                    aggregates: ["count"],
-                    headerAttributes: headerFormat,
-                    attributes: columnFormat,
-                    /*filterable: {
-                     ui: createMultiSelect,
-                     extra: false
-                     },*/
-                    /*groupHeaderTemplate: "Клиент: #=value# : #=count#: (#= Math.round((count/calcAll(data,field,value))*100)#%)"*/
-                    groupHeaderTemplate: "Клиент: #=value# : #=count#: (#= calcAll(data,field,value,count)#)"
-                    //groupHeaderTemplate: "Клиент: #=value# : #=count#"
-                },
-                {
-                    field: "itemDescription",
-                    title: "Наименование заказа",
-                    width: "130px",
-                    headerAttributes: headerFormat,
-                    attributes: columnFormat,
-                    filterable: false,
-                    groupable: false
-                },
-                {
-                    field: "monthShip",
-                    title: "Месяц отгрузки",
-                    width: "50px",
-                    headerAttributes: headerFormat,
-                    attributes: columnFormat,
-                    groupable: false,
-                    aggregates: ["count"],
-                    groupHeaderTemplate: "Месяц отгрузки: #=value# : (#= calcAll(data,field,value)#)"
-                    //groupHeaderTemplate: "Месяц отгрузки: #=value# : (#= count#)"
-                },
-                {
-                    /*field: "dateCreateOrderFormat",*/ title: "Дата начала производства", width: "80px",
-                    headerAttributes: headerFormat, attributes: columnFormat, filterable: false, groupable: false
-                },
-                {
-                    field: "dateBeginProductionFormat", title: "Дата начала производства в плане сутки.", width: "80px",
-                    headerAttributes: headerFormat, attributes: columnFormat, filterable: false, groupable: false
-                },
-                {
-                    field: "deviation",
-                    title: "Отклонение",
-                    width: "65px",
-                    headerAttributes: headerFormat,
-                    attributes: columnFormat,
-                    groupable: false
-                },
-                {
-                    field: "reasonDeviation",
-                    title: "Причина отклонений",
-                    width: "65px",
-                    headerAttributes: headerFormat,
-                    attributes: columnFormat,
-                    groupable: true,
-                    aggregates: ["count"],
-                    groupHeaderTemplate: "Причина отклонений: #=value#: #=count# : (#= calcAll(data,field,value,count)#)"
-                },
-
-                {
-                    field: "calcStatus",
-                    title: "Состояние",
-                    width: "80px",
-                    aggregates: ["count"],
-                    headerAttributes: headerFormat,
-                    attributes: columnFormat,
-                    //groupHeaderTemplate: "Состояние: #=value#: #=count# : (#= Math.round((count/calcAll(data,field,value))*100)#%)"
-                    groupHeaderTemplate: "Состояние: #=value#: #=count# : (#= calcAll(data,field,value,count)#)"
-                    //groupHeaderTemplate: "Состояние: #=value#: #=count# "
-                }
-
-            ]
-        });
-    };
-  function createGridAllOrder(datasourceDB) {
-
-      var names = _.sortBy(_.uniq(_.pluck(dataSourceDB.data(), "customer")), function(n) { return n; });
-
-      function createMultiSelect(element) {
-          element.removeAttr("data-bind");
-
-          element.kendoMultiSelect({
-              dataSource: _.sortBy(_.uniq(_.pluck(dataSourceDB.data(), "customer")), function(n) { return n; }),
-              change: function(e) {
-                  var filter = { logic: "or", filters: [] };
-                  var values = this.value();
-                  $.each(values, function(i, v) {
-                      filter.filters.push({field: "customer", operator: "eq", value: v });
-                  });
-
-                  dataSourceDB.filter(filter);
-              }
-          });
-      }
-
-
-        $("#gridView").kendoGrid({
-            toolbar: ["excel"],
-            excel: {
-                allPages: true
-            },
-
-            dataSource: dataSourceDB,
-            height: '100%',
-            groupable: true,
-            sortable: true,
-            filterable: true,
-            //resizable:true,
-            pageable: {
-                pageSizes: true
-            },
-            columns: [
-                {
-                    field: "orderNumber",
-                    title: "№ Заказа",
-                    width: "70px",
-                    headerAttributes: headerFormat,
-                    attributes: columnFormat,
-                    groupable: false
-                },
-                {
-                    field: "orderLine",
-                    title: "№ Строки",
-                    width: "60px",
-                    headerAttributes: headerFormat,
-                    attributes: columnFormat,
-                    filterable: false,
-                    groupable: false
-                },
-                {
-                    field: "manager",
-                    title: "Менеджер",
-                    width: "80px",
-                    headerAttributes: headerFormat,
-                    attributes: columnFormat,
-                    aggregates: ["count"],
-                    groupHeaderTemplate: "Менеджер: #=value#: #=count# : (#=  Math.round((count/calcAll(data,field,value))*100)#%): Count : #=count#"
-                },
-                {
-                    field: "customer",
-                    title: "Клиент",
-                    width: "180px",
-                    aggregates: ["count"],
-                    headerAttributes: headerFormat,
-                    attributes: columnFormat,
-                    filterable: {
-                        ui: createMultiSelect,
-                        extra: false
-                    },
-                    /*groupHeaderTemplate: "Клиент: #=value# : #=count#: (#= Math.round((count/calcAll(data,field,value))*100)#%)"*/
-                    groupHeaderTemplate: "Клиент: #=value# : #=count#: (#= calcAll(data,field,value,count)#)"
-                    //groupHeaderTemplate: "Клиент: #=value# : #=count#"
-                },
-                {
-                    field: "itemDescription",
-                    title: "Наименование заказа",
-                    width: "130px",
-                    headerAttributes: headerFormat,
-                    attributes: columnFormat,
-                    filterable: false,
-                    groupable: false
-                },
-                {
-                    field: "monthShip",
-                    title: "Месяц отгрузки",
-                    width: "50px",
-                    headerAttributes: headerFormat,
-                    attributes: columnFormat,
-                    groupable: false,
-                    aggregates: ["count"],
-                    groupHeaderTemplate: "Месяц отгрузки: #=value# : (#= calcAll(data,field,value)#)"
-                    //groupHeaderTemplate: "Месяц отгрузки: #=value# : (#= count#)"
-                },
-                { field: "dateCreateOrderFormat", title: "Дата открытия заказа",width: "80px",
-                    headerAttributes: headerFormat,attributes: columnFormat,filterable: false,groupable: false
-                },
-                { field: "dateBeginProductionFormat", title: "Дата начала производства",width: "80px",
-                    headerAttributes: headerFormat,attributes: columnFormat,filterable: false,groupable: false
-                },
-                { field: "dateBeginProductionFormat", title: "Дата начала производства в план сутки",width: "80px",
-                    headerAttributes: headerFormat,attributes: columnFormat,filterable: false,groupable: false
-                },
-                { field: "dateCreateOrderFormat", title: "Дата сдачи заказа на склад",width: "80px",
-                    headerAttributes: headerFormat,attributes: columnFormat,filterable: false,groupable: false
-                },
-                { field: "dateCreateOrderFormat", title: "Дата поступления на склад",width: "80px",
-                    headerAttributes: headerFormat,attributes: columnFormat,filterable: false,groupable: false
-                },
-                {
-                    field: "datePlanShipFormat", title: "Дата отгрузки план", width: "80px",
-                    headerAttributes: headerFormat, attributes: columnFormat, filterable: false, groupable: false
-                },
-                {
-                    field: "dateActualShipFormat", title: "Дата отгрузки факт.", width: "80px",
-                    headerAttributes: headerFormat, attributes: columnFormat, filterable: false, groupable: false
-                },
-                {
-                    /*field: "datePlanShipFormat",*/ title: "Дата доставки план", width: "80px",
-                    headerAttributes: headerFormat, attributes: columnFormat, filterable: false, groupable: false
-                },
-                {
-                    /*field: "dateBeginProductionFormat",*/ title: "Дата доставки актуал.", width: "80px",
-                    headerAttributes: headerFormat, attributes: columnFormat, filterable: false, groupable: false
-                },
-                {
-                    /*field: "dateBeginProductionFormat",*/ title: "Дата доставки факт.", width: "80px",
-                    headerAttributes: headerFormat, attributes: columnFormat, filterable: false, groupable: false
-                }
-
-
-            ]
-        });
-    };
-
-    var  createGridPlanPrecision_ = function(datasourceDB){
-       createGridPlanPrecision(datasourceDB);
+        }
+        return false;
     }
-    var  createGridPrecisionProduction_ = function(){
-        createGridPrecisionProduction();
+    var findCountPrevObject = function (data,value,prevValue){
+        for(var i = 0, len = data.length;  i < len; i++){
+            if(data[i].value === value && data[i].prevValue === prevValue){
+                return data[i].prevCount;
+            }
+        }
+        return -1;
     }
-    var  createGridAllOrders_ = function(datasourceDB){
-        createGridAllOrder(datasourceDB);
+
+    var findPrevObject = function (data,value,prevValue){
+        for(var i = 0, len = data.length;  i < len; i++){
+            if(data[i].value === value && data[i].prevValue === prevValue){
+                return data[i];
+            }
+        }
+        return {};
     }
+
+    var procentPrecisionByCustomer = function (filteredData,field, value, isPrecision) {
+        var fieldObjectLocal = {};
+        fieldObjectLocal["customer"] = value;
+        var countDeviation = _.countBy(_.pluck(_.where(filteredData, fieldObjectLocal), "deviationHide"), function (n) {
+            return  n === 0 ? "NoDeviation":"Deviation"
+        });
+        var deviation_ =  _.isUndefined(countDeviation.Deviation) ? 0:countDeviation.Deviation;
+        var nodeviation_ =  _.isUndefined(countDeviation.NoDeviation) ? 0:countDeviation.NoDeviation;
+        var countAll =  deviation_ + nodeviation_;
+
+        return isPrecision ? Math.round((nodeviation_ / countAll) * 100) + " %" : Math.round((1 - (nodeviation_ / countAll)) * 100) + " %";
+    }
+
+
     return{
-        createGridPlanPrecision: createGridPlanPrecision_,
+        /*createGridPlanPrecision: createGridPlanPrecision_,
         createGridPrecisionProduction: createGridPrecisionProduction_,
-        createGridAllOrders:createGridAllOrders_
+        createGridAllOrders:createGridAllOrders_,*/
+        procentPrecisionByCustomer:procentPrecisionByCustomer,
+        indexGroup:indexGroup,
+        findObject:findObject,
+        findPrevObject:findPrevObject,
+        headerFormat:headerFormat,
+        columnFormat:columnFormat
     };
 })()

@@ -5,13 +5,8 @@ import com.avaje.ebean.Model;
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
-import javax.persistence.Transient;
 import java.sql.Date;
 import java.time.LocalDate;
-import java.time.Period;
-import java.time.format.DateTimeFormatter;
-import java.time.format.TextStyle;
-import java.util.Locale;
 import java.util.Objects;
 
 /**
@@ -45,7 +40,7 @@ public abstract class PrecisionOrder extends Model {
     private LocalDate dateCreateOrder;
     /*Дата планового производства*/
     @Column(name = "DatePlan_Mnfg")
-    private LocalDate dateBeginProduction;
+    private LocalDate datePlanBeginProduction;
     /*Дата плановой отгрузки*/
     @Column(name = "DatePlan_Ship")
     private LocalDate datePlanShip;
@@ -159,12 +154,12 @@ public abstract class PrecisionOrder extends Model {
         this.dateCreateOrder = dateCreateOrder;
     }
 
-    public LocalDate getDateBeginProduction() {
-        return dateBeginProduction;
+    public LocalDate getDatePlanBeginProduction() {
+        return datePlanBeginProduction;
     }
 
-    public void setDateBeginProduction(LocalDate dateBeginProduction) {
-        this.dateBeginProduction = dateBeginProduction;
+    public void setDatePlanBeginProduction(LocalDate datePlanBeginProduction) {
+        this.datePlanBeginProduction = datePlanBeginProduction;
     }
     public String getReasonDeviation() {
         if( Objects.isNull(reasonDeviation)) return "";
@@ -200,9 +195,9 @@ public abstract class PrecisionOrder extends Model {
         this.datePlanWhse = datePlanWhse;
     }
 
-  /*  public String getDateBeginProductionFormat() {
-        if(getDateBeginProduction() != null) {
-            return getDateBeginProduction().format(DateTimeFormatter.ofPattern("dd-MM-yyyy", Locale.forLanguageTag("ru-RU")));
+  /*  public String getDatePlanBeginProductionFormat() {
+        if(getDatePlanBeginProduction() != null) {
+            return getDatePlanBeginProduction().format(DateTimeFormatter.ofPattern("dd-MM-yyyy", Locale.forLanguageTag("ru-RU")));
         }
         return "";
     }*/

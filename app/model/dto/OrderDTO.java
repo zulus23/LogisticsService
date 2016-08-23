@@ -1,6 +1,7 @@
 package model.dto;
 
-import javax.persistence.Column;
+import model.Deviation;
+
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -30,7 +31,7 @@ public class OrderDTO {
     /* Дата создания заказа*/
     private LocalDate dateCreateOrder;
     /* Дата начала производства */
-    private LocalDate dateBeginProduction;
+    private LocalDate datePlanBeginProduction;
     /* Дата плановой  отгрузки*/
     private LocalDate datePlanShip;
 
@@ -41,6 +42,10 @@ public class OrderDTO {
     private String reasonDeviation;
     /* величина отклонения*/
     private int deviation;
+
+    /*Служить для расчета процента*/
+    private int deviationHide;
+
     /* Статус заказа с отклонением или без*/
     private String calcStatus;
 
@@ -49,7 +54,7 @@ public class OrderDTO {
     /*Форматированная дата отгрузки*/
     private String dateCreateOrderFormat;
     /*Форматированная дата производства*/
-    private String dateBeginProductionFormat;
+    private String datePlanBeginProductionFormat;
 
     /*Форматированная дата  плановой даты поступления на склад*/
     private String datePlanToWhseFormat;
@@ -137,12 +142,12 @@ public class OrderDTO {
         this.dateCreateOrder = dateCreateOrder;
     }
 
-    public LocalDate getDateBeginProduction() {
-        return dateBeginProduction;
+    public LocalDate getDatePlanBeginProduction() {
+        return datePlanBeginProduction;
     }
 
-    public void setDateBeginProduction(LocalDate dateBeginProduction) {
-        this.dateBeginProduction = dateBeginProduction;
+    public void setDatePlanBeginProduction(LocalDate datePlanBeginProduction) {
+        this.datePlanBeginProduction = datePlanBeginProduction;
     }
 
     public LocalDate getDatePlanShip() {
@@ -185,6 +190,10 @@ public class OrderDTO {
         this.calcStatus = calcStatus;
     }
 
+    public int getDeviationHide() {
+        return calcStatus == Deviation.NO.getName() ? 0:1 ;
+    }
+
     public String getMonthShip() {
         if(dateActualShip != null) {
 
@@ -205,9 +214,9 @@ public class OrderDTO {
 
 
 
-    public String getDateBeginProductionFormat() {
-        if(getDateBeginProduction() != null) {
-            return getDateBeginProduction().format(DateTimeFormatter.ofPattern("dd-MM-yyyy", Locale.forLanguageTag("ru-RU")));
+    public String getDatePlanBeginProductionFormat() {
+        if(getDatePlanBeginProduction() != null) {
+            return getDatePlanBeginProduction().format(DateTimeFormatter.ofPattern("dd-MM-yyyy", Locale.forLanguageTag("ru-RU")));
         }
         return "";
     }

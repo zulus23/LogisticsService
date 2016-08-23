@@ -28,17 +28,7 @@
         </div>
         </div>
         <script>
-              /* var dataall = [];
-
-               for(order <- listOrder) {
-               var order = {}
-               order["OrderNumber"] = 'order.getOrderNumber()';
-               order["OrderLine"] ='order.getOrderLine()';
-               order["Manager"] ='order.getManager()';
-               order["Customer"] ='order.getCustomer()';
-               dataall.push(order);
-               }
-*/             $("#vertical").kendoSplitter({
+           $("#vertical").kendoSplitter({
                   orientation: "vertical",
                   panes: [
                       { collapsible: false, size: "50%" },
@@ -47,7 +37,7 @@
                   ]
               });
 
-              createDefaultGraph();
+
                var dataSourceDB = new kendo.data.DataSource({
                    serverAggregates: true,
                    transport: {
@@ -58,7 +48,10 @@
                                contentType: "application/json; charset=utf-8",
                                dataType: 'json',
                                data:{dateBegin: '@select.getDateBegin',dateEnd:'@select.getDateEnd', site:'@select.getEnterprise',mode:'@select.getMode'},
+                               beforeSend: function() { $('#loading').show(); },
                                success: function(data) {
+
+                                   $('#loading').hide();
                                    options.success(data);
                                }
                            });
@@ -78,12 +71,13 @@
                                itemDescription:{type:"string"},
                                monthShip:{type:"string"},
                                dateCreateOrderFormat:{type:"string"},
-                               dateBeginProductionFormat:{type:"string"},
+                               datePlanBeginProductionFormat:{type:"string"},
                                deviation:{type:"number"},
                                reasonDeviation:{type:"string"},
                                calcStatus:{type:"string"},
                                dateActualShip:{type:"date"},
-                               nornalizeGroupDate:{type:"string"}
+                               nornalizeGroupDate:{type:"string"},
+                               deviationHide:{type:"number"}
                            }
                        }
                    },
@@ -105,7 +99,7 @@
                         graphUtils.createBarGraph(dataSourceDB.group()[0].field,dataSourceDB)
                            //createGraph(dataSourceDB.group()[0].field);
                        } else {
-                           createDefaultGraph();
+                           graphUtils.createBarGraph("",dataSourceDB);
                        }
                        /*var chart = $("#chart1").data("kendoChart");
                        chart.dataSource.filter(dataSourceDB.filter());*/
@@ -114,7 +108,7 @@
 
                });
 
-              var dataSourceGrapth = new kendo.data.DataSource({
+            /*  var dataSourceGrapth = new kendo.data.DataSource({
                   transport: {
                       read: function(options) {
                           $.ajax({
@@ -135,7 +129,7 @@
                   sort: [
                       { "field": "categoryAxis", "dir": "asc" }
                   ],
-              });
+              });*/
 
               var names = _.sortBy(_.uniq(_.pluck(dataSourceDB.data(), "customer")), function(n) { return n; });
 
@@ -155,10 +149,10 @@
                       }
                   });
               }
-
+/*
               var headerFormat = {"class": "table-header-cell",
                                   style: " overflow: visible; white-space: normal; text-align: center; vertical-align:top; font-size: 10px"};
-              var columnFormat  = { "class": "table-cell",         style: "text-align: center; font-size: 11px" };
+              var columnFormat  = { "class": "table-cell",         style: "text-align: center; font-size: 11px" };*/
 
               $("#gridView").kendoGrid({
                    toolbar: ["excel"],
@@ -176,11 +170,11 @@
                          pageSizes: true
                     },
                     columns: [
-                        { field: "orderNumber",title:"№ Заказа", width: "70px",headerAttributes: headerFormat,attributes: columnFormat,groupable: false },
-                        { field: "orderLine", title: "№ Строки",  width: "60px",headerAttributes: headerFormat,attributes: columnFormat,filterable: false,groupable: false   },
-                        { field: "manager", title: "Менеджер", width: "80px",headerAttributes: headerFormat ,attributes: columnFormat, aggregates: ["count"],
+                        { field: "orderNumber",title:"№ Заказа", width: "70px",headerAttributes: gridUtils.headerFormat,attributes: gridUtils.columnFormat,groupable: false },
+                        { field: "orderLine", title: "№ Строки",  width: "60px",headerAttributes: gridUtils.headerFormat,attributes: gridUtils.columnFormat,filterable: false,groupable: false   },
+                        { field: "manager", title: "Менеджер", width: "80px",headerAttributes: gridUtils.headerFormat ,attributes: gridUtils.columnFormat, aggregates: ["count"],
                             groupHeaderTemplate: "Менеджер: #=value#: #=count# : (#=  Math.round((count/calcAll(data,field,value))*100)#%): Count : #=count#"},
-                        { field: "customer", title: "Клиент",width: "180px" ,aggregates: ["count"],headerAttributes: headerFormat,attributes: columnFormat,
+                        { field: "customer", title: "Клиент",width: "180px" ,aggregates: ["count"],headerAttributes: gridUtils.headerFormat,attributes: gridUtils.columnFormat,
                            filterable: {
                                 ui : createMultiSelect,
                                 extra: false
@@ -189,22 +183,23 @@
                             groupHeaderTemplate: "Клиент: #=value# : #=count#: (#= calcAll(data,field,value,count)#)"
                             //groupHeaderTemplate: "Клиент: #=value# : #=count#"
                         },
-                        { field: "itemDescription", title: "Наименование заказа",width: "130px" ,headerAttributes: headerFormat,attributes: columnFormat,filterable: false,groupable: false },
-                        { field: "monthShip", title: "Месяц отгрузки",width: "50px",headerAttributes: headerFormat ,attributes: columnFormat,groupable: false, aggregates: ["count"],
+                        { field: "itemDescription", title: "Наименование заказа",width: "130px" ,headerAttributes: gridUtils.headerFormat,attributes: gridUtils.columnFormat,
+                            filterable: false,groupable: false },
+                        { field: "monthShip", title: "Месяц отгрузки",width: "50px",headerAttributes: gridUtils.headerFormat ,attributes: gridUtils.columnFormat,groupable: false, aggregates: ["count"],
                                  groupHeaderTemplate: "Месяц отгрузки: #=value# : (#= calcAll(data,field,value)#)"
                             //groupHeaderTemplate: "Месяц отгрузки: #=value# : (#= count#)"
                         },
                         { field: "dateCreateOrderFormat", title: "Дата открытия заказа",width: "80px",
-                            headerAttributes: headerFormat,attributes: columnFormat,filterable: false,groupable: false
+                            headerAttributes: gridUtils.headerFormat,attributes: gridUtils.columnFormat,filterable: false,groupable: false
                         },
                         { field: "dateBeginProductionFormat", title: "Дата начала производства",width: "80px",
-                            headerAttributes: headerFormat,attributes: columnFormat,filterable: false,groupable: false
+                            headerAttributes: gridUtils.headerFormat,attributes: gridUtils.columnFormat,filterable: false,groupable: false
                         },
-                        { field: "deviation", title: "Отклонение",width: "65px",headerAttributes: headerFormat,attributes: columnFormat,groupable: false },
-                        { field: "reasonDeviation", title: "Причина отклонений",width: "65px",headerAttributes: headerFormat,attributes: columnFormat,groupable: true,aggregates: ["count"],
+                        { field: "deviation", title: "Отклонение",width: "65px",headerAttributes: gridUtils.headerFormat,attributes: gridUtils.columnFormat,groupable: false },
+                        { field: "reasonDeviation", title: "Причина отклонений",width: "65px",headerAttributes: gridUtils.headerFormat,attributes: gridUtils.columnFormat,groupable: true,aggregates: ["count"],
                             groupHeaderTemplate: "Причина отклонений: #=value#: #=count# : (#= calcAll(data,field,value,count)#)"},
 
-                        { field: "calcStatus", title: "Состояние",width: "80px" ,aggregates: ["count"],headerAttributes: headerFormat,attributes: columnFormat,
+                        { field: "calcStatus", title: "Состояние",width: "80px" ,aggregates: ["count"],headerAttributes: gridUtils.headerFormat,attributes: gridUtils.columnFormat,
                           //groupHeaderTemplate: "Состояние: #=value#: #=count# : (#= Math.round((count/calcAll(data,field,value))*100)#%)"
                            groupHeaderTemplate: "Состояние: #=value#: #=count# : (#= calcAll(data,field,value,count)#)"
                             //groupHeaderTemplate: "Состояние: #=value#: #=count# "
@@ -223,10 +218,10 @@
                   //tree[-1] = {prevLevel : -1,level: -1,value:"",countAll:allDataCount/*dataSourceDB.total()*/};
                   //prevLevelCount[-1] = allDataCount;/*dataSourceDB.total();*/
                   prevLevelValue[-1] = "";
-                  var levelTree = indexGroup(dataSourceDB.group(), field);
+                  var levelTree = gridUtils.indexGroup(dataSourceDB.group(), field);
                   prevLevelValue[levelTree] = data.value;
                   //prevLevelCount[levelTree] = data.count;
-                  if (!findObject(level1, levelTree, data.value, prevLevelValue[levelTree - 1])) {
+                  if (!gridUtils.findObject(level1, levelTree, data.value, prevLevelValue[levelTree - 1])) {
                       level1.push({
                           prevLevel: levelTree - 1,
                           level: levelTree,
@@ -240,7 +235,7 @@
 
                   var allCount = 0;
 
-                  function getPrecisionCustomer(field, value, isPrecision) {
+                /*  function getPrecisionCustomer(field, value, isPrecision) {
                       var fieldObjectLocal = {};
                       fieldObjectLocal["customer"] = value;
                       var tempAll = _.groupBy(_.pluck(_.where(filteredData, fieldObjectLocal), "calcStatus"), function (n) {
@@ -251,15 +246,29 @@
                       var temp = _.groupBy(_.pluck(_.where(filteredData, fieldObjectLocal), "calcStatus"), function (n) {
                           return "count"
                       });
-                      temp = _.isUndefined(temp.count) ? 1 : temp.count.length;
+                      temp = _.isUndefined(temp.count) ? 0 : temp.count.length;
                       return isPrecision ? Math.round((temp / tempAll) * 100) + " %" : Math.round((1 - (temp / tempAll)) * 100) + " %";
-                  }
+                  }*/
 
-                      if (indexGroup(dataSourceDB.group(), field) === 0) {
+               /*   function getPrecisionCustomer_(filteredData,field, value, isPrecision) {
+                      var fieldObjectLocal = {};
+                      fieldObjectLocal["customer"] = value;
+                      var countDeviation = _.countBy(_.pluck(_.where(filteredData, fieldObjectLocal), "deviationHide"), function (n) {
+                          return  n === 0 ? "NoDeviation":"Deviation"
+                      });
+                      var deviation_ =  _.isUndefined(countDeviation.Deviation) ? 0:countDeviation.Deviation;
+                      var nodeviation_ =  _.isUndefined(countDeviation.NoDeviation) ? 0:countDeviation.NoDeviation;
+                      var countAll =  deviation_ + nodeviation_;
+
+                      return isPrecision ? Math.round((nodeviation_ / countAll) * 100) + " %" : Math.round((1 - (nodeviation_ / countAll)) * 100) + " %";
+                  }*/
+
+
+                      if (gridUtils.indexGroup(dataSourceDB.group(), field) === 0) {
                           fieldObject = {};
-                          // fieldObject[field]=value;
+
                           if (field === "customer") {
-                              return getPrecisionCustomer(field, value, true);
+                              return gridUtils.procentPrecisionByCustomer(filteredData,field, value, true);
                           } else {
                               allCount = _.groupBy(_.pluck(_.where(filteredData, fieldObject), "calcStatus"), function (n) {
                                   return "count"
@@ -268,29 +277,29 @@
                           }
 
                       }
-                      if (indexGroup(dataSourceDB.group(), field) === 1) {
+                      if (gridUtils.indexGroup(dataSourceDB.group(), field) === 1) {
 
                           fieldObject ={};
                           //   if(field === "customer"){   return  getPrecisionCustomer(field,value);
-                          var prevValue = findPrevObject(level1, data.value, prevLevelValue[levelTree - 1]);
+                          var prevValue = gridUtils.findPrevObject(level1, data.value, prevLevelValue[levelTree - 1]);
                           if (field === "customer") {
                               var resDev =_.find(prevLevelValue,function(e){ e === graphUtils.WITHDEVIATION});
 
 
-                              return getPrecisionCustomer(field, value, true);//fieldObject[dataSourceDB.group()[0].field] = prevValue.prevValue;
+                              return gridUtils.procentPrecisionByCustomer(filteredData,field, value, true);//fieldObject[dataSourceDB.group()[0].field] = prevValue.prevValue;
                           } else { fieldObject[dataSourceDB.group()[0].field] = prevLevelValue[0];/*fieldObject[field] = prevValue.value; */}
                            var tempAll = _.groupBy(_.pluck(_.where(filteredData, fieldObject), field), function (n) {
                                     return "count"
                           });
                           allCount = _.isUndefined(tempAll.count) ? 1 : tempAll.count.length;
                       }
-                      if (indexGroup(dataSourceDB.group(), field) === 2) {
+                      if (gridUtils.indexGroup(dataSourceDB.group(), field) === 2) {
                           fieldObject ={};
 
                           fieldObject[dataSourceDB.group()[0].field] = prevLevelValue[0];
                           fieldObject[dataSourceDB.group()[1].field] = prevLevelValue[1];
 
-                          var prevValue = findPrevObject(level1, data.value, prevLevelValue[levelTree - 1]);
+                          var prevValue = gridUtils.findPrevObject(level1, data.value, prevLevelValue[levelTree - 1]);
                           var tempAll = _.groupBy(_.pluck(_.where(filteredData, fieldObject), field), function (n) {
                               return "count"
                           });
@@ -300,13 +309,13 @@
                       return (allCount <= count_ ) ? Math.round((allCount / count_) * 100) + " %" : Math.round((count_ / allCount) * 100) + " %";
                   }
 
-              function indexGroup(dataGroup, findElement){
+             /* function indexGroup(dataGroup, findElement){
                   for(var i = 0, len = dataGroup.length;  i < len; i++){
                       if(dataGroup[i].field === findElement){ return i;}
                   }
                   return -1;
-              }
-              function findObject(data,currentLevel,value, prevValue){
+              }*/
+           /*   function findObject(data,currentLevel,value, prevValue){
                   for(var i = 0, len = data.length;  i < len; i++){
                      if(data[i].level === currentLevel && data[i].value === value && data[i].prevValue === prevValue){
                          return true;
@@ -345,7 +354,7 @@
 
 
                   return label;
-              }
+              }*/
 
             /*  function localDataForDeviation(){
                   var data = [];
@@ -499,23 +508,7 @@
                   ]
               });
                   return datasource;}
-              /*function createLocalDatasourceForgraph(groupField){
 
-                  if(groupField === 'customer') {var mydata =  graphUtils.localDataForCustomer(dataSourceDB);};
-                  if(groupField === 'calcStatus') {var mydata =  graphUtils.localDataForDeviation(dataSourceDB);};
-                  if(groupField === 'reasonDeviation') {var mydata =  graphUtils.localDataForReasonDeviation(dataSourceDB);};
-                  //var mydata =  graphUtils.localDataForDeviation(dataSourceDB);
-                  var datasource =
-                          new kendo.data.DataSource({
-                              data:mydata,
-                              group: {
-                                  field: "deviation"
-                              },
-                              sort: [
-                                  { "field": "monthActualShip", "dir": "asc" }
-                              ]
-                          });
-                  return datasource;}*/
         </script>
 }
 }

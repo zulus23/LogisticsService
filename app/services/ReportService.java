@@ -5,19 +5,13 @@ import model.Deviation;
 import model.GrapthPrecisionCreateOrder;
 import model.ReportPrecisionCreateOrder;
 import model.dto.OrderDTO;
-import play.mvc.PathBindable;
-import scala.Function1;
-import scala.util.Either;
 
-import javax.inject.Inject;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
-import static model.ReportPrecisionCreateOrder.find;
 
 /**
  * Created by Zhukov on 06.08.2016.
@@ -77,10 +71,8 @@ public class ReportService {
         return listOrders;
     }
 
-    private List<ReportPrecisionCreateOrder> getListOrders(LocalDate dateBegin, LocalDate dateEnd, String site) {
-        return ReportPrecisionCreateOrder.find.where().eq("site",site).between("DateActual_Ship",dateBegin,dateEnd).isNotNull("customer").findList();
-    }
 
+    /*  4 ----------------------- Точность постановки заказов в производство -------*/
     public List<OrderDTO> precisionProductionOrders(LocalDate dateBegin, LocalDate dateEnd, String site, String mode) {
         List<ReportPrecisionCreateOrder> listAllOrders = getListOrders(dateBegin, dateEnd, site);
 
@@ -92,7 +84,7 @@ public class ReportService {
 
 
     }
-
+    /*  5 ----------------------- Точность выходов заказов на склад -------*/
     public List<OrderDTO> precisionWhseOrders(LocalDate dateBegin, LocalDate dateEnd, String site, String mode) {
 
         List<ReportPrecisionCreateOrder> listAllOrders = getListOrders(dateBegin, dateEnd, site);
@@ -105,7 +97,7 @@ public class ReportService {
 
 
     }
-
+    /*  6 ----------------------- Точность отгрузки заказов -------*/
     public List<OrderDTO> precisionShipmentOrders(LocalDate dateBegin, LocalDate dateEnd, String site, String mode) {
         List<ReportPrecisionCreateOrder> listAllOrders = getListOrders(dateBegin, dateEnd, site);
 
@@ -115,7 +107,7 @@ public class ReportService {
 
         return listOrders;
     }
-
+    /*  7 ----------------------- Точность доставки заказов -------*/
     public List<OrderDTO> precisionDeliveryOrders(LocalDate dateBegin, LocalDate dateEnd, String site, String mode) {
         List<ReportPrecisionCreateOrder> listAllOrders = getListOrders(dateBegin, dateEnd, site);
 
@@ -163,17 +155,17 @@ public class ReportService {
                 int productionDeviation = 0;
                 int whseDeviation = 0;
                  /* ----Взять отклонение с предыдущего шага -----*/
-                if (orderDTO.getDateActualShip() != null && orderDTO.getDateBeginProduction() != null) {
+                if (orderDTO.getDateActualShip() != null && orderDTO.getDatePlanBeginProduction() != null) {
 
-                    productionDeviation = Period.between(orderDTO.getDateActualShip().toLocalDate(), orderDTO.getDateBeginProduction()).getDays();
+                    productionDeviation = Period.between(orderDTO.getDateActualShip().toLocalDate(), orderDTO.getDatePlanBeginProduction()).getDays();
                     productionDeviation = tempDeviation > 0 ? 0 : tempDeviation;
                 }
                 if (productionDeviation > 0) {
-                    orderDTO.setDateBeginProduction(orderDTO.getDateBeginProduction().plusDays(productionDeviation));
+                    orderDTO.setDatePlanBeginProduction(orderDTO.getDatePlanBeginProduction().plusDays(productionDeviation));
                 }
 
-                if (orderDTO.getDateBeginProduction() != null && orderDTO.getDatePlanWhse() != null) {
-                    whseDeviation = Period.between(orderDTO.getDateBeginProduction(), orderDTO.getDatePlanWhse()).getDays();
+                if (orderDTO.getDatePlanBeginProduction() != null && orderDTO.getDatePlanWhse() != null) {
+                    whseDeviation = Period.between(orderDTO.getDatePlanBeginProduction(), orderDTO.getDatePlanWhse()).getDays();
                     whseDeviation = whseDeviation > 0 ? 0 : whseDeviation;
 
                 }
@@ -200,8 +192,8 @@ public class ReportService {
             case  1: {
                 /*Разница между датой поступления на склад и датой сдачи на склад*/
                 /*TODO Нет даты поступления на склад*/
-                if(orderDTO.getDateBeginProduction() != null && orderDTO.getDatePlanWhse() != null) {
-                    tempDeviation = Period.between(orderDTO.getDateBeginProduction(),orderDTO.getDatePlanWhse() ).getDays();
+                if(orderDTO.getDatePlanBeginProduction() != null && orderDTO.getDatePlanWhse() != null) {
+                    tempDeviation = Period.between(orderDTO.getDatePlanBeginProduction(),orderDTO.getDatePlanWhse() ).getDays();
                     tempDeviation =   tempDeviation > 0 ? 0:tempDeviation ; ;
                 }
 
@@ -212,17 +204,17 @@ public class ReportService {
                   /*TODO Нет даты поступления на склад*/
                  int productionDeviation =0;
                  /* ----Взять отклонение с предыдущего шага -----*/
-                 if(orderDTO.getDateActualShip() != null && orderDTO.getDateBeginProduction() != null) {
+                 if(orderDTO.getDateActualShip() != null && orderDTO.getDatePlanBeginProduction() != null) {
 
-                     productionDeviation = Period.between(orderDTO.getDateActualShip().toLocalDate(),orderDTO.getDateBeginProduction() ).getDays();
+                     productionDeviation = Period.between(orderDTO.getDateActualShip().toLocalDate(),orderDTO.getDatePlanBeginProduction() ).getDays();
                      productionDeviation =   tempDeviation > 0 ? 0:tempDeviation ;
                  }
                  if(productionDeviation > 0 ) {
-                     orderDTO.setDateBeginProduction(orderDTO.getDateBeginProduction().plusDays(productionDeviation));
+                     orderDTO.setDatePlanBeginProduction(orderDTO.getDatePlanBeginProduction().plusDays(productionDeviation));
                  }
                  /* --------------------------------------------------------------------------------------*/
-                 if(orderDTO.getDateBeginProduction() != null && orderDTO.getDatePlanWhse() != null) {
-                     tempDeviation = Period.between(orderDTO.getDateBeginProduction(),orderDTO.getDatePlanWhse() ).getDays();
+                 if(orderDTO.getDatePlanBeginProduction() != null && orderDTO.getDatePlanWhse() != null) {
+                     tempDeviation = Period.between(orderDTO.getDatePlanBeginProduction(),orderDTO.getDatePlanWhse() ).getDays();
                      tempDeviation =   tempDeviation > 0 ? 0:tempDeviation ;;
                  }
 
@@ -239,9 +231,9 @@ public class ReportService {
     private void setDeviationCreateOrder(OrderDTO orderDTO,int mode ) {
         /* Расчет отклонения */
         int tempDeviation = 0;
-        if(orderDTO.getDateBeginProduction() != null && orderDTO.getDateCreateOrder() != null) {
+        if(orderDTO.getDatePlanBeginProduction() != null && orderDTO.getDateCreateOrder() != null) {
 
-            tempDeviation = Period.between(orderDTO.getDateCreateOrder(),orderDTO.getDateBeginProduction() ).getDays();
+            tempDeviation = Period.between(orderDTO.getDateCreateOrder(),orderDTO.getDatePlanBeginProduction() ).getDays();
             tempDeviation =   tempDeviation > 2 ? 0:tempDeviation ;
         }
         orderDTO.setDeviation(tempDeviation);
@@ -267,9 +259,9 @@ public class ReportService {
         /* Расчет отклонения */
         int tempDeviation = 0;
         /*TODO нет даты начала производства в плане на сутки*/
-        if(orderDTO.getDateActualShip() != null && orderDTO.getDateBeginProduction() != null) {
+        if(orderDTO.getDateActualShip() != null && orderDTO.getDatePlanBeginProduction() != null) {
 
-            tempDeviation = Period.between(orderDTO.getDateActualShip().toLocalDate(),orderDTO.getDateBeginProduction() ).getDays();
+            tempDeviation = Period.between(orderDTO.getDateActualShip().toLocalDate(),orderDTO.getDatePlanBeginProduction() ).getDays();
             tempDeviation =   tempDeviation > 0 ? 0:tempDeviation ;
         }
         orderDTO.setDeviation(tempDeviation);
@@ -295,7 +287,7 @@ public class ReportService {
         orderDTO.setItemDescription(order.getItemDescription());
         orderDTO.setDateActualShip(order.getMonthActualShip());
         orderDTO.setDateCreateOrder(order.getDateCreateOrder());
-        orderDTO.setDateBeginProduction(order.getDateBeginProduction());
+        orderDTO.setDatePlanBeginProduction(order.getDatePlanBeginProduction());
         orderDTO.setDatePlanShip(order.getDatePlanShip());
         orderDTO.setDatePlanWhse(order.getDatePlanWhse());
         orderDTO.setReasonDeviation(order.getReasonDeviation());
@@ -303,7 +295,7 @@ public class ReportService {
         orderDTO.setCalcStatus(order.getCalcStatus());*/
        // orderDTO.setMonthShip(order.getMonthShip());
         //orderDTO.setDateCreateOrderFormat(order.getDateCreateOrderFormat());
-        //orderDTO.setDateBeginProductionFormat(order.getDateBeginProductionFormat());
+        //orderDTO.setDateBeginProductionFormat(order.getDatePlanBeginProductionFormat());
        // orderDTO.setDatePlanToWhseFormat(order.getDatePlanWhseFormat());
        // orderDTO.setNornalizeGroupDate(order.getNornalizeGroupDate());
 
@@ -364,6 +356,8 @@ public class ReportService {
         return precisionCreateOrders;
     }
 
-
+    private List<ReportPrecisionCreateOrder> getListOrders(LocalDate dateBegin, LocalDate dateEnd, String site) {
+        return ReportPrecisionCreateOrder.find.where().eq("site",site).between("DateActual_Ship",dateBegin,dateEnd).isNotNull("customer").findList();
+    }
 
 }

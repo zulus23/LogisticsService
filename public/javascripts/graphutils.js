@@ -33,7 +33,7 @@ var  graphUtils = (function(){
                 ];
 */
     var NODEVIATION = 'Без отклонений';
-    var DEVIATION = 'C отклонениями';
+    var DEVIATION = 'C отклонением';
     var localDataForDeviation = function (dataSource){
         var data = [];
         var query = new kendo.data.Query(dataSource.data());
