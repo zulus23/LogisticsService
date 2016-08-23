@@ -235,33 +235,6 @@
 
                   var allCount = 0;
 
-                /*  function getPrecisionCustomer(field, value, isPrecision) {
-                      var fieldObjectLocal = {};
-                      fieldObjectLocal["customer"] = value;
-                      var tempAll = _.groupBy(_.pluck(_.where(filteredData, fieldObjectLocal), "calcStatus"), function (n) {
-                          return "count"
-                      });
-                      tempAll = _.isUndefined(tempAll.count) ? 1 : tempAll.count.length
-                      fieldObjectLocal["calcStatus"] = "Без отклонений";
-                      var temp = _.groupBy(_.pluck(_.where(filteredData, fieldObjectLocal), "calcStatus"), function (n) {
-                          return "count"
-                      });
-                      temp = _.isUndefined(temp.count) ? 0 : temp.count.length;
-                      return isPrecision ? Math.round((temp / tempAll) * 100) + " %" : Math.round((1 - (temp / tempAll)) * 100) + " %";
-                  }*/
-
-               /*   function getPrecisionCustomer_(filteredData,field, value, isPrecision) {
-                      var fieldObjectLocal = {};
-                      fieldObjectLocal["customer"] = value;
-                      var countDeviation = _.countBy(_.pluck(_.where(filteredData, fieldObjectLocal), "deviationHide"), function (n) {
-                          return  n === 0 ? "NoDeviation":"Deviation"
-                      });
-                      var deviation_ =  _.isUndefined(countDeviation.Deviation) ? 0:countDeviation.Deviation;
-                      var nodeviation_ =  _.isUndefined(countDeviation.NoDeviation) ? 0:countDeviation.NoDeviation;
-                      var countAll =  deviation_ + nodeviation_;
-
-                      return isPrecision ? Math.round((nodeviation_ / countAll) * 100) + " %" : Math.round((1 - (nodeviation_ / countAll)) * 100) + " %";
-                  }*/
 
 
                       if (gridUtils.indexGroup(dataSourceDB.group(), field) === 0) {
@@ -281,13 +254,21 @@
 
                           fieldObject ={};
                           //   if(field === "customer"){   return  getPrecisionCustomer(field,value);
-                          var prevValue = gridUtils.findPrevObject(level1, data.value, prevLevelValue[levelTree - 1]);
-                          if (field === "customer") {
+                         // var prevValue = gridUtils.findPrevObject(level1, data.value, prevLevelValue[levelTree - 1]);
+                          /*if (field === "customer") {
                               var resDev =_.find(prevLevelValue,function(e){ e === graphUtils.WITHDEVIATION});
 
 
-                              return gridUtils.procentPrecisionByCustomer(filteredData,field, value, true);//fieldObject[dataSourceDB.group()[0].field] = prevValue.prevValue;
-                          } else { fieldObject[dataSourceDB.group()[0].field] = prevLevelValue[0];/*fieldObject[field] = prevValue.value; */}
+                              return gridUtils.procentPrecisionByCustomer(filteredData,field, value, true);
+                          } else { fieldObject[dataSourceDB.group()[0].field] = prevLevelValue[0];}*/
+                          if (field === "customer" &&  prevLevelValue[0] === graphUtils.WITHOUTDEVIATION) {
+                              return gridUtils.procentPrecisionByCustomer(filteredData,field, value, true);
+                          };
+                          if (field === "customer" &&  prevLevelValue[0] === graphUtils.WITHDEVIATION) {
+                              return gridUtils.procentPrecisionByCustomer(filteredData,field, value, false);
+                          };
+                          fieldObject[dataSourceDB.group()[0].field] = prevLevelValue[0];
+
                            var tempAll = _.groupBy(_.pluck(_.where(filteredData, fieldObject), field), function (n) {
                                     return "count"
                           });
@@ -299,7 +280,7 @@
                           fieldObject[dataSourceDB.group()[0].field] = prevLevelValue[0];
                           fieldObject[dataSourceDB.group()[1].field] = prevLevelValue[1];
 
-                          var prevValue = gridUtils.findPrevObject(level1, data.value, prevLevelValue[levelTree - 1]);
+                         // var prevValue = gridUtils.findPrevObject(level1, data.value, prevLevelValue[levelTree - 1]);
                           var tempAll = _.groupBy(_.pluck(_.where(filteredData, fieldObject), field), function (n) {
                               return "count"
                           });
@@ -309,127 +290,7 @@
                       return (allCount <= count_ ) ? Math.round((allCount / count_) * 100) + " %" : Math.round((count_ / allCount) * 100) + " %";
                   }
 
-             /* function indexGroup(dataGroup, findElement){
-                  for(var i = 0, len = dataGroup.length;  i < len; i++){
-                      if(dataGroup[i].field === findElement){ return i;}
-                  }
-                  return -1;
-              }*/
-           /*   function findObject(data,currentLevel,value, prevValue){
-                  for(var i = 0, len = data.length;  i < len; i++){
-                     if(data[i].level === currentLevel && data[i].value === value && data[i].prevValue === prevValue){
-                         return true;
-                     }
-                  }
-                  return false;
-              }
-              function findCountPrevObject(data,value,prevValue){
-                  for(var i = 0, len = data.length;  i < len; i++){
-                      if(data[i].value === value && data[i].prevValue === prevValue){
-                          return data[i].prevCount;
-                      }
-                  }
-                  return -1;
-              }
-
-              function findPrevObject(data,value,prevValue){
-                  for(var i = 0, len = data.length;  i < len; i++){
-                      if(data[i].value === value && data[i].prevValue === prevValue){
-                          return data[i];
-                      }
-                  }
-                  return {};
-              }
-
-              function filterCount(){
-                  var query = new kendo.data.Query(dataSourceDB.data());
-                  var filters = dataSourceDB.filter();
-                  var filteredData = query.filter(filters).data;
-              }
-
-              function labelTemplate(e) {
-                  var ds = dataSourceDB;
-                  var date = new Date(e.value);
-                  var label = (date.getMonth()+1) + '-'+ date.getFullYear();
-
-
-                  return label;
-              }*/
-
-            /*  function localDataForDeviation(){
-                  var data = [];
-                  var query = new kendo.data.Query(dataSourceDB.data());
-                  var filters = dataSourceDB.filter();
-                  var filteredData = query.filter(filters).data;
-                  var uniqDate =  _.uniq(filteredData,false,function(p){ return p.monthShip} ).map(function(e){return e.monthShip});
-                  _.each(uniqDate,function (e) {
-                                                  var all = _.where(filteredData,{monthShip:e}).length;
-                                                  var countPre = _.where(filteredData,{monthShip:e,caclStatus:"Без отклонений"}).length;
-                                                  var _procent = Math.round((countPre/all)*100);
-                                                  var myDate = moment(e, "MMM-YYYY","ru");
-                                                  data.push({deviation:"Без отклонений",monthActualShip:myDate,procent:_procent });
-                                                 // data.push({deviation:"C отклонениями",monthActualShip:myDate,procent:100-_procent });
-                                                 });
-                  return data;
-              }*/
-             /* function createGraph(groupField){
-
-                  var _datasource =  createLocalDatasourceForgraph(groupField);
-                  /!*datasource_.filter(dataSourceDB.filter());
-                  var visibleLegend = !!dataSourceDB.filter()? (dataSourceDB.filter().filters.length > 0 ? true : false): false ;*!/
-                  $("#chartView").kendoChart({
-                      dataSource: _datasource,
-                      legend: {
-                          visible: true,
-                          position:"top"
-                      },
-                      series: [/!*{
-                          type: "column",
-                          field: "procent",
-
-                      },*!/{
-                          type: "column",
-                          field: "procent",
-                          tooltip: {
-                              visible: true,
-                              template: "#= kendo.format('{0}%', value) #"
-                          }
-                      },{
-                          type: "line",
-                          field: "procent",
-                          tooltip: {
-                              visible: true,
-                              template: "#= kendo.format('{0}%', value) #"
-                          },
-                          visibleInLegend: false
-
-                      }],
-
-                      valueAxis: {
-
-                          labels: {
-
-                              min:0,
-                              max:100,
-                              format: "{0}%"
-                          }
-                      },
-                     categoryAxis: {
-
-                          baseUnit:"months",
-                          field: "monthActualShip",
-                          labels: {
-
-                              template: "#= kendo.format('{0:MMMM-yyyy}', new Date(value)) #"
-
-                          }
-                      }/!*,
-                      tooltip: {
-                          visible: true,
-                          template: "#:value#%"
-                      }*!/
-                  });
-              }*/
+           /*
               function createDefaultGraph(){
                   $("#chartView").kendoChart({
                       dataSource: dataSourceGrapth,
@@ -475,9 +336,9 @@
                   });
               }
               function createDatasourceForgraph(groupField){
-                  /*var str = Object.keys(dataSourceDB.filter().filters).map(function(key){
+                  /!*var str = Object.keys(dataSourceDB.filter().filters).map(function(key){
                       return encodeURIComponent(key) + '=' + encodeURIComponent(obj[key]);
-                  }).join('&');*/
+                  }).join('&');*!/
 
                   var str = dataSourceDB.filter().filters.map(function(obj){return encodeURIComponent(obj.field)+'='+encodeURIComponent(obj.value)}).join('&');
 
@@ -507,7 +368,7 @@
                       { "field": "categoryAxis", "dir": "asc" }
                   ]
               });
-                  return datasource;}
+                  return datasource;}*/
 
         </script>
 }
