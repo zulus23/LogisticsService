@@ -48,7 +48,9 @@
                              contentType: "application/json; charset=utf-8",
                              dataType: 'json',
                              data:{dateBegin: '@select.getDateBegin',dateEnd:'@select.getDateEnd', site:'@select.getEnterprise',mode:'@select.getMode'},
+                             beforeSend: function() { $('#loading').show(); },
                              success: function(data) {
+                                 $('#loading').hide();
                                  options.success(data);
                              }
                          });
@@ -68,11 +70,14 @@
                              itemDescription:{type:"string"},
                              monthShip:{type:"string"},
                              dateCreateOrderFormat:{type:"string"},
-                             dateBeginProductionFormat:{type:"string"},
+                             datePlanBeginProductionFormat:{type:"string"},
+                             datePlanShipFormat:{type:"string"},
+                             datePlanToWhseFormat:{type:"string"},
+                             dateActualShipFormat:{type:"string"},
                              deviation:{type:"number"},
                              reasonDeviation:{type:"string"},
                              calcStatus:{type:"string"},
-                             dateActualShip:{type:"date"},
+                             //dateActualShip:{type:"date"},
                              dateActualShipFormat:{type:"string"},
                              nornalizeGroupDate:{type:"string"},
                              deviationHide:{type:"number"}
@@ -206,16 +211,16 @@
                      { field: "dateCreateOrderFormat", title: "Дата открытия заказа",width: "80px",
                          headerAttributes: gridUtils.headerFormat,attributes: gridUtils.columnFormat,filterable: false,groupable: false
                      },
-                     { field: "dateBeginProductionFormat", title: "Дата начала производства",width: "80px",
+                     { field: "datePlanBeginProductionFormat", title: "Дата начала производства",width: "80px",
                          headerAttributes: gridUtils.headerFormat,attributes: gridUtils.columnFormat,filterable: false,groupable: false
                      },
                      { field: "dateBeginProductionFormat", title: "Дата начала производства в план сутки",width: "80px",
                          headerAttributes: gridUtils.headerFormat,attributes: gridUtils.columnFormat,filterable: false,groupable: false
                      },
-                     { field: "dateCreateOrderFormat", title: "Дата сдачи заказа на склад",width: "80px",
+                     { field: "datePlanToWhseFormat", title: "Дата сдачи заказа на склад",width: "80px",
                          headerAttributes: gridUtils.headerFormat,attributes: gridUtils.columnFormat,filterable: false,groupable: false
                      },
-                     { field: "dateCreateOrderFormat", title: "Дата поступления на склад",width: "80px",
+                     { /*field: "dateCreateOrderFormat",*/ title: "Дата поступления на склад",width: "80px",
                          headerAttributes: gridUtils.headerFormat,attributes: gridUtils.columnFormat,filterable: false,groupable: false
                      },
                      {

@@ -67,14 +67,16 @@
                              customer: { type: "string" },
                              itemDescription:{type:"string"},
                              monthShip:{type:"string"},
-                             dateCreateOrderFormat:{type:"string"},
-                             dateBeginProductionFormat:{type:"string"},
+                             //dateCreateOrderFormat:{type:"string"},
+                            // dateBeginProductionFormat:{type:"string"},
+                             datePlanToWhseFormat:{type:"string"},
                              deviation:{type:"number"},
                              reasonDeviation:{type:"string"},
                              calcStatus:{type:"string"},
                              monthActualShip:{type:"date"},
                              nornalizeGroupDate:{type:"string"},
-                             deviationHide:{type:"number"}
+                             deviationHide:{type:"number"},
+                             changeDatePlanWhse:{type:"boolean"}
                          }
                      }
                  },
@@ -201,8 +203,8 @@
                          //groupHeaderTemplate: "Месяц отгрузки: #=value# : (#= count#)"
                      },
                      {
-                         /*field: "datePlanShipFormat",*/ title: "Дата сдачи на склад", width: "80px",
-                         headerAttributes: gridUtils.headerFormat, attributes: gridUtils.columnFormat, filterable: false, groupable: false
+                         field: "datePlanToWhseFormat", title: "Дата сдачи на склад", width: "80px",
+                         headerAttributes: gridUtils.headerFormat, attributes: gridUtils.columnFormatChangeWhseDate, filterable: false, groupable: false
                      },
                      {
                          /*field: "dateActualShipFormat",*/ title: "Дата поступления на склад", width: "80px",
@@ -264,7 +266,12 @@
              var prevLevelValue = [];
              var prevLevelCount = [];
              var fieldObject = {};
+
+
+            /* =====================================================================*/
              function calcAll(data,field,value,count_) {
+                 //tree[-1] = {prevLevel : -1,level: -1,value:"",countAll:allDataCount/*dataSourceDB.total()*/};
+                 //prevLevelCount[-1] = allDataCount;/*dataSourceDB.total();*/
                  prevLevelValue[-1] = "";
                  var levelTree = gridUtils.indexGroup(dataSourceDB.group(), field);
                  prevLevelValue[levelTree] = data.value;
@@ -275,7 +282,7 @@
                          level: levelTree,
                          value: data.value,
                          prevValue: prevLevelValue[levelTree - 1]
-
+                         /*countAll:data.count, prevCount:prevLevelCount[levelTree - 1]*/
                      });
                  }
                  //  return findCountPrevObject(level1,data.value,prevLevelValue[levelTree-1]);
@@ -283,28 +290,13 @@
 
                  var allCount = 0;
 
-                 function getPrecisionCustomer(field, value, isPrecision) {
-                     var fieldObjectLocal = {};
-                     fieldObjectLocal["customer"] = value;
-                     var tempAll = _.groupBy(_.pluck(_.where(filteredData, fieldObjectLocal), "calcStatus"), function (n) {
-                         return "count"
-                     });
-                     tempAll = _.isUndefined(tempAll.count) ? 1 : tempAll.count.length
-                     fieldObjectLocal["calcStatus"] = graphUtils.WITHDEVIATION;
-                     var temp = _.groupBy(_.pluck(_.where(filteredData, fieldObjectLocal), "calcStatus"), function (n) {
-                         return "count"
-                     });
-                     temp = _.isUndefined(temp.count) ? 0 : temp.count.length;
-                     return isPrecision ? Math.round((temp / tempAll) * 100) + " %" : Math.round((1 - (temp / tempAll)) * 100) + " %";
-                 }
 
-                 /* ----*/
 
                  if (gridUtils.indexGroup(dataSourceDB.group(), field) === 0) {
                      fieldObject = {};
-                     // fieldObject[field]=value;
+
                      if (field === "customer") {
-                         return getPrecisionCustomer(field, value, true);
+                         return gridUtils.procentPrecisionByCustomer(filteredData,field, value, true);
                      } else {
                          allCount = _.groupBy(_.pluck(_.where(filteredData, fieldObject), "calcStatus"), function (n) {
                              return "count"
@@ -313,46 +305,39 @@
                      }
 
                  }
-
                  if (gridUtils.indexGroup(dataSourceDB.group(), field) === 1) {
 
                      fieldObject ={};
-                     var prevValue = gridUtils.findPrevObject(level1, data.value, prevLevelValue[levelTree - 1]);
-                     if (field === "customer") {
-                         var resDev =_.find(prevLevelValue,function(e){ e === graphUtils.WITHDEVIATION});
 
+                     if (field === "customer" &&  prevLevelValue[0] === graphUtils.WITHOUTDEVIATION) {
+                         return gridUtils.procentPrecisionByCustomer(filteredData,field, value, true);
+                     };
+                     if (field === "customer" &&  prevLevelValue[0] === graphUtils.WITHDEVIATION) {
+                         return gridUtils.procentPrecisionByCustomer(filteredData,field, value, false);
+                     };
+                     fieldObject[dataSourceDB.group()[0].field] = prevLevelValue[0];
 
-                         return getPrecisionCustomer(field, value, true);
-                     } else { fieldObject[dataSourceDB.group()[0].field] = prevLevelValue[0];}
                      var tempAll = _.groupBy(_.pluck(_.where(filteredData, fieldObject), field), function (n) {
                          return "count"
                      });
                      allCount = _.isUndefined(tempAll.count) ? 1 : tempAll.count.length;
-
-                 };
-
+                 }
                  if (gridUtils.indexGroup(dataSourceDB.group(), field) === 2) {
                      fieldObject ={};
 
                      fieldObject[dataSourceDB.group()[0].field] = prevLevelValue[0];
                      fieldObject[dataSourceDB.group()[1].field] = prevLevelValue[1];
 
-                     //var prevValue = gridUtils.findPrevObject(level1, data.value, prevLevelValue[levelTree - 1]);
+
                      var tempAll = _.groupBy(_.pluck(_.where(filteredData, fieldObject), field), function (n) {
                          return "count"
                      });
                      allCount = _.isUndefined(tempAll.count) ? 1 : tempAll.count.length;
                  }
 
-
-                 /*======*/
-
-
                  return (allCount <= count_ ) ? Math.round((allCount / count_) * 100) + " %" : Math.round((count_ / allCount) * 100) + " %";
-
              }
-
-
+            /* ---------------------------------------------------------------------*/
 
 
         </script>

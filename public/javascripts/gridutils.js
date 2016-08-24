@@ -5,9 +5,18 @@
 
 var  gridUtils = (function(){
 
+    var listFieldDataSource = {};
+
+
+
     var headerFormat = {"class": "table-header-cell",
         style: " overflow: visible; white-space: normal; text-align: center; vertical-align:top; font-size: 10px"};
     var columnFormat  = { "class": "table-cell",         style: "text-align: center; font-size: 11px" };
+    var columnFormatChangeWhseDate  = { "class": "#=changeDatePlanWhse ? 'red':'' #, table-cell",         style: "text-align: center; font-size: 11px" };
+    var columnFormatChangeDeliveryDate  = { "class": "#=changeDatePlanDelivery ? 'red':'' #, table-cell",         style: "text-align: center; font-size: 11px" };
+    var columnFormatChangeShipDate  = { "class": "#=changeDatePlanShip ? 'red':'' #, table-cell",         style: "text-align: center; font-size: 11px" };
+
+
 
     var indexGroup = function (dataGroup, findElement){
         for(var i = 0, len = dataGroup.length;  i < len; i++){
@@ -64,6 +73,11 @@ var  gridUtils = (function(){
         findObject:findObject,
         findPrevObject:findPrevObject,
         headerFormat:headerFormat,
-        columnFormat:columnFormat
+        columnFormat:columnFormat,
+        listFieldDataSource:listFieldDataSource,
+        columnFormatChangeWhseDate:columnFormatChangeWhseDate,
+        columnFormatChangeDeliveryDate:columnFormatChangeDeliveryDate,
+        columnFormatChangeShipDate:columnFormatChangeShipDate
+
     };
 })()

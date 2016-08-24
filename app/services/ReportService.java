@@ -117,7 +117,7 @@ public class ReportService {
 
         return listOrders;
     }
-
+    /* =================== Отклонение доставки заказа  =====================================*/
     private void setDeviationDeliveryOrder(OrderDTO orderDTO, int mode) {
 
         int tempDeviation = 0;
@@ -135,7 +135,7 @@ public class ReportService {
         }
     }
 
-
+    /* =================== Отклонение отгрузки заказа =====================================*/
     private void setDeviationShipmentOrder(OrderDTO orderDTO, int mode) {
         int tempDeviation = 0;
         switch (mode) {
@@ -185,7 +185,7 @@ public class ReportService {
 
     }
 
-
+     /* =================== Отклонение выхода заказа на склад =====================================*/
     private void setDeviationWhseOrder(OrderDTO orderDTO,int mode) {
          int tempDeviation = 0;
          switch (mode) {
@@ -204,17 +204,21 @@ public class ReportService {
                   /*TODO Нет даты поступления на склад*/
                  int productionDeviation =0;
                  /* ----Взять отклонение с предыдущего шага -----*/
+                 /*TODO Здесь необходимо заменить getDateActualShip() на  дату производства в плане на сутки*/
                  if(orderDTO.getDateActualShip() != null && orderDTO.getDatePlanBeginProduction() != null) {
 
                      productionDeviation = Period.between(orderDTO.getDateActualShip().toLocalDate(),orderDTO.getDatePlanBeginProduction() ).getDays();
                      productionDeviation =   tempDeviation > 0 ? 0:tempDeviation ;
                  }
+
                  if(productionDeviation > 0 ) {
-                     orderDTO.setDatePlanBeginProduction(orderDTO.getDatePlanBeginProduction().plusDays(productionDeviation));
+                     /*увеличить плановую дата поступления на склад*/
+                     orderDTO.setDatePlanWhse(orderDTO.getDatePlanWhse().plusDays(productionDeviation));
                  }
                  /* --------------------------------------------------------------------------------------*/
-                 if(orderDTO.getDatePlanBeginProduction() != null && orderDTO.getDatePlanWhse() != null) {
-                     tempDeviation = Period.between(orderDTO.getDatePlanBeginProduction(),orderDTO.getDatePlanWhse() ).getDays();
+                 /*TODO Здесь необходимо заменить getDateActualShip() на  дату сдачи на склад факт*/
+                 if(orderDTO.getDateActualShip() != null && orderDTO.getDatePlanWhse() != null) {
+                     tempDeviation = Period.between(orderDTO.getDateActualShip().toLocalDate(),orderDTO.getDatePlanWhse() ).getDays();
                      tempDeviation =   tempDeviation > 0 ? 0:tempDeviation ;;
                  }
 

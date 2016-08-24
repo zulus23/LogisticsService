@@ -4,6 +4,7 @@ import model.Deviation;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.Locale;
@@ -37,6 +38,9 @@ public class OrderDTO {
 
     /* Дата планового  поступления на склад*/
     private LocalDate datePlanWhse;
+
+   /* Дата плановой  доставки*/
+   private LocalDate datePlanDelivery;
 
     /* ==================== Для режима расчета дат (режим 2) ====================*/
     /* Дата планового  поступления на склад не измененная*/
@@ -78,6 +82,11 @@ public class OrderDTO {
 
     /* Дата javascript*/
     private Date nornalizeGroupDate;
+
+    private boolean isChangeDatePlanShip;
+    private boolean isChangeDatePlanWhse;
+    private boolean isChangeDatePlanDelivery;
+
 
 
     public Long getId() {
@@ -302,6 +311,36 @@ public class OrderDTO {
 
     public void setNornalizeGroupDate(Date nornalizeGroupDate) {
         this.nornalizeGroupDate = nornalizeGroupDate;
+    }
+
+    public boolean isChangeDatePlanShip() {
+        if(datePlanShipOriginal != null && datePlanShip !=null) {
+            return Period.between(datePlanShipOriginal, datePlanShip).getDays() != 0;
+        }
+        return false;
+
+    }
+
+    public boolean isChangeDatePlanWhse() {
+        if(datePlanWhseOriginal != null && datePlanWhse !=null) {
+            return Period.between(datePlanWhseOriginal, datePlanWhse).getDays() != 0;
+        }
+        return false;
+    }
+
+    public boolean isChangeDatePlanDelivery() {
+        if(datePlanDeliveryOriginal != null && datePlanDelivery !=null) {
+            return Period.between(datePlanDeliveryOriginal, datePlanDelivery).getDays() != 0;
+        }
+        return  false;
+    }
+
+    public LocalDate getDatePlanDelivery() {
+        return datePlanDelivery;
+    }
+
+    public void setDatePlanDelivery(LocalDate datePlanDelivery) {
+        this.datePlanDelivery = datePlanDelivery;
     }
 
     @Override
