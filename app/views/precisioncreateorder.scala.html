@@ -57,6 +57,7 @@
                            });
                        }
                    },
+
                    pageSize:20,
                    schema: {
                        model: {
@@ -133,7 +134,7 @@
                                   style: " overflow: visible; white-space: normal; text-align: center; vertical-align:top; font-size: 10px"};
               var columnFormat  = { "class": "table-cell",         style: "text-align: center; font-size: 11px" };*/
 
-              $("#gridView").kendoGrid({
+           var grid =   $("#gridView").kendoGrid({
                    toolbar: ["excel"],
                    excel: {
                        allPages: true
@@ -148,6 +149,21 @@
                     pageable: {
                          pageSizes: true
                     },
+                 // autoBind: false,
+                  dataBound: function(e){
+                      var grid = this;
+                      var dataSource = this.dataSource;
+
+                      var state = kendo.stringify({
+                          page: dataSource.page(),
+                          pageSize: dataSource.pageSize(),
+                          sort: dataSource.sort(),
+                          group: dataSource.group(),
+                          filter: dataSource.filter()
+                      });
+
+                      localStorage.setItem("createOrderState",state);
+                  },
                     columns: [
                         { field: "orderNumber",title:"№ Заказа", width: "70px",headerAttributes: gridUtils.headerFormat,attributes: gridUtils.columnFormat,groupable: false },
                         { field: "orderLine", title: "№ Строки",  width: "60px",headerAttributes: gridUtils.headerFormat,attributes: gridUtils.columnFormat,filterable: false,groupable: false   },
@@ -268,7 +284,9 @@
 
                       return (allCount <= count_ ) ? Math.round((allCount / count_) * 100) + " %" : Math.round((count_ / allCount) * 100) + " %";
                   }
-
+                  var state = JSON.parse(localStorage.getItem("createOrderState"));
+                  if(state.group){ dataSourceDB.group(state.group);  }
+                  console.log(state);
         </script>
 }
 }
