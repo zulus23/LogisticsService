@@ -290,6 +290,11 @@ public class ReportService {
         orderDTO.setDatePlanBeginProduction(order.getDatePlanBeginProduction());
         orderDTO.setDatePlanShip(order.getDatePlanShip());
         orderDTO.setDatePlanWhse(order.getDatePlanWhse());
+        orderDTO.setDatePlanShipOriginal(order.getDatePlanShip());
+        orderDTO.setDatePlanWhseOriginal(order.getDatePlanWhse());
+        /*TODO необходмисо сохранить оригинальную дату доставки*/
+        orderDTO.setDatePlanDeliveryOriginal(null);
+
         orderDTO.setReasonDeviation(order.getReasonDeviation());
      /*   orderDTO.setDeviation(order.getDeviation());
         orderDTO.setCalcStatus(order.getCalcStatus());*/

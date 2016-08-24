@@ -38,6 +38,17 @@ public class OrderDTO {
     /* Дата планового  поступления на склад*/
     private LocalDate datePlanWhse;
 
+    /* ==================== Для режима расчета дат (режим 2) ====================*/
+    /* Дата планового  поступления на склад не измененная*/
+    private LocalDate datePlanWhseOriginal;
+    /* Дата плановой  отгрузки не измененная*/
+    private LocalDate datePlanShipOriginal;
+
+    /* Дата плановой  доставки не измененная*/
+    private LocalDate datePlanDeliveryOriginal;
+
+    /* ==========================================================================*/
+
     /* Причина отклонения*/
     private String reasonDeviation;
     /* величина отклонения*/
@@ -192,6 +203,31 @@ public class OrderDTO {
 
     public int getDeviationHide() {
         return calcStatus == Deviation.NO.getName() ? 0:1 ;
+    }
+
+
+    public LocalDate getDatePlanWhseOriginal() {
+        return datePlanWhseOriginal;
+    }
+
+    public void setDatePlanWhseOriginal(LocalDate datePlanWhseOriginal) {
+        this.datePlanWhseOriginal = datePlanWhseOriginal;
+    }
+
+    public LocalDate getDatePlanShipOriginal() {
+        return datePlanShipOriginal;
+    }
+
+    public void setDatePlanShipOriginal(LocalDate datePlanShipOriginal) {
+        this.datePlanShipOriginal = datePlanShipOriginal;
+    }
+
+    public LocalDate getDatePlanDeliveryOriginal() {
+        return datePlanDeliveryOriginal;
+    }
+
+    public void setDatePlanDeliveryOriginal(LocalDate datePlanDeliveryOriginal) {
+        this.datePlanDeliveryOriginal = datePlanDeliveryOriginal;
     }
 
     public String getMonthShip() {
