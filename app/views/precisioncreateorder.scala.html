@@ -17,6 +17,8 @@
             <div id="loading">
             </div>
 
+
+
             <div id="graph" class="col-md-offset-1 col-md-10" >
                 <div class="demo-section k-content wide">
                     <div id="chartView"></div>
@@ -25,9 +27,14 @@
         </div>
         <div  id="t1" class="col-md-12" >
             <div id="gridView"></div>
+
+
         </div>
+
         </div>
         <script>
+
+
            $("#vertical").kendoSplitter({
                   orientation: "vertical",
                   panes: [
@@ -150,7 +157,7 @@
                          pageSizes: true
                     },
                  // autoBind: false,
-                  dataBound: function(e){
+               /*   dataBound: function(e){
                       var grid = this;
                       var dataSource = this.dataSource;
 
@@ -162,8 +169,10 @@
                           filter: dataSource.filter()
                       });
 
-                      localStorage.setItem("createOrderState",state);
-                  },
+
+                         localStorage.setItem("createOrderState",state);
+
+                  },*/
                     columns: [
                         { field: "orderNumber",title:"№ Заказа", width: "70px",headerAttributes: gridUtils.headerFormat,attributes: gridUtils.columnFormat,groupable: false },
                         { field: "orderLine", title: "№ Строки",  width: "60px",headerAttributes: gridUtils.headerFormat,attributes: gridUtils.columnFormat,filterable: false,groupable: false   },
@@ -284,9 +293,17 @@
 
                       return (allCount <= count_ ) ? Math.round((allCount / count_) * 100) + " %" : Math.round((count_ / allCount) * 100) + " %";
                   }
-                  var state = JSON.parse(localStorage.getItem("createOrderState"));
-                  if(state.group){ dataSourceDB.group(state.group);  }
-                  console.log(state);
+
+                /*  var state = JSON.parse(localStorage.getItem("createOrderState"));
+                  if(!_.isNull(state)){
+                  if(state.filter){ dataSourceDB.filter(state.filter);  }
+
+                   if(state.group){ dataSourceDB.group(state.group);  }
+                   console.log(state);
+                   }
+*/
+
+
         </script>
 }
 }

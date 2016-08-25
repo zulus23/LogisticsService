@@ -24,11 +24,19 @@
             </div>
         </div>
         <div  id="t1" class="col-md-12" >
+
             <div id="gridView"></div>
+            <script id="template" type="text/x-kendo-template">
+            <input type="checkbox" id="saveStatus" class="k-checkbox" data-bind="checked: isSaveSatus">
+            <label class="k-checkbox-label" for="saveStatus">Сохранить состояние(группировку и фильтр)</label>
+            </script>
         </div>
         </div>
         <script>
-
+                var data = kendo.observable({
+                    isSaveStatus:true
+                });
+                kendo.bind($("#saveStatus"), data);
 
                 $("#vertical").kendoSplitter({
                     orientation: "vertical",
@@ -131,8 +139,8 @@
                     });
                 }
 
-                $("#gridView").kendoGrid({
-                    toolbar: ["excel"],
+            var grid = $("#gridView").kendoGrid({
+                    toolbar: ["excel",{ template: kendo.template($("#template").html()) }],
                     excel: {
                         allPages: true
                     },

@@ -143,6 +143,22 @@
                   pageable: {
                       pageSizes: true
                   },
+                /*  dataBound: function(e){
+                      var grid = this;
+                      var dataSource = this.dataSource;
+
+                      var state = kendo.stringify({
+                          page: dataSource.page(),
+                          pageSize: dataSource.pageSize(),
+                          sort: dataSource.sort(),
+                          group: dataSource.group(),
+                          filter: dataSource.filter()
+                      });
+
+
+                      localStorage.setItem("planeOrderState",state);
+
+                  },*/
                   columns: [
                       {
                           field: "orderNumber",
@@ -177,10 +193,10 @@
                           aggregates: ["count"],
                           headerAttributes: gridUtils.headerFormat,
                           attributes: gridUtils.columnFormat,
-                          filterable: {
+                         /* filterable: {
                               ui: createMultiSelect,
                               extra: false
-                          },
+                          },*/
                           /*groupHeaderTemplate: "Клиент: #=value# : #=count#: (#= Math.round((count/calcAll(data,field,value))*100)#%)"*/
                           groupHeaderTemplate: "Клиент: #=value# : #=count#: (#= calcAll(data,field,value,count)#)"
                           //groupHeaderTemplate: "Клиент: #=value# : #=count#"
@@ -245,24 +261,7 @@
                       }
 
                   ],
-                  change: function(e) {
-
-                      var query = new kendo.data.Query(dataSourceDB.data());
-                      var filters = dataSourceDB.filter();
-                      filteredData = query.filter(filters).data;
-
-                      allDataCount = filteredData.length;
-
-                      if(dataSourceDB.group().length > 0 ){
-                          graphUtils.createBarGraph(dataSourceDB.group()[0].field,dataSourceDB)
-                          //createGraph(dataSourceDB.group()[0].field);
-                      } else {
-                          gridUtils.createBarGraph("",dataSourceDB);
-                      }
-
-                      /*var chart = $("#chart1").data("kendoChart");
-                       chart.dataSource.filter(dataSourceDB.filter());*/
-                  }
+                  filterMenuInit: onFilterMenuInit
               });
               /* --------------------------------------------------------------*/
 
@@ -346,7 +345,95 @@
            }
             /* ---------------------------------------------------------------------------*/
 
+            /* -----------------------------------------------   Filter  by customer -------------*/
 
-              </script>
+           function onFilterMenuInit(e) {
+               if (e.field == "customer") {
+                   initCheckboxFilter.call(this, e,dataSourceDB);
+               }
+           }
 
+           function initCheckboxFilter(e,datasource) {
+               var popup = e.container.data("kendoPopup");
+               var dataSource = datasource;
+               var field = e.field;
+               var checkboxesDataSource = new kendo.data.DataSource({
+                   data: uniqueForField(dataSource.data(), field)
+               });
+
+
+               var helpTextElement = e.container.children(":first").children(":first");
+               helpTextElement.nextUntil(":has(.k-button)").remove();
+               var element = $("<div class='checkbox-ontainer'></div>").insertAfter(helpTextElement).kendoListView({
+                   dataSource: checkboxesDataSource,
+                   template: "<div><input type='checkbox' value='#:" + field + "#'/>#:" + field + "#</div>"
+               });
+               e.container.find("[type='submit']").click(function (e) {
+                   e.preventDefault();
+                   e.stopPropagation();
+                   var filter = dataSource.filter() || { logic: "and", filters: [] };
+                   var fieldFilters = $.map(element.find(":checkbox:checked"), function (input) {
+                       return {
+                           field: field,
+                           operator: "eq",
+                           value: input.value
+                       };
+                   });
+                   if (fieldFilters.length) {
+                       removeFiltersForField(filter, field);
+                       filter.filters.push({
+                           logic: "or",
+                           filters: fieldFilters
+                       });
+                       dataSource.filter(filter);
+                   }
+                   popup.close();
+               });
+           }
+
+           function removeFiltersForField(expression, field) {
+               if (expression.filters) {
+                   expression.filters = $.grep(expression.filters, function (filter) {
+                       removeFiltersForField(filter, field);
+                       if (filter.filters) {
+                           return filter.filters.length;
+                       } else {
+                           return filter.field != field;
+                       }
+                   });
+               }
+           }
+
+           function uniqueForField(data, field) {
+               var map = {};
+               var result = [];
+               var item;
+               for (var i = 0; i < data.length; i++) {
+                   item = data[i];
+                   if (!map[item[field]]) {
+                       result.push(item.toJSON());
+                       map[item[field]] = true;
+                   }
+               }
+               return result;
+           }
+
+
+         /*  var state = JSON.parse(localStorage.getItem("planeOrderState"));
+           if(!_.isNull(state)){
+               if(state.filter){ dataSourceDB.filter(state.filter);  }
+
+               if(state.group){ dataSourceDB.group(state.group);  }
+               console.log(state);
+           }*/
+
+
+        </script>
+    <style type="text/css">
+    .checkbox-ontainer
+    {
+        max-height: 200px;
+        overflow:auto;
+    }
+    </style>
 }
