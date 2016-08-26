@@ -52,26 +52,6 @@ public abstract class PrecisionOrder extends Model {
     @Column(name = "StatusRow")
     private String reasonDeviation;
 
-/*
-    @Transient
-    private int deviation;
-    @Transient
-    private String calcStatus;
-    @Transient
-    private String monthShip;*/
-
-/*
-
-    @Transient
-    private String dateCreateOrderFormat;
-    @Transient
-    private String dateBeginProductionFormat;
-    @Transient
-    private Date nornalizeGroupDate;
-*/
-
-
-
 
     public String getSite() {
         return site;
@@ -178,15 +158,6 @@ public abstract class PrecisionOrder extends Model {
         this.datePlanShip = datePlanShip;
     }
 
-    /*public String getMonthShip() {
-        if(getMonthActualShip() != null) {
-
-            return String.format("%s-%s",  getMonthActualShip().toLocalDate().getMonth().getDisplayName(TextStyle.FULL_STANDALONE, Locale.forLanguageTag("ru-RU")),
-                    getMonthActualShip().toLocalDate().getYear());
-        }
-        return "";
-    }*/
-
     public LocalDate getDatePlanWhse() {
         return datePlanWhse;
     }
@@ -195,45 +166,7 @@ public abstract class PrecisionOrder extends Model {
         this.datePlanWhse = datePlanWhse;
     }
 
-  /*  public String getDatePlanBeginProductionFormat() {
-        if(getDatePlanBeginProduction() != null) {
-            return getDatePlanBeginProduction().format(DateTimeFormatter.ofPattern("dd-MM-yyyy", Locale.forLanguageTag("ru-RU")));
-        }
-        return "";
-    }*/
-
-   /* public String getDatePlanWhseFormat() {
-        if(getDatePlanWhse() != null) {
-            return getDatePlanWhse().format(DateTimeFormatter.ofPattern("dd-MM-yyyy", Locale.forLanguageTag("ru-RU")));
-        }
-        return "";
-    }*/
-
-    /*public String getDateCreateOrderFormat() {
-
-        if(getDateCreateOrder() != null) {
-            return getDateCreateOrder().format(DateTimeFormatter.ofPattern("dd-MM-yyyy", Locale.forLanguageTag("ru-RU")));
-        }
-
-        return "";
-    }
-*/
 
 
 
-
-
-  /*  public Date getNornalizeGroupDate() {
-        LocalDate temp;
-        if(getMonthActualShip() != null) {
-            temp = getMonthActualShip().toLocalDate();
-
-        } else {
-            temp = LocalDate.now();
-        }
-        return  Date.valueOf(LocalDate.of(temp.getYear(),temp.getMonth(),1));
-    }*/
-
-    //public abstract int getDeviation();
-    //public abstract String getCalcStatus();
 }
