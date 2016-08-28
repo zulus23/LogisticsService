@@ -369,4 +369,31 @@ public class ReportService {
         return ReportPrecisionCreateOrder.find.where().eq("site",site).between("DateActual_Ship",dateBegin,dateEnd).isNotNull("customer").findList();
     }
 
+    private ReportPrecisionCreateOrder mapSqlRowToReportPrecisionOrder(SqlRow row){
+        ReportPrecisionCreateOrder precisionOrder = new ReportPrecisionCreateOrder();
+        precisionOrder.setId(row.getLong("id"));
+        precisionOrder.setOrderNumber(row.getString("co_num"));
+        precisionOrder.setOrderLine(row.getInteger("co_line").toString());
+        precisionOrder.setCustomer(row.getString("Cust_name"));
+        precisionOrder.setSite(row.getString("site"));
+        precisionOrder.setManager(row.getString("FrontSlsmanName"));
+        precisionOrder.setItem(row.getString("item"));
+        precisionOrder.setItemDescription(row.getString("Item_Desc"));
+        precisionOrder.setReasonDeviation(row.getString("StatusRow"));
+        precisionOrder.setDateCreateOrder(row.getDate("DateCreate_Row").toLocalDate());
+        precisionOrder.setDatePlanWhse(row.getDate("DatePlan_Whse").toLocalDate());
+        precisionOrder.setDatePlanBeginProduction(row.getDate("DatePlan_Mnfg").toLocalDate());
+        precisionOrder.setDatePlanShip(row.getDate("DatePlan_Ship").toLocalDate());
+        precisionOrder.setMonthActualShip(row.getDate("DateActual_Ship"));
+
+        return  precisionOrder;
+    }
+
+    public List<ReportPrecisionCreateOrder> testSp(){
+        String sqlsp = "exec dbo.t1";
+        List<ReportPrecisionCreateOrder> t=   Ebean.createSqlQuery(sqlsp).findList().stream().map(this::mapSqlRowToReportPrecisionOrder).collect(toList());
+
+        return t;
+
+    }
 }

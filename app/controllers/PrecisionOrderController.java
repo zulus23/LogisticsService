@@ -318,4 +318,9 @@ public class PrecisionOrderController extends Controller {
 
         return ok(views.html.precisioncreateorder.render("",webJarAssets,paramReportSelectForm,null));
     }
+
+
+    public  Result testsp() {
+        return  ok(Json.toJson(reportService.testSp()));
+    }
 }
