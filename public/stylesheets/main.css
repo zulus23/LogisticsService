@@ -53,5 +53,9 @@ body.loading .modal {
     display: block;
 }
 
+.navbar-form .form-group {
+    margin-top: 5px;
+}
+
 /* ------------------------- Kendo ----------------------*/
 /*td[role="gridcell"] { white-space: nowrap; }*/
