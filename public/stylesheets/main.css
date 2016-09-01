@@ -59,3 +59,13 @@ body.loading .modal {
 
 /* ------------------------- Kendo ----------------------*/
 /*td[role="gridcell"] { white-space: nowrap; }*/
+
+.k-grid tbody tr{
+    height: 38px;
+}
+
+.k-grid td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

@@ -191,7 +191,7 @@ public class ReportService {
                 /*TODO Нет даты поступления на склад*/
                 if (orderDTO.getDateActualShip() != null && orderDTO.getDatePlanShip() != null) {
                     tempDeviation = Period.between(orderDTO.getDateActualShip().toLocalDate(), orderDTO.getDatePlanShip()).getDays();
-                    tempDeviation = tempDeviation > 0 ? 0 : Math.abs(tempDeviation);
+                    tempDeviation = tempDeviation > 0 ? 0 : tempDeviation;
                 }
 
                 break;
@@ -202,27 +202,25 @@ public class ReportService {
                 int productionDeviation = 0;
                 int whseDeviation = 0;
                  /* ----Взять отклонение с предыдущего шага -----*/
-                if(orderDTO.getPlanProdReqDate() != null && orderDTO.getFactProdReqDate() != null) {
-
-                    productionDeviation = Period.between(orderDTO.getFactProdReqDate().toLocalDate(),orderDTO.getDatePlanBeginProduction() ).getDays();
-                    productionDeviation =   productionDeviation > 0 ? 0:productionDeviation ;
-                }
-
-                if(productionDeviation > 0 ) {
+                 if(orderDTO.getPlanProdReqDate() != null && orderDTO.getFactProdReqDate() != null) {
+                            productionDeviation = Period.between(orderDTO.getFactProdReqDate().toLocalDate(),orderDTO.getDatePlanBeginProduction() ).getDays();
+                            productionDeviation =   productionDeviation > 0 ? 0:productionDeviation ;
+                 }
+                 if(productionDeviation > 0 ) {
                      /*увеличить плановую дата поступления на склад*/
-                    orderDTO.setDatePlanWhse(orderDTO.getDatePlanWhse().plusDays(productionDeviation));
-                }
+                         orderDTO.setDatePlanWhse(orderDTO.getDatePlanWhse().plusDays(productionDeviation));
+                 }
 
                 if (orderDTO.getDatePlanWhse() != null && orderDTO.getFactOnWhseDate() != null) {
-                    whseDeviation = Period.between(orderDTO.getDatePlanWhse(), orderDTO.getFactOnWhseDate().toLocalDate()).getDays();
+                    whseDeviation = Period.between( orderDTO.getFactOnWhseDate().toLocalDate(),orderDTO.getDatePlanWhse()).getDays();
                     whseDeviation = whseDeviation > 0 ? 0 : whseDeviation;
 
                 }
                 if (whseDeviation > 0) {
-                    orderDTO.setDateActualShip(Date.valueOf(orderDTO.getDateActualShip().toLocalDate().plusDays(whseDeviation)));
+                    orderDTO.setDatePlanWhse(orderDTO.getDatePlanWhse().plusDays(whseDeviation));
                 }
-                tempDeviation = Period.between(orderDTO.getDateActualShip().toLocalDate(), orderDTO.getDatePlanShip()).getDays();
-                tempDeviation = tempDeviation > 0 ? 0 : Math.abs(tempDeviation);
+                tempDeviation = Period.between(orderDTO.getDateActualShip().toLocalDate(),orderDTO.getDatePlanShip()).getDays();
+                tempDeviation = tempDeviation > 0 ? 0 : tempDeviation;
                 break;
             }
 
@@ -242,7 +240,7 @@ public class ReportService {
                 /*Разница между датой поступления на склад и датой сдачи на склад*/
                 /*TODO Нет даты поступления на склад*/
                 if(orderDTO.getDatePlanBeginProduction() != null && orderDTO.getDatePlanWhse() != null) {
-                    tempDeviation = Period.between(orderDTO.getDatePlanWhse(),orderDTO.getFactOnWhseDate().toLocalDate()).getDays();
+                    tempDeviation = Period.between(orderDTO.getFactOnWhseDate().toLocalDate(),orderDTO.getDatePlanWhse()).getDays();
                     tempDeviation =   tempDeviation > 0 ? 0:tempDeviation ; ;
                 }
 
