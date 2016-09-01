@@ -48,6 +48,30 @@ public abstract class PrecisionOrder extends Model {
     /*Плановая дата поступления на склад*/
     @Column(name = "DatePlan_Whse")
     private LocalDate datePlanWhse;
+    /*Фактическая дата начала производства в плане на сутки*/
+    @Column(name = "FactProdReqDate")
+    private Date factProdReqDate;
+
+    /*Фактическая дата поступления на склад*/
+    @Column(name = "FactOnWhseDate")
+    private Date factOnWhseDate;
+
+    /*Фактическая дата доставки*/
+    @Column(name = "FactDeliveryDate")
+    private Date factDeliveryDate;
+
+    /*Астуализированная  дата доставки*/
+    @Column(name = "ActualDeliveryDate")
+    private Date actualDeliveryDate;
+
+    /*Плановая дата доставки*/
+    @Column(name = "PlanDeliveryDate")
+    private Date planDeliveryDate;
+
+    /*Плановая дата производства*/
+    @Column(name = "PlanProdReqDate")
+    private Date planProdReqDate;
+
 
     @Column(name = "StatusRow")
     private String reasonDeviation;
@@ -166,7 +190,51 @@ public abstract class PrecisionOrder extends Model {
         this.datePlanWhse = datePlanWhse;
     }
 
+    public Date getFactProdReqDate() {
+        return factProdReqDate;
+    }
 
+    public void setFactProdReqDate(Date factProdReqDate) {
+        this.factProdReqDate = factProdReqDate;
+    }
 
+    public Date getFactOnWhseDate() {
+        return factOnWhseDate;
+    }
 
+    public void setFactOnWhseDate(Date factOnWhseDate) {
+        this.factOnWhseDate = factOnWhseDate;
+    }
+
+    public Date getFactDeliveryDate() {
+        return factDeliveryDate;
+    }
+
+    public void setFactDeliveryDate(Date factDeliveryDate) {
+        this.factDeliveryDate = factDeliveryDate;
+    }
+
+    public Date getActualDeliveryDate() {
+        return actualDeliveryDate;
+    }
+
+    public void setActualDeliveryDate(Date actualDeliveryDate) {
+        this.actualDeliveryDate = actualDeliveryDate;
+    }
+
+    public Date getPlanDeliveryDate() {
+        return planDeliveryDate;
+    }
+
+    public void setPlanDeliveryDate(Date planDeliveryDate) {
+        this.planDeliveryDate = planDeliveryDate;
+    }
+
+    public Date getPlanProdReqDate() {
+        return planProdReqDate;
+    }
+
+    public void setPlanProdReqDate(Date planProdReqDate) {
+        this.planProdReqDate = planProdReqDate;
+    }
 }

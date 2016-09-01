@@ -16,6 +16,7 @@ import services.ReportService;
 import javax.inject.Inject;
 import java.sql.Date;
 import java.time.LocalDate;
+import java.time.Month;
 import java.time.format.DateTimeFormatter;
 
 import java.util.ArrayList;
@@ -321,6 +322,6 @@ public class PrecisionOrderController extends Controller {
 
 
     public  Result testsp() {
-        return  ok(Json.toJson(reportService.testSp()));
+        return  ok(Json.toJson(reportService.testSp(LocalDate.of(2016, Month.AUGUST,1),LocalDate.of(2016, Month.AUGUST,22),"1")));
     }
 }

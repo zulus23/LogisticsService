@@ -24,7 +24,7 @@ GET  /api/listshipmentorder         controllers.PrecisionOrderController.listShi
 GET  /api/listdeliveryorder         controllers.PrecisionOrderController.listDeliveryOrder(dateBegin:Option[String], dateEnd:Option[String],site: Option[String] , mode :Option[String])
 
 GET  /api/grapth                    controllers.PrecisionOrderController.grapth(dateBegin:Option[String],dateEnd:Option[String],site: Option[String] , mode :Option[String],groupField:Option[String])
-GET  /api/testsp         controllers.PrecisionOrderController.testsp
+#GET  /api/testsp         controllers.PrecisionOrderController.testsp
 
 
 GET     /api/typereport             controllers.HelperController.getTypeReport

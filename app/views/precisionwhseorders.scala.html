@@ -67,7 +67,7 @@
                              customer: { type: "string" },
                              itemDescription:{type:"string"},
                              monthShip:{type:"string"},
-                             //dateCreateOrderFormat:{type:"string"},
+                             factOnWhseDateFormat:{type:"string"},
                             // dateBeginProductionFormat:{type:"string"},
                              datePlanToWhseFormat:{type:"string"},
                              deviation:{type:"number"},
@@ -203,11 +203,11 @@
                          //groupHeaderTemplate: "Месяц отгрузки: #=value# : (#= count#)"
                      },
                      {
-                         field: "datePlanToWhseFormat", title: "Дата сдачи на склад", width: "80px",
+                         field: "datePlanToWhseFormat", title: "Дата сдачи на склад план", width: "80px",
                          headerAttributes: gridUtils.headerFormat, attributes: gridUtils.columnFormatChangeWhseDate, filterable: false, groupable: false
                      },
                      {
-                         /*field: "dateActualShipFormat",*/ title: "Дата поступления на склад", width: "80px",
+                         field: "factOnWhseDateFormat", title: "Дата поступления на склад", width: "80px",
                          headerAttributes: gridUtils.headerFormat, attributes: gridUtils.columnFormat, filterable: false, groupable: false
                      },
                      {

@@ -40,7 +40,7 @@ public class HomeController extends Controller {
         Result temp = ok();
         Form<ParamReportSelect> selectForm = paramReportSelectForm.bindFromRequest();
         ParamReportSelect paramReportSelect = selectForm.get();
-        List<ReportPrecisionCreateOrder> orderList = ReportPrecisionCreateOrder.find.all();
+//        List<ReportPrecisionCreateOrder> orderList = ReportPrecisionCreateOrder.find.all();
         switch (Integer.parseInt(paramReportSelect.getReport())){
             case 1: {
                 temp = ok(allorders.render("",webJarAssets,selectForm, paramReportSelect));

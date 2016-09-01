@@ -58,7 +58,7 @@ public class ApplicationTest {
     @Test
     public void renderTemplate() {
         reportService = new ReportService();
-       reportService.testSp();
+
     }
 
 

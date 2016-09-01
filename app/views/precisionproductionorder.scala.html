@@ -72,6 +72,7 @@
                               monthShip:{type:"string"},
                              // dateCreateOrderFormat:{type:"string"},
                               datePlanBeginProductionFormat:{type:"string"},
+                              factProdReqDateFormat:{type:"string"},
                               deviation:{type:"number"},
                               reasonDeviation:{type:"string"},
                               calcStatus:{type:"string"},
@@ -214,7 +215,7 @@
                           headerAttributes: gridUtils.headerFormat, attributes: gridUtils.columnFormat, filterable: false, groupable: false
                       },
                       {
-                          /*field: "datePlanBeginProductionFormat",*/ title: "Дата начала производства в плане сутки.", width: "80px",
+                          field: "factProdReqDateFormat", title: "Дата начала производства в плане сутки.", width: "80px",
                           headerAttributes: gridUtils.headerFormat, attributes: gridUtils.columnFormat, filterable: false, groupable: false
                       },
                       {

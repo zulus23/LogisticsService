@@ -2,6 +2,7 @@ package model.dto;
 
 import model.Deviation;
 
+import javax.persistence.Column;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.Period;
@@ -42,6 +43,23 @@ public class OrderDTO {
    /* Дата плановой  доставки*/
    private LocalDate datePlanDelivery;
 
+    /*Фактическая дата начала производства в плане на сутки*/
+    private Date factProdReqDate;
+    /*Фактическая дата поступления на склад*/
+    private Date factOnWhseDate;
+    /*Фактическая дата доставки*/
+    private Date factDeliveryDate;
+    /*Астуализированная  дата доставки*/
+    private Date actualDeliveryDate;
+    /*Плановая дата доставки*/
+    private Date planDeliveryDate;
+    /*Плановая дата производства*/
+    private Date planProdReqDate;
+
+
+
+
+
     /* ==================== Для режима расчета дат (режим 2) ====================*/
     /* Дата планового  поступления на склад не измененная*/
     private LocalDate datePlanWhseOriginal;
@@ -76,9 +94,18 @@ public class OrderDTO {
     /*Форматированная дата  фактической отгрузки*/
     private String dateActualShipFormat;
 
+    /*Форматированная дата  даты фактического поступления на склад*/
+    private String factOnWhseDateFormat;
+
     /*Форматированная дата  плановой  отгрузки*/
     private String datePlanShipFormat;
 
+    /*Форматированная дата  фактического  произ*/
+    private String factProdReqDateFormat;
+    /*Форматированная дата  фактической  доставки*/
+    private String factDeliveryDateFormat;
+    /*Форматированная дата  плановой  доставки*/
+    private String planDeliveryDateFormat;
 
     /* Дата javascript*/
     private Date nornalizeGroupDate;
@@ -239,6 +266,54 @@ public class OrderDTO {
         this.datePlanDeliveryOriginal = datePlanDeliveryOriginal;
     }
 
+    public Date getFactProdReqDate() {
+        return factProdReqDate;
+    }
+
+    public void setFactProdReqDate(Date factProdReqDate) {
+        this.factProdReqDate = factProdReqDate;
+    }
+
+    public Date getFactOnWhseDate() {
+        return factOnWhseDate;
+    }
+
+    public void setFactOnWhseDate(Date factOnWhseDate) {
+        this.factOnWhseDate = factOnWhseDate;
+    }
+
+    public Date getFactDeliveryDate() {
+        return factDeliveryDate;
+    }
+
+    public void setFactDeliveryDate(Date factDeliveryDate) {
+        this.factDeliveryDate = factDeliveryDate;
+    }
+
+    public Date getActualDeliveryDate() {
+        return actualDeliveryDate;
+    }
+
+    public void setActualDeliveryDate(Date actualDeliveryDate) {
+        this.actualDeliveryDate = actualDeliveryDate;
+    }
+
+    public Date getPlanDeliveryDate() {
+        return planDeliveryDate;
+    }
+
+    public void setPlanDeliveryDate(Date planDeliveryDate) {
+        this.planDeliveryDate = planDeliveryDate;
+    }
+
+    public Date getPlanProdReqDate() {
+        return planProdReqDate;
+    }
+
+    public void setPlanProdReqDate(Date planProdReqDate) {
+        this.planProdReqDate = planProdReqDate;
+    }
+
     public String getMonthShip() {
         if(dateActualShip != null) {
 
@@ -296,7 +371,36 @@ public class OrderDTO {
 
         return "";
     }
+    public String getFactOnWhseDateFormat(){
+        if(factOnWhseDate != null) {
+            return factOnWhseDate.toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy", Locale.forLanguageTag("ru-RU")));
+        }
 
+        return "";
+    }
+
+    public String getFactProdReqDateFormat() {
+        if(factProdReqDate != null) {
+            return factProdReqDate.toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy", Locale.forLanguageTag("ru-RU")));
+        }
+        return "";
+    }
+
+    public String getFactDeliveryDateFormat() {
+        if(factDeliveryDate != null) {
+            return factDeliveryDate.toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy", Locale.forLanguageTag("ru-RU")));
+        }
+        return "";
+
+    }
+
+    public String getPlanDeliveryDateFormat() {
+        if(planDeliveryDate != null) {
+            return planDeliveryDate.toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy", Locale.forLanguageTag("ru-RU")));
+        }
+        return "";
+
+    }
 
     public Date getNornalizeGroupDate() {
         LocalDate temp;

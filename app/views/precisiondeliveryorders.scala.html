@@ -67,8 +67,8 @@
                              customer: { type: "string" },
                              itemDescription:{type:"string"},
                              monthShip:{type:"string"},
-                           //  dateCreateOrderFormat:{type:"string"},
-                            // datePlanBeginProductionFormat:{type:"string"},
+                             planDeliveryDateFormat:{type:"string"},
+                             factDeliveryDateFormat:{type:"string"},
                              deviation:{type:"number"},
                              reasonDeviation:{type:"string"},
                              calcStatus:{type:"string"},
@@ -204,11 +204,11 @@
                          //groupHeaderTemplate: "Месяц отгрузки: #=value# : (#= count#)"
                      },
                      {
-                         field: "datePlanShipFormat", title: "Дата доставки план", width: "80px",
+                         field: "planDeliveryDateFormat", title: "Дата доставки план", width: "80px",
                          headerAttributes: gridUtils.headerFormat, attributes: gridUtils.columnFormatChangeDeliveryDate, filterable: false, groupable: false
                      },
                      {
-                         field: "dateActualShipFormat", title: "Дата доставки факт.", width: "80px",
+                         field: "factDeliveryDateFormat", title: "Дата доставки факт.", width: "80px",
                          headerAttributes: gridUtils.headerFormat, attributes: gridUtils.columnFormat, filterable: false, groupable: false
                      },
                      {
