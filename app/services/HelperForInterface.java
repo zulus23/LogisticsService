@@ -45,4 +45,7 @@ public class HelperForInterface {
 
         return typeReports.stream().filter(s -> s.getId() == id).map(e -> e.getName()).findFirst().get();
     }
+
+
+
 }

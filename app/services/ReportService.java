@@ -34,7 +34,8 @@ public class ReportService {
    public List<OrderDTO> allOrders(LocalDate dateBegin, LocalDate dateEnd, String site, String mode){
 
 
-       List<ReportPrecisionCreateOrder> listAllOrders = getListOrders(dateBegin, dateEnd, site);
+
+       List<ReportPrecisionCreateOrder> listAllOrders = getListOrders(dateBegin, dateEnd, site,1);
 
        List<OrderDTO> listOrders =   listAllOrders.stream().map(this::createOrderDTO).collect(toList());
 
@@ -47,7 +48,7 @@ public class ReportService {
     public List<OrderDTO> precisionCreateOrders(LocalDate dateBegin, LocalDate dateEnd, String site, String mode){
 
 
-         List<ReportPrecisionCreateOrder> listAllOrders = getListOrders(dateBegin, dateEnd, site);
+         List<ReportPrecisionCreateOrder> listAllOrders = getListOrders(dateBegin, dateEnd, site,2);
 
         List<OrderDTO> listOrders =   listAllOrders.stream().filter(e -> e.getDatePlanBeginProduction() != null && e.getDateCreateOrder() != null).map(this::createOrderDTO)
 
@@ -66,7 +67,7 @@ public class ReportService {
     public List<OrderDTO> precisionPlanOrders(LocalDate dateBegin, LocalDate dateEnd, String site, String mode){
 
 
-        List<ReportPrecisionCreateOrder> listAllOrders = getListOrders(dateBegin, dateEnd, site);
+        List<ReportPrecisionCreateOrder> listAllOrders = getListOrders(dateBegin, dateEnd, site,3);
 
         List<OrderDTO> listOrders =   listAllOrders.stream().filter(e -> e.getPlanDeliveryDate() != null && e.getActualDeliveryDate() != null).map(this::createOrderDTO).collect(toList());
         listOrders.stream().forEach( e -> {setDeviationPlanOrder(e,Integer.parseInt(mode)); e.setReasonDeviation("");});
@@ -78,7 +79,7 @@ public class ReportService {
 
     /*  4 ----------------------- Точность постановки заказов в производство -------*/
     public List<OrderDTO> precisionProductionOrders(LocalDate dateBegin, LocalDate dateEnd, String site, String mode) {
-        List<ReportPrecisionCreateOrder> listAllOrders = getListOrders(dateBegin, dateEnd, site);
+        List<ReportPrecisionCreateOrder> listAllOrders = getListOrders(dateBegin, dateEnd, site,4);
 
         List<OrderDTO> listOrders =   listAllOrders.stream().filter(e -> e.getDatePlanBeginProduction() != null && e.getFactProdReqDate() != null).map(this::createOrderDTO).collect(toList());
         listOrders.stream().forEach( e -> setDeviationProductionOrder(e,Integer.parseInt(mode)));
@@ -91,7 +92,7 @@ public class ReportService {
     /*  5 ----------------------- Точность выходов заказов на склад -------*/
     public List<OrderDTO> precisionWhseOrders(LocalDate dateBegin, LocalDate dateEnd, String site, String mode) {
 
-        List<ReportPrecisionCreateOrder> listAllOrders = getListOrders(dateBegin, dateEnd, site);
+        List<ReportPrecisionCreateOrder> listAllOrders = getListOrders(dateBegin, dateEnd, site,5);
 
         List<OrderDTO> listOrders =   listAllOrders.stream().filter(e -> e.getDatePlanWhse() != null && e.getFactOnWhseDate() != null).map(this::createOrderDTO).collect(toList());
         listOrders.stream().forEach( e -> setDeviationWhseOrder(e,Integer.parseInt(mode)));
@@ -103,7 +104,7 @@ public class ReportService {
     }
     /*  6 ----------------------- Точность отгрузки заказов -------*/
     public List<OrderDTO> precisionShipmentOrders(LocalDate dateBegin, LocalDate dateEnd, String site, String mode) {
-        List<ReportPrecisionCreateOrder> listAllOrders = getListOrders(dateBegin, dateEnd, site);
+        List<ReportPrecisionCreateOrder> listAllOrders = getListOrders(dateBegin, dateEnd, site,6);
 
         List<OrderDTO> listOrders =   listAllOrders.stream().filter(e -> e.getDatePlanShip() != null && e.getMonthActualShip() != null).map(this::createOrderDTO).collect(toList());
         listOrders.stream().forEach( e -> setDeviationShipmentOrder(e,Integer.parseInt(mode)));
@@ -113,7 +114,7 @@ public class ReportService {
     }
     /*  7 ----------------------- Точность доставки заказов -------*/
     public List<OrderDTO> precisionDeliveryOrders(LocalDate dateBegin, LocalDate dateEnd, String site, String mode) {
-        List<ReportPrecisionCreateOrder> listAllOrders = getListOrders(dateBegin, dateEnd, site);
+        List<ReportPrecisionCreateOrder> listAllOrders = getListOrders(dateBegin, dateEnd, site,7);
 
         List<OrderDTO> listOrders =   listAllOrders.stream().filter(e -> e.getFactDeliveryDate() != null && e.getPlanDeliveryDate() != null).map(this::createOrderDTO).collect(toList());
         listOrders.stream().forEach( e -> setDeviationDeliveryOrder(e,Integer.parseInt(mode)));
@@ -155,7 +156,7 @@ public class ReportService {
 
                 if (orderDTO.getDatePlanWhse() != null && orderDTO.getFactOnWhseDate() != null) {
                     whseDeviation = Period.between(orderDTO.getDatePlanWhse(), orderDTO.getFactOnWhseDate().toLocalDate()).getDays();
-                    whseDeviation = whseDeviation > 0 ? 0 : whseDeviation;
+                    whseDeviation = whseDeviation > 0 ? 0 : Math.abs(whseDeviation);
 
                 }
                 if (whseDeviation > 0) {
@@ -204,7 +205,7 @@ public class ReportService {
                  /* ----Взять отклонение с предыдущего шага -----*/
                  if(orderDTO.getPlanProdReqDate() != null && orderDTO.getFactProdReqDate() != null) {
                             productionDeviation = Period.between(orderDTO.getFactProdReqDate().toLocalDate(),orderDTO.getDatePlanBeginProduction() ).getDays();
-                            productionDeviation =   productionDeviation > 0 ? 0:productionDeviation ;
+                            productionDeviation =   productionDeviation > 0 ? 0:Math.abs(productionDeviation);
                  }
                  if(productionDeviation > 0 ) {
                      /*увеличить плановую дата поступления на склад*/
@@ -213,7 +214,7 @@ public class ReportService {
 
                 if (orderDTO.getDatePlanWhse() != null && orderDTO.getFactOnWhseDate() != null) {
                     whseDeviation = Period.between( orderDTO.getFactOnWhseDate().toLocalDate(),orderDTO.getDatePlanWhse()).getDays();
-                    whseDeviation = whseDeviation > 0 ? 0 : whseDeviation;
+                    whseDeviation = whseDeviation > 0 ? 0 : Math.abs(whseDeviation);
 
                 }
                 if (whseDeviation > 0) {
@@ -255,7 +256,7 @@ public class ReportService {
                  if(orderDTO.getPlanProdReqDate() != null && orderDTO.getFactProdReqDate() != null) {
 
                      productionDeviation = Period.between(orderDTO.getFactProdReqDate().toLocalDate(),orderDTO.getDatePlanBeginProduction() ).getDays();
-                     productionDeviation =   productionDeviation > 0 ? 0:productionDeviation ;
+                     productionDeviation =   productionDeviation > 0 ? 0:Math.abs(productionDeviation) ;
                  }
 
                  if(productionDeviation > 0 ) {
@@ -266,7 +267,7 @@ public class ReportService {
                  /*TODO Здесь необходимо заменить getDateActualShip() на  дату сдачи на склад факт*/
                  if(orderDTO.getFactOnWhseDate() != null && orderDTO.getDatePlanWhse() != null) {
                      tempDeviation = Period.between(orderDTO.getFactOnWhseDate().toLocalDate(),orderDTO.getDatePlanWhse() ).getDays();
-                     tempDeviation =   tempDeviation > 0 ? 0:tempDeviation ;;
+                     tempDeviation =   tempDeviation > 0 ? 0:Math.abs(tempDeviation);
                  }
 
 
@@ -421,8 +422,8 @@ public class ReportService {
         return precisionCreateOrders;
     }
 
-    private List<ReportPrecisionCreateOrder> getListOrders(LocalDate dateBegin, LocalDate dateEnd, String site) {
-         return  selectData(dateBegin,dateEnd, site);
+    private List<ReportPrecisionCreateOrder> getListOrders(LocalDate dateBegin, LocalDate dateEnd, String site,int typeReport) {
+         return  selectData(dateBegin,dateEnd, site,typeReport);
 
 
         //return ReportPrecisionCreateOrder.find.where().eq("site",site).between("DateActual_Ship",dateBegin,dateEnd).isNotNull("customer").findList();
@@ -466,7 +467,7 @@ public class ReportService {
 
     }
 
-    public List<ReportPrecisionCreateOrder> selectData(LocalDate dateBegin, LocalDate dateEnd, String site){
+    public List<ReportPrecisionCreateOrder> selectData(LocalDate dateBegin, LocalDate dateEnd, String site,int typeReport){
         String sqlsp = "exec dbo.gtk_rpt_logist_www :v_startdate, :v_enddate, :v_site";
         List<ReportPrecisionCreateOrder> t=   Ebean.createSqlQuery(sqlsp).setParameter("v_startdate",dateBegin)
                 .setParameter("v_enddate",dateEnd)
