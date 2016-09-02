@@ -12,7 +12,7 @@
         <div id="vertical">
         <div>
             <div class="col-md-offset-4 col-md-4">
-                <h2 class="text-primary text-center">Точность планирования заказов продажи</h2>
+                <h2 class="text-primary text-center">Точность планирования заказов</h2>
             </div>
             <div id="loading">
             </div>
@@ -69,12 +69,12 @@
                               monthShip:{type:"string"},
                             //  dateCreateOrderFormat:{type:"string"},
                             //  datePlanBeginProductionFormat:{type:"string"},
-                              datePlanShipFormat:{type:"string"},
+                              planDeliveryDateFormat:{type:"string"},
                               deviation:{type:"number"},
                               reasonDeviation:{type:"string"},
                               calcStatus:{type:"string"},
                               dateActualShip:{type:"date"},
-                              dateActualShipFormat:{type:"string"},
+                              actualDeliveryDateFormat:{type:"string"},
                               nornalizeGroupDate:{type:"string"},
                               deviationHide:{type:"number"}
                           }
@@ -222,11 +222,11 @@
                           //groupHeaderTemplate: "Месяц отгрузки: #=value# : (#= count#)"
                       },
                       {
-                          field: "datePlanShipFormat", title: "Дата доставки план", width: "80px",
+                          field: "planDeliveryDateFormat", title: "Дата доставки план", width: "80px",
                           headerAttributes: gridUtils.headerFormat, attributes: gridUtils.columnFormat, filterable: false, groupable: false
                       },
                       {
-                          field: "dateActualShipFormat", title: "Дата доставки актуал.", width: "80px",
+                          field: "actualDeliveryDateFormat", title: "Дата доставки актуал.", width: "80px",
                           headerAttributes: gridUtils.headerFormat, attributes: gridUtils.columnFormat, filterable: false, groupable: false
                       },
                       {
@@ -358,7 +358,7 @@
                var dataSource = datasource;
                var field = e.field;
                var checkboxesDataSource = new kendo.data.DataSource({
-                   data: uniqueForField(dataSource.data(), field)
+                   data: uniqueForField(_.sortBy(dataSource.data(),function(e){return e.customer}) , field)
                });
 
 

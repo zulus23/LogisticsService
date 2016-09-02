@@ -116,6 +116,10 @@ var  graphUtils = (function(){
                 tooltip: {
                     visible: true,
                     template: "#= kendo.format('{0}%', value) #"
+                },
+                labels: {
+                    visible: true,
+                    background: "transparent"
                 }
             }, {
                 type: "line",
@@ -178,6 +182,10 @@ var  graphUtils = (function(){
                 tooltip: {
                     visible: true,
                     template: "#= kendo.format('{0}%', value) #"
+                },
+                labels: {
+                    visible: true,
+                    background: "transparent"
                 },
                 categoryField: "dateActualShip"
 

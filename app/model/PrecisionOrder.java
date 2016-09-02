@@ -76,6 +76,19 @@ public abstract class PrecisionOrder extends Model {
     @Column(name = "StatusRow")
     private String reasonDeviation;
 
+    /*Плановая дата доставки из заявки диспечера*/
+    @Column(name = "PlanDeliveryDate_m")
+    private Date planDeliveryDate_M;
+
+    /*Дата плановой отгрузки из заявки диспечера*/
+    @Column(name = "DatePlan_Ship_M")
+    private Date datePlanShip_M;
+
+    /*Тип транспорта */
+    @Column(name = "ShipCodeDescr")
+    private String typeShip;
+
+
 
     public String getSite() {
         return site;
@@ -236,5 +249,29 @@ public abstract class PrecisionOrder extends Model {
 
     public void setPlanProdReqDate(Date planProdReqDate) {
         this.planProdReqDate = planProdReqDate;
+    }
+
+    public Date getPlanDeliveryDate_M() {
+        return planDeliveryDate_M;
+    }
+
+    public void setPlanDeliveryDate_M(Date planDeliveryDate_M) {
+        this.planDeliveryDate_M = planDeliveryDate_M;
+    }
+
+    public Date getDatePlanShip_M() {
+        return datePlanShip_M;
+    }
+
+    public void setDatePlanShip_M(Date datePlanShip_M) {
+        this.datePlanShip_M = datePlanShip_M;
+    }
+
+    public String getTypeShip() {
+        return typeShip;
+    }
+
+    public void setTypeShip(String typeShip) {
+        this.typeShip = typeShip;
     }
 }

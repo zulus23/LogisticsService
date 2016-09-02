@@ -56,7 +56,13 @@ public class OrderDTO {
     /*Плановая дата производства*/
     private Date planProdReqDate;
 
+    /*Плановая дата доставки из заявки на отгрузку*/
+    private Date planDeliveryDate_M;
+    /* Дата плановой  отгрузки из заявки на отгрузку*/
+    private Date datePlanShip_M;
+    /*Тип транспорта */
 
+    private String typeShip;
 
 
 
@@ -105,7 +111,14 @@ public class OrderDTO {
     /*Форматированная дата  фактической  доставки*/
     private String factDeliveryDateFormat;
     /*Форматированная дата  плановой  доставки*/
+    private String actualDeliveryDateFormat;
+
+
+    /*Форматированная дата  актуальной   доставки*/
     private String planDeliveryDateFormat;
+    /*Форматированная дата  плана   доставки*/
+    private String datePlanDeliveryFormat;
+
 
     /* Дата javascript*/
     private Date nornalizeGroupDate;
@@ -314,6 +327,30 @@ public class OrderDTO {
         this.planProdReqDate = planProdReqDate;
     }
 
+    public Date getPlanDeliveryDate_M() {
+        return planDeliveryDate_M;
+    }
+
+    public void setPlanDeliveryDate_M(Date planDeliveryDate_M) {
+        this.planDeliveryDate_M = planDeliveryDate_M;
+    }
+
+    public Date getDatePlanShip_M() {
+        return datePlanShip_M;
+    }
+
+    public void setDatePlanShip_M(Date datePlanShip_M) {
+        this.datePlanShip_M = datePlanShip_M;
+    }
+
+    public String getTypeShip() {
+        return typeShip;
+    }
+
+    public void setTypeShip(String typeShip) {
+        this.typeShip = typeShip;
+    }
+
     public String getMonthShip() {
         if(dateActualShip != null) {
 
@@ -397,6 +434,22 @@ public class OrderDTO {
     public String getPlanDeliveryDateFormat() {
         if(planDeliveryDate != null) {
             return planDeliveryDate.toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy", Locale.forLanguageTag("ru-RU")));
+        }
+        return "";
+
+    }
+
+    public String getActualDeliveryDateFormat() {
+        if(actualDeliveryDate != null) {
+            return actualDeliveryDate.toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy", Locale.forLanguageTag("ru-RU")));
+        }
+        return "";
+
+    }
+
+    public String getDatePlanDeliveryFormat() {
+        if(datePlanDelivery != null) {
+            return datePlanDelivery.format(DateTimeFormatter.ofPattern("dd-MM-yyyy", Locale.forLanguageTag("ru-RU")));
         }
         return "";
 

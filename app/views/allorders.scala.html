@@ -73,7 +73,11 @@
                              datePlanBeginProductionFormat:{type:"string"},
                              datePlanShipFormat:{type:"string"},
                              datePlanToWhseFormat:{type:"string"},
+                             factOnWhseDateFormat:{type:"string"},
                              dateActualShipFormat:{type:"string"},
+                             planDeliveryDateFormat:{type:"string"},
+                             factDeliveryDateFormat:{type:"string"},
+                             actualDeliveryDateFormat:{type:"string"},
                              deviation:{type:"number"},
                              reasonDeviation:{type:"string"},
                              calcStatus:{type:"string"},
@@ -220,7 +224,7 @@
                      { field: "datePlanToWhseFormat", title: "Дата сдачи заказа на склад план",width: "80px",
                          headerAttributes: gridUtils.headerFormat,attributes: gridUtils.columnFormat,filterable: false,groupable: false
                      },
-                     { /*field: "dateCreateOrderFormat",*/ title: "Дата поступления на склад",width: "80px",
+                     { field: "factOnWhseDateFormat", title: "Дата поступления на склад",width: "80px",
                          headerAttributes: gridUtils.headerFormat,attributes: gridUtils.columnFormat,filterable: false,groupable: false
                      },
                      {
@@ -232,15 +236,15 @@
                          headerAttributes: gridUtils.headerFormat, attributes: gridUtils.columnFormat, filterable: false, groupable: false
                      },
                      {
-                         /*field: "datePlanShipFormat",*/ title: "Дата доставки план", width: "80px",
+                         field: "planDeliveryDateFormat", title: "Дата доставки план", width: "80px",
                          headerAttributes: gridUtils.headerFormat, attributes: gridUtils.columnFormat, filterable: false, groupable: false
                      },
                      {
-                         /*field: "dateBeginProductionFormat",*/ title: "Дата доставки актуал.", width: "80px",
+                         field: "actualDeliveryDateFormat", title: "Дата доставки актуал.", width: "80px",
                          headerAttributes: gridUtils.headerFormat, attributes: gridUtils.columnFormat, filterable: false, groupable: false
                      },
                      {
-                         /*field: "dateBeginProductionFormat",*/ title: "Дата доставки факт.", width: "80px",
+                         field: "factDeliveryDateFormat", title: "Дата доставки факт.", width: "80px",
                          headerAttributes: gridUtils.headerFormat, attributes: gridUtils.columnFormat, filterable: false, groupable: false
                      }
 
