@@ -379,6 +379,13 @@ public class ReportService {
         if(Optional.of(order.getPlanDeliveryDate()).isPresent()) {
             orderDTO.setDatePlanDeliveryOriginal(order.getPlanDeliveryDate().toLocalDate());
         }
+        if(Optional.of(order.getDatePlanWhse()).isPresent()) {
+           orderDTO.setDatePlanWhseOriginal(order.getDatePlanWhse());
+        }
+        if(Optional.of(order.getDatePlanShip()).isPresent()) {
+         orderDTO.setDatePlanShipOriginal(order.getDatePlanShip());
+        }
+
         orderDTO.setActualDeliveryDate(order.getActualDeliveryDate());
         orderDTO.setFactDeliveryDate(order.getFactDeliveryDate());
         orderDTO.setFactOnWhseDate(order.getFactOnWhseDate());
@@ -390,13 +397,6 @@ public class ReportService {
         orderDTO.setPlanDeliveryDate_M(order.getPlanDeliveryDate_M());
         orderDTO.setDatePlanShip_M(order.getDatePlanShip_M());
         orderDTO.setTypeShip(order.getTypeShip());
-     /*   orderDTO.setDeviation(order.getDeviation());
-        orderDTO.setCalcStatus(order.getCalcStatus());*/
-       // orderDTO.setMonthShip(order.getMonthShip());
-        //orderDTO.setDateCreateOrderFormat(order.getDateCreateOrderFormat());
-        //orderDTO.setDateBeginProductionFormat(order.getDatePlanBeginProductionFormat());
-       // orderDTO.setDatePlanToWhseFormat(order.getDatePlanWhseFormat());
-       // orderDTO.setNornalizeGroupDate(order.getNornalizeGroupDate());
 
 
         return  orderDTO;
@@ -405,7 +405,7 @@ public class ReportService {
 
 
 
-    public List<GrapthPrecisionCreateOrder> precisionCreateOrdersGrapth(LocalDate dateBegin, LocalDate dateEnd, String site, String mode,String groupField){
+    /*public List<GrapthPrecisionCreateOrder> precisionCreateOrdersGrapth(LocalDate dateBegin, LocalDate dateEnd, String site, String mode,String groupField){
 
         String sqlAll = "SELECT DISTINCT deviation,monthActualShip as monthActualShip,customer,procent FROM (" +
                         "SELECT p.dif_ as deviation,p.dat_ as monthActualShip,\'\' as customer,\n" +
@@ -438,28 +438,26 @@ public class ReportService {
         //SqlQuery sqlQuery = Ebean.createSqlQuery(sql);
         RawSql rawSql =  RawSqlBuilder
                 .parse(sql)
-               /* .columnMapping("deviation", "deviation")
+               *//* .columnMapping("deviation", "deviation")
                 .columnMapping("dateBeginProduction", "dateBeginProduction")
                 .columnMapping("customer", "customer")
-                .columnMapping("procent", "procent")*/
+                .columnMapping("procent", "procent")*//*
                 .create();
 
         List<GrapthPrecisionCreateOrder> precisionCreateOrders =  Ebean.find(GrapthPrecisionCreateOrder.class).setRawSql(rawSql).setParameter("site", site).setParameter("dateBegin", dateBegin).setParameter("dateEnd", dateEnd).findList();
 
-        /*sqlQuery.setParameter("site", site);
+        *//*sqlQuery.setParameter("site", site);
         sqlQuery.setParameter("dateBegin", dateBegin);
-        sqlQuery.setParameter("dateEnd", dateEnd);*/
+        sqlQuery.setParameter("dateEnd", dateEnd);*//*
 
 
-        /*List<SqlRow> sqlRows =  sqlQuery.findList();*/
+        *//*List<SqlRow> sqlRows =  sqlQuery.findList();*//*
         return precisionCreateOrders;
-    }
+    }*/
 
     private List<ReportPrecisionCreateOrder> getListOrders(LocalDate dateBegin, LocalDate dateEnd, String site,int typeReport) {
          return  selectData(dateBegin,dateEnd, site,typeReport);
 
-
-        //return ReportPrecisionCreateOrder.find.where().eq("site",site).between("DateActual_Ship",dateBegin,dateEnd).isNotNull("customer").findList();
     }
 
     private ReportPrecisionCreateOrder mapSqlRowToReportPrecisionOrder(SqlRow row){
@@ -497,26 +495,17 @@ public class ReportService {
         return  precisionOrder;
     }
 
-    public List<ReportPrecisionCreateOrder> testSp(LocalDate dateBegin, LocalDate dateEnd, String site){
-        String sqlsp = "exec dbo.gtk_rpt_logist_www :v_startdate, :v_enddate, :v_site";
-        List<ReportPrecisionCreateOrder> t=   Ebean.createSqlQuery(sqlsp).setParameter("v_startdate",dateBegin)
-                                                                         .setParameter("v_enddate",dateEnd)
-                                                                         .setParameter("v_site",site)
-                .findList().stream().map(this::mapSqlRowToReportPrecisionOrder).collect(toList());
 
-        return t;
 
-    }
-
-    public List<ReportPrecisionCreateOrder> selectData(LocalDate dateBegin, LocalDate dateEnd, String site,int typeReport){
+   public List<ReportPrecisionCreateOrder> selectData(LocalDate dateBegin, LocalDate dateEnd, String site,int typeReport){
         String sqlsp = "exec dbo.gtk_rpt_logist_www :v_startdate, :v_enddate, :v_site,:v_type_rep";
-        List<ReportPrecisionCreateOrder> t=   Ebean.createSqlQuery(sqlsp).setParameter("v_startdate",dateBegin)
+        List<ReportPrecisionCreateOrder> result =   Ebean.createSqlQuery(sqlsp).setParameter("v_startdate",dateBegin)
                 .setParameter("v_enddate",dateEnd)
                 .setParameter("v_site",site)
                 .setParameter("v_type_rep",typeReport)
                 .findList().stream().map(this::mapSqlRowToReportPrecisionOrder).collect(toList());
 
-        return t;
+        return result;
 
     }
 

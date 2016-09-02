@@ -2,7 +2,6 @@ package controllers;
 
 import model.GrapthPrecisionCreateOrder;
 import model.ReportPrecisionCreateOrder;
-import model.dto.GraphDto;
 import org.jetbrains.annotations.NotNull;
 import play.data.Form;
 import play.libs.Json;
@@ -16,15 +15,10 @@ import services.ReportService;
 import javax.inject.Inject;
 import java.sql.Date;
 import java.time.LocalDate;
-import java.time.Month;
 import java.time.format.DateTimeFormatter;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.*;
 
 
 /**
@@ -53,7 +47,7 @@ public class PrecisionOrderController extends Controller {
 
 
 
-    public  Result listorder(Option<String> dateBegin, Option<String> dateEnd, Option<String> site, Option<String> mode ) {
+   /* public  Result listorder(Option<String> dateBegin, Option<String> dateEnd, Option<String> site, Option<String> mode ) {
 
         LocalDate tempdateBegin = LocalDate.now(),tempdateEnd = LocalDate.now();
 
@@ -73,11 +67,11 @@ public class PrecisionOrderController extends Controller {
 
 
         return ok(Json.toJson(reportService.precisionCreateOrders(tempdateBegin,tempdateEnd,tempSite,"")));
-    }
+    }*/
 
     public  Result listAllOrder(Option<String> dateBegin, Option<String> dateEnd, Option<String> site, Option<String> mode ) {
 
-        LocalDate tempdateBegin = LocalDate.now(),tempdateEnd = LocalDate.now();
+        /*LocalDate tempdateBegin = LocalDate.now(),tempdateEnd = LocalDate.now();
 
         if(dateBegin.isDefined()){
             tempdateBegin = LocalDate.parse(dateBegin.get(), DateTimeFormatter.ofPattern("dd.MM.yyyy"));
@@ -94,8 +88,12 @@ public class PrecisionOrderController extends Controller {
         String tempMode = "1";
         if(mode.isDefined()){
             tempMode = mode.get();
-        }
-
+        }*/
+        SelectParam selectParam = new SelectParam(dateBegin, dateEnd, site, mode).invoke();
+        LocalDate tempdateBegin = selectParam.getTempdateBegin();
+        LocalDate tempdateEnd = selectParam.getTempdateEnd();
+        String tempSite = selectParam.getTempSite();
+        String tempMode = selectParam.getTempMode();
 
 
         return ok(Json.toJson(reportService.allOrders(tempdateBegin,tempdateEnd,tempSite,tempMode)));
@@ -104,7 +102,7 @@ public class PrecisionOrderController extends Controller {
 
     public  Result listCreateOrder(Option<String> dateBegin, Option<String> dateEnd, Option<String> site, Option<String> mode ) {
 
-        LocalDate tempdateBegin = LocalDate.now(),tempdateEnd = LocalDate.now();
+      /*  LocalDate tempdateBegin = LocalDate.now(),tempdateEnd = LocalDate.now();
 
         if(dateBegin.isDefined()){
             tempdateBegin = LocalDate.parse(dateBegin.get(), DateTimeFormatter.ofPattern("dd.MM.yyyy"));
@@ -123,13 +121,18 @@ public class PrecisionOrderController extends Controller {
         if(mode.isDefined()){
           tempMode = mode.get();
         }
-
+*/
+        SelectParam selectParam = new SelectParam(dateBegin, dateEnd, site, mode).invoke();
+        LocalDate tempdateBegin = selectParam.getTempdateBegin();
+        LocalDate tempdateEnd = selectParam.getTempdateEnd();
+        String tempSite = selectParam.getTempSite();
+        String tempMode = selectParam.getTempMode();
         return ok(Json.toJson(reportService.precisionCreateOrders(tempdateBegin,tempdateEnd,tempSite,tempMode)));
     }
 
     public  Result listPlanOrder(Option<String> dateBegin, Option<String> dateEnd, Option<String> site, Option<String> mode ) {
 
-        LocalDate tempdateBegin = LocalDate.now(),tempdateEnd = LocalDate.now();
+       /* LocalDate tempdateBegin = LocalDate.now(),tempdateEnd = LocalDate.now();
 
         if(dateBegin.isDefined()){
             tempdateBegin = LocalDate.parse(dateBegin.get(), DateTimeFormatter.ofPattern("dd.MM.yyyy"));
@@ -148,13 +151,18 @@ public class PrecisionOrderController extends Controller {
             tempMode = mode.get();
         }
 
-
+*/
+        SelectParam selectParam = new SelectParam(dateBegin, dateEnd, site, mode).invoke();
+        LocalDate tempdateBegin = selectParam.getTempdateBegin();
+        LocalDate tempdateEnd = selectParam.getTempdateEnd();
+        String tempSite = selectParam.getTempSite();
+        String tempMode = selectParam.getTempMode();
 
         return ok(Json.toJson(reportService.precisionPlanOrders(tempdateBegin,tempdateEnd,tempSite,tempMode)));
     }
 
     public  Result listProductionOrder(Option<String> dateBegin, Option<String> dateEnd, Option<String> site, Option<String> mode) {
-        LocalDate tempdateBegin = LocalDate.now(),tempdateEnd = LocalDate.now();
+      /*  LocalDate tempdateBegin = LocalDate.now(),tempdateEnd = LocalDate.now();
 
         if(dateBegin.isDefined()){
             tempdateBegin = LocalDate.parse(dateBegin.get(), DateTimeFormatter.ofPattern("dd.MM.yyyy"));
@@ -171,13 +179,17 @@ public class PrecisionOrderController extends Controller {
         String tempMode = "1";
         if(mode.isDefined()){
             tempMode = mode.get();
-        }
+        }*/
 
-
+        SelectParam selectParam = new SelectParam(dateBegin, dateEnd, site, mode).invoke();
+        LocalDate tempdateBegin = selectParam.getTempdateBegin();
+        LocalDate tempdateEnd = selectParam.getTempdateEnd();
+        String tempSite = selectParam.getTempSite();
+        String tempMode = selectParam.getTempMode();
         return ok(Json.toJson(reportService.precisionProductionOrders(tempdateBegin,tempdateEnd,tempSite,tempMode)));
     }
     public  Result listWhseOrder(Option<String> dateBegin, Option<String> dateEnd, Option<String> site, Option<String> mode) {
-        LocalDate tempdateBegin = LocalDate.now(),tempdateEnd = LocalDate.now();
+       /* LocalDate tempdateBegin = LocalDate.now(),tempdateEnd = LocalDate.now();
 
         if(dateBegin.isDefined()){
             tempdateBegin = LocalDate.parse(dateBegin.get(), DateTimeFormatter.ofPattern("dd.MM.yyyy"));
@@ -194,11 +206,16 @@ public class PrecisionOrderController extends Controller {
         String tempMode = "1";
         if(mode.isDefined()){
             tempMode = mode.get();
-        }
+        }*/
+        SelectParam selectParam = new SelectParam(dateBegin, dateEnd, site, mode).invoke();
+        LocalDate tempdateBegin = selectParam.getTempdateBegin();
+        LocalDate tempdateEnd = selectParam.getTempdateEnd();
+        String tempSite = selectParam.getTempSite();
+        String tempMode = selectParam.getTempMode();
         return ok(Json.toJson(reportService.precisionWhseOrders(tempdateBegin,tempdateEnd,tempSite,tempMode)));
     }
     public  Result listShipmentOrder(Option<String> dateBegin, Option<String> dateEnd, Option<String> site, Option<String> mode) {
-        LocalDate tempdateBegin = LocalDate.now(),tempdateEnd = LocalDate.now();
+     /*   LocalDate tempdateBegin = LocalDate.now(),tempdateEnd = LocalDate.now();
 
         if(dateBegin.isDefined()){
             tempdateBegin = LocalDate.parse(dateBegin.get(), DateTimeFormatter.ofPattern("dd.MM.yyyy"));
@@ -215,113 +232,86 @@ public class PrecisionOrderController extends Controller {
         String tempMode = "1";
         if(mode.isDefined()){
             tempMode = mode.get();
-        }
+        }*/
+        SelectParam selectParam = new SelectParam(dateBegin, dateEnd, site, mode).invoke();
+        LocalDate tempdateBegin = selectParam.getTempdateBegin();
+        LocalDate tempdateEnd = selectParam.getTempdateEnd();
+        String tempSite = selectParam.getTempSite();
+        String tempMode = selectParam.getTempMode();
         return ok(Json.toJson(reportService.precisionShipmentOrders(tempdateBegin,tempdateEnd,tempSite,tempMode)));
     }
     public  Result listDeliveryOrder(Option<String> dateBegin, Option<String> dateEnd, Option<String> site, Option<String> mode) {
-        LocalDate tempdateBegin = LocalDate.now(),tempdateEnd = LocalDate.now();
-
-        if(dateBegin.isDefined()){
-            tempdateBegin = LocalDate.parse(dateBegin.get(), DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-        }
-        if(dateEnd.isDefined()){
-            tempdateEnd = LocalDate.parse(dateEnd.get(), DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-        }
-
-        String tempSite = "";
-
-        if(site.isDefined()){
-            tempSite = helperForInterface.siteName(Integer.parseInt(site.get()));
-        }
-        String tempMode = "1";
-        if(mode.isDefined()){
-            tempMode = mode.get();
-        }
+        SelectParam selectParam = new SelectParam(dateBegin, dateEnd, site, mode).invoke();
+        LocalDate tempdateBegin = selectParam.getTempdateBegin();
+        LocalDate tempdateEnd = selectParam.getTempdateEnd();
+        String tempSite = selectParam.getTempSite();
+        String tempMode = selectParam.getTempMode();
         return ok(Json.toJson(reportService.precisionDeliveryOrders(tempdateBegin,tempdateEnd,tempSite,tempMode)));
-    }
-
-
-
-
-    public  Result grapth(Option<String> dateBegin, Option<String> dateEnd, Option<String> site, Option<String> mode, Option<String> groupField ) {
-
-        List<GrapthPrecisionCreateOrder> grapthPrecisionCreateOrders = new ArrayList<>();
-
-        LocalDate tempdateBegin = LocalDate.now(),tempdateEnd = LocalDate.now();
-
-        if(dateBegin.isDefined()){
-            tempdateBegin = LocalDate.parse(dateBegin.get(), DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-        }
-        if(dateEnd.isDefined()){
-            tempdateEnd = LocalDate.parse(dateEnd.get(), DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-        }
-
-        String tempSite = "";
-
-        if(site.isDefined()){
-            tempSite = helperForInterface.siteName(Integer.parseInt(site.get()));
-        }
-
-        String tempGroup ="";
-        if(site.isDefined()){
-            tempGroup = groupField.get();
-        }
-
-        List<GrapthPrecisionCreateOrder> longMap = reportService.precisionCreateOrdersGrapth(tempdateBegin,tempdateEnd,tempSite,"",tempGroup).stream()
-                                                 .filter(e -> e.getDeviation().equals("Без отклонений"))
-                                                 .sorted((a,b) -> a.getMonthActualShip().compareTo(b.getMonthActualShip()))
-                                                 .collect(toList());
-       /* longMap.stream().forEach(e -> convertDate(e));
-
-        Map<Date,List<Double>> dateListMap =  longMap.stream().collect(Collectors.groupingBy(GrapthPrecisionCreateOrder::getMonthActualShip,mapping(GrapthPrecisionCreateOrder::getProcent,toList())));
-
-        List<GraphDto> graphDtos = dateListMap.entrySet().stream()
-                .sorted((a,b)-> a.getKey().compareTo(b.getKey()))
-                .peek(System.out::println)
-                .map(e -> new GraphDto(e.getKey(), e.getValue().get(0))) //TODO необходимо убрать get(0)
-                .collect(toList());*/
-        //longMap.entrySet().stream().
-        /*longMap.entrySet().stream()
-                          .sorted((a,b)-> a.getKey().compareToIgnoreCase(b.getKey()))
-                          .map(e -> new GrapthPrecisionCreateOrder(e.getValue().intValue(), getDateFrom(e)))
-                                  //
-                                   .forEach(e-> grapthPrecisionCreateOrders.add(e));
-        /*forEach((k, v) -> {
-              grapthPrecisionCreateOrders.add(new GrapthPrecisionCreateOrder(v.intValue(),k));
-        });*/
-
-
-        return ok(Json.toJson(longMap));
-
-    }
-
-    private void convertDate(GrapthPrecisionCreateOrder e) {
-        Date temp =  e.getMonthActualShip();
-        LocalDate localDate = temp.toLocalDate();
-        e.setMonthActualShip(Date.valueOf(LocalDate.of(localDate.getYear(),localDate.getMonth(),1)));
-
-    }
-
-    @NotNull
-    private Date getDateFrom(Map.Entry<String, Long> e) {
-        LocalDate localDate = LocalDate.of(Integer.parseInt(e.getKey().split("-")[1]),
-                Integer.parseInt(e.getKey().split("-")[0]),1);
-        Date temp = Date.valueOf (localDate);
-
-        return temp;
     }
 
 
     public  Result show() {
 
-       // List<ReportPrecisionCreateOrder> orderList = ReportPrecisionCreateOrder.find.all();
-        //JsonNode orderList = Json.toJson(ReportPrecisionCreateOrder.find.all());
-
         return ok(views.html.precisioncreateorder.render("",webJarAssets,paramReportSelectForm,null));
     }
 
+    private class SelectParam {
+        private Option<String> dateBegin;
+        private Option<String> dateEnd;
+        private Option<String> site;
+        private Option<String> mode;
+        private LocalDate tempdateBegin;
+        private LocalDate tempdateEnd;
+        private String tempSite;
+        private String tempMode;
 
-    public  Result testsp() {
-        return  ok(Json.toJson(reportService.testSp(LocalDate.of(2016, Month.AUGUST,1),LocalDate.of(2016, Month.AUGUST,22),"1")));
+        public SelectParam(Option<String> dateBegin, Option<String> dateEnd, Option<String> site, Option<String> mode) {
+            this.dateBegin = dateBegin;
+            this.dateEnd = dateEnd;
+            this.site = site;
+            this.mode = mode;
+        }
+
+        public LocalDate getTempdateBegin() {
+            return tempdateBegin;
+        }
+
+        public LocalDate getTempdateEnd() {
+            return tempdateEnd;
+        }
+
+        public String getTempSite() {
+            return tempSite;
+        }
+
+        public String getTempMode() {
+            return tempMode;
+        }
+
+        public SelectParam invoke() {
+            tempdateBegin = LocalDate.now();
+            tempdateEnd = LocalDate.now();
+
+            if(dateBegin.isDefined()){
+                tempdateBegin = LocalDate.parse(dateBegin.get(), DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+            }
+            if(dateEnd.isDefined()){
+                tempdateEnd = LocalDate.parse(dateEnd.get(), DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+            }
+
+            tempSite = "";
+
+            if(site.isDefined()){
+                tempSite = helperForInterface.siteName(Integer.parseInt(site.get()));
+            }
+            tempMode = "1";
+            if(mode.isDefined()){
+                tempMode = mode.get();
+            }
+            return this;
+        }
     }
+
+
+
 }
