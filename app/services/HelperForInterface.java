@@ -1,6 +1,7 @@
 package services;
 
 import model.Enterprise;
+import model.TypeMode;
 import model.TypeReport;
 
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import java.util.List;
 public class HelperForInterface {
     List<TypeReport> typeReports = new ArrayList<>();
     List<Enterprise> enterprises = new ArrayList<>();
+    List<TypeMode> typeModes = new ArrayList<>();
 
 
      public List<TypeReport> typeReportList(){
@@ -35,6 +37,15 @@ public class HelperForInterface {
 
         return enterprises;
     }
+
+    public List<TypeMode> listtTypeMOde() {
+        typeModes.clear();
+        typeModes.add(new TypeMode(1,"Прямой расчет"));
+        typeModes.add(new TypeMode(2,"С учетом отклонений пред. операций"));
+        typeModes.add(new TypeMode(3,"По поручению экспедитора"));
+        return  typeModes;
+    }
+
 
     public String siteName(int id){
         listDB();
