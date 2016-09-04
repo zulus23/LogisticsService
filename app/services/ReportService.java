@@ -4,7 +4,9 @@ import com.avaje.ebean.*;
 import model.Deviation;
 import model.GrapthPrecisionCreateOrder;
 import model.ReportPrecisionCreateOrder;
+import model.TypeReport;
 import model.dto.OrderDTO;
+import services.report.AllOrder;
 
 import javax.inject.Inject;
 import java.sql.Date;
@@ -30,6 +32,22 @@ public class ReportService {
 
         return find.where().eq("site",site).between("DateActual_Ship",dateBegin,dateEnd).isNotNull("customer").findList();
     }*/
+
+   public IReport createReport(TypeReport typeReport,LocalDate dateBegin, LocalDate dateEnd, String site, String mode){
+
+       IReport result = null;
+       switch (typeReport.getId() ){
+           case 1:{
+               result = new AllOrder();
+           }
+       }
+
+       return result;
+
+   }
+
+
+
    /*Отчет 1 все заказы*/
    public List<OrderDTO> allOrders(LocalDate dateBegin, LocalDate dateEnd, String site, String mode){
 

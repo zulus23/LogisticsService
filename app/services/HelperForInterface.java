@@ -11,12 +11,12 @@ import java.util.List;
  * Created by Gukov on 05.08.2016.
  */
 public class HelperForInterface {
-    List<TypeReport> typeReports = new ArrayList<>();
-    List<Enterprise> enterprises = new ArrayList<>();
-    List<TypeMode> typeModes = new ArrayList<>();
+    private static List<TypeReport> typeReports = new ArrayList<>();
+    private static List<Enterprise> enterprises = new ArrayList<>();
+    private static List<TypeMode> typeModes = new ArrayList<>();
 
 
-     public List<TypeReport> typeReportList(){
+     public static List<TypeReport> typeReportList(){
          typeReports.clear();
          typeReports.add(new TypeReport(1,"Все заказы"));
          typeReports.add(new TypeReport(2,"Точность открытия заказов"));
@@ -29,7 +29,7 @@ public class HelperForInterface {
 
      }
 
-    public List<Enterprise> listDB() {
+    public static  List<Enterprise> listDB() {
            enterprises.clear();
             enterprises.add(new Enterprise(1,"ГОТЭК","GOTEK"));
             enterprises.add(new Enterprise(2,"ЦЕНТР","Center"));
@@ -38,7 +38,7 @@ public class HelperForInterface {
         return enterprises;
     }
 
-    public List<TypeMode> listtTypeMOde() {
+    public static List<TypeMode> listtTypeMOde() {
         typeModes.clear();
         typeModes.add(new TypeMode(1,"Прямой расчет"));
         typeModes.add(new TypeMode(2,"С учетом отклонений пред. операций"));
@@ -47,12 +47,12 @@ public class HelperForInterface {
     }
 
 
-    public String siteName(int id){
+    public static String  siteName(int id){
         listDB();
         return enterprises.stream().filter(s -> s.getId() == id).map(e -> e.getNameInDb()).findFirst().get();
     }
 
-    public String typeReport(int id){
+    public static String typeReport(int id){
 
         return typeReports.stream().filter(s -> s.getId() == id).map(e -> e.getName()).findFirst().get();
     }
