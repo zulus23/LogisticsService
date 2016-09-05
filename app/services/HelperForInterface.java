@@ -38,7 +38,7 @@ public class HelperForInterface {
         return enterprises;
     }
 
-    public static List<TypeMode> listtTypeMOde() {
+    public static List<TypeMode> listTypeMode() {
         typeModes.clear();
         typeModes.add(new TypeMode(1,"Прямой расчет"));
         typeModes.add(new TypeMode(2,"С учетом отклонений пред. операций"));

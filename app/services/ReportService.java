@@ -394,13 +394,13 @@ public class ReportService {
         orderDTO.setDatePlanShipOriginal(order.getDatePlanShip());
         orderDTO.setDatePlanWhseOriginal(order.getDatePlanWhse());
         /*TODO необходмисо сохранить оригинальную дату доставки*/
-        if(Optional.of(order.getPlanDeliveryDate()).isPresent()) {
+        if(Optional.ofNullable(order.getPlanDeliveryDate()).isPresent()) {
             orderDTO.setDatePlanDeliveryOriginal(order.getPlanDeliveryDate().toLocalDate());
         }
-        if(Optional.of(order.getDatePlanWhse()).isPresent()) {
+        if(Optional.ofNullable(order.getDatePlanWhse()).isPresent()) {
            orderDTO.setDatePlanWhseOriginal(order.getDatePlanWhse());
         }
-        if(Optional.of(order.getDatePlanShip()).isPresent()) {
+        if(Optional.ofNullable(order.getDatePlanShip()).isPresent()) {
          orderDTO.setDatePlanShipOriginal(order.getDatePlanShip());
         }
 

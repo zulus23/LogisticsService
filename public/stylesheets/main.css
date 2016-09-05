@@ -43,6 +43,10 @@ html,body{
     no-repeat;
 }
 
+#help {
+    margin-top: 10px;
+}
+
 body.loading {
     overflow: hidden;
 }

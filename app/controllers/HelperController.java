@@ -16,6 +16,10 @@ public class HelperController {
     @Inject
     private HelperForInterface helperForInterface;
 
+    public  Result typeMode() {
+        return ok(Json.toJson(helperForInterface.listTypeMode()));
+    }
+
     public  Result listdb() {
         return ok(Json.toJson(helperForInterface.listDB()));
     }

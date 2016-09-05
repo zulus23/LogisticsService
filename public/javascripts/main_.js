@@ -34,7 +34,22 @@ $(document).ready(function() {
     }
   });
 
-
+  var dataSourceTypeMode = new kendo.data.DataSource({
+    transport: {
+      read: function(options) {
+        $.ajax({
+          type: "GET",
+          url: "api/typemode",
+          contentType: "application/json; charset=utf-8",
+          dataType: 'json',
+          //data: JSON.stringify({key: "value"}),
+          success: function(data) {
+            options.success(data);
+          }
+        });
+      }
+    }
+  });
   kendo.culture("ru-RU");
   // create DatePicker from input HTML element
   $("#dateBegin").kendoDatePicker({
@@ -91,6 +106,13 @@ $(document).ready(function() {
     index: 0,
     change: onChange
   })
+
+  $("#typeMode").kendoDropDownList({
+    dataTextField: "name",
+    dataValueField: "id",
+    dataSource: dataSourceTypeMode,
+    index: 0
+  });
 
 
   function onChange() {
