@@ -27,7 +27,10 @@
         </div>
         <div  id="t1" class="col-md-12" >
             <div id="gridView"></div>
-
+            <script id="template" type="text/x-kendo-template">
+            <input type="checkbox" id="typeCustomer" class="k-checkbox" onclick="return typeCustomer_click()" data-bind="checked: isSaveSatus">
+            <label class="k-checkbox-label" for="typeCustomer">Только стратегические клиенты</label>
+            </script>
 
         </div>
 
@@ -142,7 +145,7 @@
               var columnFormat  = { "class": "table-cell",         style: "text-align: center; font-size: 11px" };*/
 
            var grid =   $("#gridView").kendoGrid({
-                   toolbar: ["excel"],
+                   toolbar: ["excel",{ template: kendo.template($("#template").html()) }],
                    excel: {
                        allPages: true
                    },
@@ -302,7 +305,27 @@
                    console.log(state);
                    }
 */
+           function typeCustomer_click(){
 
+               if($("input[type=checkbox]").is(':checked')){
+                   if(dataSourceDB.filter.filters) {
+                       dataSourceDB.filter.filters.push({
+                           field: "typeCustomer",
+                           operator: "eq",
+                           value: "Стратегический"
+                       });
+                   } else {
+                       var _filter = { logic: "and", filters: [] }
+                       _filter.filters.push({
+                           field: "typeCustomer",
+                           operator: "eq",
+                           value: "Стратегический"
+                       });
+                       dataSourceDB.filter(_filter);
+                   }
+               }else{ dataSourceDB.filter({})}
+
+           }
 
         </script>
 }

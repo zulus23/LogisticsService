@@ -25,6 +25,10 @@
         </div>
         <div  id="t1" class="col-md-12" >
             <div id="gridView"></div>
+            <script id="template" type="text/x-kendo-template">
+            <input type="checkbox" id="typeCustomer" class="k-checkbox" onclick="return typeCustomer_click()" data-bind="checked: isSaveSatus">
+            <label class="k-checkbox-label" for="typeCustomer">Только стратегические клиенты</label>
+            </script>
         </div>
         </div>
         <script>
@@ -133,7 +137,7 @@
 
               /*  -------------------------- Grid -----------------------------------------*/
               $("#gridView").kendoGrid({
-                  toolbar: ["excel"],
+                  toolbar: ["excel",{ template: kendo.template($("#template").html()) }],
                   excel: {
                       allPages: true
                   },
@@ -332,7 +336,27 @@
                   return (allCount <= count_ ) ? Math.round((allCount / count_) * 100) + " %" : Math.round((count_ / allCount) * 100) + " %";
               }
               /*  ---------------------------------------------------------------------------*/
+              function typeCustomer_click(){
 
+                  if($("input[type=checkbox]").is(':checked')){
+                      if(dataSourceDB.filter.filters) {
+                          dataSourceDB.filter.filters.push({
+                              field: "typeCustomer",
+                              operator: "eq",
+                              value: "Стратегический"
+                          });
+                      } else {
+                          var _filter = { logic: "and", filters: [] }
+                          _filter.filters.push({
+                              field: "typeCustomer",
+                              operator: "eq",
+                              value: "Стратегический"
+                          });
+                          dataSourceDB.filter(_filter);
+                      }
+                  }else{ dataSourceDB.filter({})}
+
+              }
         </script>
 
 }
