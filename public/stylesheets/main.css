@@ -63,9 +63,11 @@ body.loading .modal {
 
 /* ------------------------- Kendo ----------------------*/
 /*td[role="gridcell"] { white-space: nowrap; }*/
-
+#gridView .k-virtual-scrollable-wrap tr td{
+    height: 25px
+}
 .k-grid tbody tr{
-    height: 38px;
+    height: 25px;
 }
 
 .k-grid td {
