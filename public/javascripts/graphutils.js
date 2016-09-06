@@ -157,6 +157,70 @@ var  graphUtils = (function(){
              }*/
         });
     }
+
+    /* =========================================================*/
+    function graphForAll_(_datasource) {
+        $("#chartView").kendoChart({
+            dataSource: _datasource,
+            legend: {
+                visible: true,
+                position: "top"
+            },
+            series: [/*{
+             type: "column",
+             field: "procent",
+
+             },*/{
+                type: "column",
+                field: "procent",
+                tooltip: {
+                    visible: true,
+                    template: "#= kendo.format('{0}%', value) #"
+                },
+                labels: {
+                    visible: true,
+                    background: "transparent"
+                },
+                categoryField: "dateActualShip"
+            }/*, {
+                type: "line",
+                field: "procent",
+                tooltip: {
+                    visible: true,
+                    template: "#= kendo.format('{0}%', value) #"
+                },
+                visibleInLegend: false,
+                categoryField: "dateActualShip"
+
+            }*/
+            ],
+
+            valueAxis: {
+
+                labels: {
+
+                    min: 0,
+                    max: 100,
+                    format: "{0}%"
+                }
+            },
+            categoryAxis: {
+
+                baseUnit: "months",
+
+                labels: {
+
+                    template: "#= kendo.format('{0:MMMM-yyyy}', new Date(value)) #"
+
+                }
+            }/*,
+             tooltip: {
+             visible: true,
+             template: "#:value#%"
+             }*/
+        });
+    }
+    /* ---------------------------------------------------------*/
     function graphForReasonDeviation(_datasource) {
 
         $("#chartView").kendoChart({
@@ -219,7 +283,7 @@ var  graphUtils = (function(){
         if(groupField === 'reasonDeviation' ){
             graphForReasonDeviation(_datasource);
         } else {
-         graphForAll(_datasource);
+         graphForAll_(_datasource);
         }
     };
     function createLocalDatasourceForgraph(groupField,datasource){

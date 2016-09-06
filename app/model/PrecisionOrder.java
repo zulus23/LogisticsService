@@ -88,6 +88,10 @@ public abstract class PrecisionOrder extends Model {
     @Column(name = "ShipCodeDescr")
     private String typeShip;
 
+    /*Тип клиента */
+    @Column(name = "CustStrateg")
+    private String typeCustomer;
+
 
 
     public String getSite() {
@@ -273,5 +277,13 @@ public abstract class PrecisionOrder extends Model {
 
     public void setTypeShip(String typeShip) {
         this.typeShip = typeShip;
+    }
+
+    public String getTypeCustomer() {
+        return typeCustomer;
+    }
+
+    public void setTypeCustomer(String typeCustomer) {
+        this.typeCustomer = typeCustomer;
     }
 }

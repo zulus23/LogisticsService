@@ -126,7 +126,7 @@ public class OrderDTO {
     private boolean isChangeDatePlanShip;
     private boolean isChangeDatePlanWhse;
     private boolean isChangeDatePlanDelivery;
-
+    private String typeCustomer;
 
 
     public Long getId() {
@@ -514,5 +514,13 @@ public class OrderDTO {
     @Override
     public int hashCode() {
         return getId().hashCode();
+    }
+
+    public void setTypeCustomer(String typeCustomer) {
+        this.typeCustomer = typeCustomer;
+    }
+
+    public String getTypeCustomer() {
+        return typeCustomer;
     }
 }

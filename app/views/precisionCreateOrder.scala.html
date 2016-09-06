@@ -175,7 +175,7 @@
                   },*/
                     columns: [
                         { field: "orderNumber",title:"№ Заказа", width: "70px",headerAttributes: gridUtils.headerFormat,attributes: gridUtils.columnFormat,groupable: false },
-                        { field: "orderLine", title: "№ Строки",  width: "60px",headerAttributes: gridUtils.headerFormat,attributes: gridUtils.columnFormat,filterable: false,groupable: false   },
+                        { field: "orderLine", title: "№ Строки",  width: "60px",headerAttributes: gridUtils.headerFormat,attributes: gridUtils.columnFormat,/*filterable: false,*/groupable: false   },
                         { field: "manager", title: "Менеджер", width: "80px",headerAttributes: gridUtils.headerFormat ,attributes: gridUtils.columnFormat, aggregates: ["count"],
                             groupHeaderTemplate: "Менеджер: #=value#: #=count# : #=count# : (#= calcAll(data,field,value,count)#)"},
                         { field: "customer", title: "Клиент",width: "180px" ,aggregates: ["count"],headerAttributes: gridUtils.headerFormat,attributes: gridUtils.columnFormat,

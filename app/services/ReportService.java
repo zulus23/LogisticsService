@@ -415,6 +415,7 @@ public class ReportService {
         orderDTO.setPlanDeliveryDate_M(order.getPlanDeliveryDate_M());
         orderDTO.setDatePlanShip_M(order.getDatePlanShip_M());
         orderDTO.setTypeShip(order.getTypeShip());
+        orderDTO.setTypeCustomer(order.getTypeCustomer());
 
 
         return  orderDTO;
@@ -509,6 +510,7 @@ public class ReportService {
         precisionOrder.setPlanDeliveryDate_M(row.getDate("PlanDeliveryDate_M"));
         precisionOrder.setDatePlanShip_M(row.getDate("DatePlan_Ship_M"));
         precisionOrder.setTypeShip(row.getString("ShipCodeDescr"));
+        precisionOrder.setTypeCustomer(row.getString("CustStrateg"));
 
         return  precisionOrder;
     }

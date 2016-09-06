@@ -27,12 +27,16 @@
 
             <div id="gridView"></div>
             <script id="template" type="text/x-kendo-template">
-            <input type="checkbox" id="saveStatus" class="k-checkbox" data-bind="checked: isSaveSatus">
-            <label class="k-checkbox-label" for="saveStatus">Сохранить состояние(группировку и фильтр)</label>
+            <input type="checkbox" id="typeCustomer" class="k-checkbox" onclick="return typeCustomer_click()" data-bind="checked: isSaveSatus">
+            <label class="k-checkbox-label" for="typeCustomer">Только стратегические клиенты</label>
             </script>
         </div>
         </div>
         <script>
+
+
+
+
                 var data = kendo.observable({
                     isSaveStatus:true
                 });
@@ -90,7 +94,8 @@
                                 //datePlanShipOriginal:{type:"date"},
                                 nornalizeGroupDate:{type:"string"},
                                 deviationHide:{type:"number"},
-                                changeDatePlanShip:{type:"boolean"}
+                                changeDatePlanShip:{type:"boolean"},
+                                typeCustomer:{type:"string"}
                             }
                         }
                     },
@@ -169,7 +174,7 @@
                             width: "60px",
                             headerAttributes: gridUtils.headerFormat,
                             attributes: gridUtils.columnFormat,
-                            filterable: false,
+                           // filterable: false,
                             groupable: false
                         },
                         {
@@ -357,6 +362,27 @@
                 };
                 /* ---------------------------------------------------------------------------*/
 
+                function typeCustomer_click(){
+
+                    if($("input[type=checkbox]").is(':checked')){
+                       if(dataSourceDB.filter.filters) {
+                              dataSourceDB.filter.filters.push({
+                                  field: "typeCustomer",
+                                  operator: "eq",
+                                  value: "Стратегический"
+                              });
+                       } else {
+                           var _filter = { logic: "and", filters: [] }
+                           _filter.filters.push({
+                               field: "typeCustomer",
+                               operator: "eq",
+                               value: "Стратегический"
+                           });
+                           dataSourceDB.filter(_filter);
+                       }
+                    }else{ dataSourceDB.filter({})}
+
+                }
 
 
 
