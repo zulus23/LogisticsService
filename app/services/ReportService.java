@@ -2,10 +2,9 @@ package services;
 
 import com.avaje.ebean.*;
 import model.Deviation;
-import model.GrapthPrecisionCreateOrder;
 import model.ReportPrecisionCreateOrder;
 import model.TypeReport;
-import model.dto.OrderDTO;
+import model.dto.*;
 import services.report.AllOrder;
 
 import javax.inject.Inject;
@@ -63,7 +62,7 @@ public class ReportService {
    }
 
     /*Отчет 2 точность открытия заказов*/
-    public List<OrderDTO> precisionCreateOrders(LocalDate dateBegin, LocalDate dateEnd, String site, String mode){
+    public List<PrecisionCreateOrderDTO> precisionCreateOrders(LocalDate dateBegin, LocalDate dateEnd, String site, String mode){
 
 
          List<ReportPrecisionCreateOrder> listAllOrders = getListOrders(dateBegin, dateEnd, site,2);
@@ -74,75 +73,75 @@ public class ReportService {
 
 
         listOrders.stream().forEach( e -> {setDeviationCreateOrder(e,Integer.parseInt(mode)); e.setReasonDeviation("");});
+        List<PrecisionCreateOrderDTO>  result = listOrders.stream().map(this::mapOrderToPrecisionCreateOrder).collect(toList());
 
-
-        return listOrders;
+        return result;
     }
 
 
 
     /*Отчет 3 точность планирования заказов*/
-    public List<OrderDTO> precisionPlanOrders(LocalDate dateBegin, LocalDate dateEnd, String site, String mode){
+    public List<PrecisionPlanOrderDTO> precisionPlanOrders(LocalDate dateBegin, LocalDate dateEnd, String site, String mode){
 
 
         List<ReportPrecisionCreateOrder> listAllOrders = getListOrders(dateBegin, dateEnd, site,3);
 
         List<OrderDTO> listOrders =   listAllOrders.stream().filter(e -> e.getPlanDeliveryDate() != null && e.getActualDeliveryDate() != null).map(this::createOrderDTO).collect(toList());
         listOrders.stream().forEach( e -> {setDeviationPlanOrder(e,Integer.parseInt(mode)); e.setReasonDeviation("");});
+        List<PrecisionPlanOrderDTO>  result = listOrders.stream().map(this::mapOrderToPrecisionPlanOrder).collect(toList());
 
-
-        return listOrders;
+        return result;
     }
 
 
     /*  4 ----------------------- Точность постановки заказов в производство -------*/
-    public List<OrderDTO> precisionProductionOrders(LocalDate dateBegin, LocalDate dateEnd, String site, String mode) {
+    public List<PrecisionProductionOrderDTO> precisionProductionOrders(LocalDate dateBegin, LocalDate dateEnd, String site, String mode) {
         List<ReportPrecisionCreateOrder> listAllOrders = getListOrders(dateBegin, dateEnd, site,4);
 
         List<OrderDTO> listOrders =   listAllOrders.stream().filter(e -> e.getDatePlanBeginProduction() != null && e.getFactProdReqDate() != null).map(this::createOrderDTO).collect(toList());
         listOrders.stream().forEach( e -> setDeviationProductionOrder(e,Integer.parseInt(mode)));
+        List<PrecisionProductionOrderDTO>  result = listOrders.stream().map(this::mapOrderToPrecisionProductionOrder).collect(toList());
 
-
-        return listOrders;
+        return result;
 
 
     }
     /*  5 ----------------------- Точность выходов заказов на склад -------*/
-    public List<OrderDTO> precisionWhseOrders(LocalDate dateBegin, LocalDate dateEnd, String site, String mode) {
+    public List<PrecisionWhseOrderDTO> precisionWhseOrders(LocalDate dateBegin, LocalDate dateEnd, String site, String mode) {
 
         List<ReportPrecisionCreateOrder> listAllOrders = getListOrders(dateBegin, dateEnd, site,5);
 
         List<OrderDTO> listOrders =   listAllOrders.stream().filter(e -> e.getDatePlanWhse() != null && e.getFactOnWhseDate() != null).map(this::createOrderDTO).collect(toList());
         listOrders.stream().forEach( e -> {setDeviationWhseOrder(e,Integer.parseInt(mode));e.setReasonDeviation("");});
 
-
-        return listOrders;
+        List<PrecisionWhseOrderDTO>  result = listOrders.stream().map(this::mapOrderToPrecisionWhseOrder).collect(toList());
+        return result;
 
 
     }
     /*  6 ----------------------- Точность отгрузки заказов -------*/
-    public List<OrderDTO> precisionShipmentOrders(LocalDate dateBegin, LocalDate dateEnd, String site, String mode) {
+    public List<PrecisionShipOrderDTO> precisionShipmentOrders(LocalDate dateBegin, LocalDate dateEnd, String site, String mode) {
         List<ReportPrecisionCreateOrder> listAllOrders = getListOrders(dateBegin, dateEnd, site,6);
 
         List<OrderDTO> listOrders =   listAllOrders.stream().filter(e -> e.getDatePlanShip() != null && e.getMonthActualShip() != null && !e.getTypeShip().equals("самовывоз"))
                                                             .map(this::createOrderDTO).collect(toList());
 
-            listOrders.stream().forEach(e -> setDeviationShipmentOrder(e, Integer.parseInt(mode)));
+           listOrders.stream().forEach(e -> setDeviationShipmentOrder(e, Integer.parseInt(mode)));
+           List<PrecisionShipOrderDTO>  result = listOrders.stream().map(this::mapOrderToPrecisionShipOrder).collect(toList());
 
 
-
-        return listOrders;
+        return result;
     }
     /*  7 ----------------------- Точность доставки заказов -------*/
-    public List<OrderDTO> precisionDeliveryOrders(LocalDate dateBegin, LocalDate dateEnd, String site, String mode) {
+    public List<PrecisionDeliveryOrderDTO> precisionDeliveryOrders(LocalDate dateBegin, LocalDate dateEnd, String site, String mode) {
         List<ReportPrecisionCreateOrder> listAllOrders = getListOrders(dateBegin, dateEnd, site,7);
 
         List<OrderDTO> listOrders =   listAllOrders.stream().filter(e -> e.getFactDeliveryDate() != null && e.getPlanDeliveryDate() != null && !e.getTypeShip().equals("самовывоз"))
                                                             .map(this::createOrderDTO).collect(toList());
         listOrders.stream().forEach( e -> setDeviationDeliveryOrder(e,Integer.parseInt(mode)));
+        List<PrecisionDeliveryOrderDTO>  result = listOrders.stream().map(this::mapOrderToPrecisionDeliveryOrder).collect(toList());
 
-
-        return listOrders;
+        return result;
     }
     /* =================== Отклонение доставки заказа  =====================================*/
     private void setDeviationDeliveryOrder(OrderDTO orderDTO, int mode) {
@@ -529,4 +528,156 @@ public class ReportService {
 
     }
 
+    /* ----------------------- Точность открытия заказов -----------------------*/
+
+    private PrecisionCreateOrderDTO mapOrderToPrecisionCreateOrder(OrderDTO order){
+        PrecisionCreateOrderDTO result = new PrecisionCreateOrderDTO();
+        result.setId(order.getId());
+        result.setOrderNumber(order.getOrderNumber());
+        result.setOrderLine(order.getOrderLine());
+        result.setCustomer(order.getCustomer());
+        result.setManager(order.getManager());
+        result.setItemDescription(order.getItemDescription());
+        result.setItem(order.getItem());
+        result.setMonthShip(order.getMonthShip());
+        result.setDeviation(order.getDeviation());
+        result.setReasonDeviation(order.getReasonDeviation());
+        result.setCalcStatus(order.getCalcStatus());
+        result.setDateActualShip(order.getDateActualShip());
+        result.setNornalizeGroupDate(order.getNornalizeGroupDate());
+        result.setDeviationHide(order.getDeviationHide());
+        result.setTypeCustomer(order.getTypeCustomer());
+        result.setDateCreateOrderFormat(order.getDateCreateOrderFormat());////
+        result.setDatePlanBeginProductionFormat(order.getDatePlanBeginProductionFormat());
+
+
+        return  result;
+    }
+
+    /* --------------------   Точность планирования заказов -------------------------------*/
+
+    private PrecisionPlanOrderDTO mapOrderToPrecisionPlanOrder(OrderDTO order){
+        PrecisionPlanOrderDTO result = new PrecisionPlanOrderDTO();
+        result.setId(order.getId());
+        result.setOrderNumber(order.getOrderNumber());
+        result.setOrderLine(order.getOrderLine());
+        result.setCustomer(order.getCustomer());
+        result.setManager(order.getManager());
+        result.setItemDescription(order.getItemDescription());
+        result.setItem(order.getItem());
+        result.setMonthShip(order.getMonthShip());
+        result.setDeviation(order.getDeviation());
+        result.setReasonDeviation(order.getReasonDeviation());
+        result.setCalcStatus(order.getCalcStatus());
+        result.setDateActualShip(order.getDateActualShip());
+        result.setNornalizeGroupDate(order.getNornalizeGroupDate());
+        result.setDeviationHide(order.getDeviationHide());
+        result.setTypeCustomer(order.getTypeCustomer());
+        result.setPlanDeliveryDateFormat(order.getPlanDeliveryDateFormat());////
+        result.setActualDeliveryDateFormat(order.getActualDeliveryDateFormat());
+
+
+        return  result;
+    }
+
+    /* -------------------- Точность постановки заказов в производство ---------------------*/
+
+
+    private PrecisionProductionOrderDTO mapOrderToPrecisionProductionOrder(OrderDTO order){
+        PrecisionProductionOrderDTO result = new PrecisionProductionOrderDTO();
+        result.setId(order.getId());
+        result.setOrderNumber(order.getOrderNumber());
+        result.setOrderLine(order.getOrderLine());
+        result.setCustomer(order.getCustomer());
+        result.setManager(order.getManager());
+        result.setItemDescription(order.getItemDescription());
+        result.setItem(order.getItem());
+        result.setMonthShip(order.getMonthShip());
+        result.setDeviation(order.getDeviation());
+        result.setReasonDeviation(order.getReasonDeviation());
+        result.setCalcStatus(order.getCalcStatus());
+        result.setDateActualShip(order.getDateActualShip());
+        result.setNornalizeGroupDate(order.getNornalizeGroupDate());
+        result.setDeviationHide(order.getDeviationHide());
+        result.setTypeCustomer(order.getTypeCustomer());
+        result.setFactProdReqDateFormat(order.getFactProdReqDateFormat());////
+        result.setDatePlanBeginProductionFormat(order.getDatePlanBeginProductionFormat());
+
+
+        return  result;
+    }
+
+    /* ---------------------  Точность отгрузки заказов  -----------------------------------*/
+    private PrecisionShipOrderDTO mapOrderToPrecisionShipOrder(OrderDTO order){
+        PrecisionShipOrderDTO result = new PrecisionShipOrderDTO();
+            result.setId(order.getId());
+            result.setOrderNumber(order.getOrderNumber());
+            result.setOrderLine(order.getOrderLine());
+            result.setCustomer(order.getCustomer());
+            result.setManager(order.getManager());
+            result.setItemDescription(order.getItemDescription());
+            result.setItem(order.getItem());
+            result.setMonthShip(order.getMonthShip());
+            result.setDatePlanShipFormat(order.getDatePlanShipFormat());
+            result.setDateActualShipFormat(order.getDateActualShipFormat());
+            result.setDeviation(order.getDeviation());
+            result.setReasonDeviation(order.getReasonDeviation());
+            result.setCalcStatus(order.getCalcStatus());
+            result.setDateActualShip(order.getDateActualShip());
+            result.setNornalizeGroupDate(order.getNornalizeGroupDate());
+            result.setDeviationHide(order.getDeviationHide());
+            result.setChangeDatePlanShip(order.isChangeDatePlanShip());
+            result.setTypeCustomer(order.getTypeCustomer());
+        return  result;
+    }
+
+    /* ------------------------------ Точность выхода заказов на склад ---------------------------------*/
+    private PrecisionWhseOrderDTO mapOrderToPrecisionWhseOrder(OrderDTO order){
+        PrecisionWhseOrderDTO result = new PrecisionWhseOrderDTO();
+        result.setId(order.getId());
+        result.setOrderNumber(order.getOrderNumber());
+        result.setOrderLine(order.getOrderLine());
+        result.setCustomer(order.getCustomer());
+        result.setManager(order.getManager());
+        result.setItemDescription(order.getItemDescription());
+        result.setItem(order.getItem());
+        result.setMonthShip(order.getMonthShip());
+        result.setDeviation(order.getDeviation());
+        result.setReasonDeviation(order.getReasonDeviation());
+        result.setCalcStatus(order.getCalcStatus());
+        result.setDateActualShip(order.getDateActualShip());
+        result.setNornalizeGroupDate(order.getNornalizeGroupDate());
+        result.setDeviationHide(order.getDeviationHide());
+        result.setTypeCustomer(order.getTypeCustomer());
+        result.setFactOnWhseDateFormat(order.getFactOnWhseDateFormat());
+        result.setDatePlanToWhseFormat(order.getDatePlanToWhseFormat());
+        result.setChangeDatePlanWhse(order.isChangeDatePlanWhse());
+
+        return  result;
+    }
+
+    /* -------------------------- Точность доставки заказов -------------------------------*/
+    private PrecisionDeliveryOrderDTO mapOrderToPrecisionDeliveryOrder(OrderDTO order){
+        PrecisionDeliveryOrderDTO result = new PrecisionDeliveryOrderDTO();
+        result.setId(order.getId());
+        result.setOrderNumber(order.getOrderNumber());
+        result.setOrderLine(order.getOrderLine());
+        result.setCustomer(order.getCustomer());
+        result.setManager(order.getManager());
+        result.setItemDescription(order.getItemDescription());
+        result.setItem(order.getItem());
+        result.setMonthShip(order.getMonthShip());
+        result.setDeviation(order.getDeviation());
+        result.setReasonDeviation(order.getReasonDeviation());
+        result.setCalcStatus(order.getCalcStatus());
+        result.setDateActualShip(order.getDateActualShip());
+        result.setNornalizeGroupDate(order.getNornalizeGroupDate());
+        result.setDeviationHide(order.getDeviationHide());
+        result.setTypeCustomer(order.getTypeCustomer());
+        result.setPlanDeliveryDateFormat(order.getPlanDeliveryDateFormat());
+        result.setFactDeliveryDateFormat(order.getFactDeliveryDateFormat());
+        result.setChangeDatePlanDelivery(order.isChangeDatePlanDelivery());
+
+        return  result;
+    }
 }
