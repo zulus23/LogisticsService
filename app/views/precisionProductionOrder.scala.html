@@ -61,7 +61,7 @@
                           });
                       }
                   },
-                  pageSize:20,
+                  pageSize:100,
                   schema: {
                       model: {
                           id:"id",
@@ -83,7 +83,8 @@
                               //dateActualShip:{type:"date"},
                               //dateActualShipFormat:{type:"string"},
                               nornalizeGroupDate:{type:"string"},
-                              deviationHide:{type:"number"}
+                              deviationHide:{type:"number"},
+                              typeCustomer:{type:"string"}
                           }
                       }
                   },
@@ -147,9 +148,12 @@
                   groupable: true,
                   sortable: true,
                   filterable: true,
-                  //resizable:true,
+                  resizable:true,
                   pageable: {
                       pageSizes: true
+                  },
+                  dataBound: function(e){
+                      $("#gridView").find('.k-icon.k-i-collapse').trigger('click');
                   },
                   columns: [
                       {

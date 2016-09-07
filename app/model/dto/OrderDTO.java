@@ -9,6 +9,9 @@ import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.Locale;
+import java.util.Optional;
+
+import static java.util.Optional.ofNullable;
 
 /**
  * Created by Gukov on 22.08.2016.
@@ -118,6 +121,9 @@ public class OrderDTO {
     private String planDeliveryDateFormat;
     /*Форматированная дата  плана   доставки*/
     private String datePlanDeliveryFormat;
+
+    private String planDeliveryDateMFormat;
+    private String datePlanShipMFormat;
 
 
     /* Дата javascript*/
@@ -372,8 +378,8 @@ public class OrderDTO {
 
 
     public String getDatePlanBeginProductionFormat() {
-        if(getDatePlanBeginProduction() != null) {
-            return getDatePlanBeginProduction().format(DateTimeFormatter.ofPattern("dd-MM-yyyy", Locale.forLanguageTag("ru-RU")));
+        if(Optional.ofNullable(datePlanBeginProduction).isPresent()) {
+            return datePlanBeginProduction.format(DateTimeFormatter.ofPattern("dd-MM-yyyy", Locale.forLanguageTag("ru-RU")));
         }
         return "";
     }
@@ -450,6 +456,21 @@ public class OrderDTO {
     public String getDatePlanDeliveryFormat() {
         if(datePlanDelivery != null) {
             return datePlanDelivery.format(DateTimeFormatter.ofPattern("dd-MM-yyyy", Locale.forLanguageTag("ru-RU")));
+        }
+        return "";
+
+    }
+
+    public String getPlanDeliveryDateMFormat() {
+        if(Optional.ofNullable(planDeliveryDate_M).isPresent()){
+            return planDeliveryDate_M.toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy", Locale.forLanguageTag("ru-RU")));
+        }
+        return "";
+    }
+
+    public String getDatePlanShipMFormat() {
+        if(Optional.ofNullable(datePlanShip_M).isPresent()){
+            return datePlanShip_M.toLocalDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy", Locale.forLanguageTag("ru-RU")));
         }
         return "";
 

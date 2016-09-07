@@ -223,6 +223,9 @@ var  graphUtils = (function(){
     /* ---------------------------------------------------------*/
     function graphForReasonDeviation(_datasource) {
 
+
+
+
         $("#chartView").kendoChart({
             dataSource:_datasource,
             legend: {
@@ -252,6 +255,7 @@ var  graphUtils = (function(){
                     background: "transparent"
                 },
                 categoryField: "dateActualShip"
+
 
             }],
 

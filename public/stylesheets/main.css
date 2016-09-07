@@ -64,17 +64,20 @@ body.loading .modal {
 /* ------------------------- Kendo ----------------------*/
 /*td[role="gridcell"] { white-space: nowrap; }*/
 #gridView .k-virtual-scrollable-wrap tr td{
-    height: 25px
+    height: 15px
 }
 .k-grid tbody tr{
-    height: 25px;
+    height: 15px;
 }
 
 .k-grid td {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    padding: 0.08em 0.08em
 }
+
+
 
 .red{
     color:red;
@@ -82,4 +85,13 @@ body.loading .modal {
 
 .green {
     color:green;
+}
+
+
+.k-grid-footer{
+    height: 0;
+    border-bottom-width: 0;
+    visibility: hidden;
+    overflow: hidden;
+    display: none;
 }

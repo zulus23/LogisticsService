@@ -60,7 +60,7 @@
                          });
                      }
                  },
-                 pageSize:20,
+                 pageSize:100,
                  schema: {
                      model: {
                          id:"id",
@@ -75,6 +75,7 @@
                              monthShip:{type:"string"},
                              dateCreateOrderFormat:{type:"string"},
                              datePlanBeginProductionFormat:{type:"string"},
+                             factProdReqDateFormat:{type:"string"},
                              datePlanShipFormat:{type:"string"},
                              datePlanToWhseFormat:{type:"string"},
                              factOnWhseDateFormat:{type:"string"},
@@ -88,7 +89,10 @@
                              //dateActualShip:{type:"date"},
                              dateActualShipFormat:{type:"string"},
                              nornalizeGroupDate:{type:"string"},
-                             deviationHide:{type:"number"}
+                             deviationHide:{type:"number"},
+                             typeCustomer:{type:"string"},
+                             planDeliveryDateMFormat:{type:"string"},
+                             datePlanShipMFormat:{type:"string"}
                          }
                      }
                  },
@@ -150,7 +154,7 @@
                  //groupable: true,
                  sortable: true,
                  filterable: true,
-                 //resizable:true,
+                 resizable:true,
                  pageable: {
                      pageSizes: true
                  },
@@ -222,7 +226,7 @@
                      { field: "datePlanBeginProductionFormat", title: "Дата начала производства план",width: "80px",
                          headerAttributes: gridUtils.headerFormat,attributes: gridUtils.columnFormat,filterable: false,groupable: false
                      },
-                     { field: "dateBeginProductionFormat", title: "Дата начала производства в план сутки",width: "80px",
+                     { field: "factProdReqDateFormat", title: "Дата начала производства в план сутки",width: "80px",
                          headerAttributes: gridUtils.headerFormat,attributes: gridUtils.columnFormat,filterable: false,groupable: false
                      },
                      { field: "datePlanToWhseFormat", title: "Дата сдачи заказа на склад план",width: "80px",
@@ -250,6 +254,14 @@
                      {
                          field: "factDeliveryDateFormat", title: "Дата доставки факт.", width: "80px",
                          headerAttributes: gridUtils.headerFormat, attributes: gridUtils.columnFormat, filterable: false, groupable: false
+                     },
+                     {
+                         field: "datePlanShipMFormat", title: "Дата отгрузки по поруч.эксп.", width: "80px",
+                         headerAttributes: gridUtils.headerFormat, attributes: gridUtils.columnFormat, filterable: false, groupable: false
+                     },
+                     {
+                         field: "planDeliveryDateMFormat", title: "Дата дост. по поруч.эксп.", width: "80px",
+                         headerAttributes: gridUtils.headerFormat, attributes: gridUtils.columnFormat, filterable: false, groupable: false
                      }
 
 
@@ -276,6 +288,7 @@
                  }else{ dataSourceDB.filter({})}
 
              }
+            // $(".k-grid-footer").css('display', 'none');
         </script>
 
 }
