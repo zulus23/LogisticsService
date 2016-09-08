@@ -11,6 +11,9 @@ public class BaseOrderDTO {
     private String orderLine;
     private String customer;
     private String manager;
+
+
+
     private String item;
     private String itemDescription;
     /* Дата фактической отгрузки*/

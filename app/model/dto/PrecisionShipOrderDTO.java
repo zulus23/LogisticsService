@@ -36,4 +36,7 @@ public class PrecisionShipOrderDTO extends BaseOrderDTO {
     public void setChangeDatePlanShip(boolean changeDatePlanShip) {
         isChangeDatePlanShip = changeDatePlanShip;
     }
+
+
+
 }

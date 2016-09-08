@@ -127,7 +127,7 @@ public class ReportService {
                                                             .map(this::createOrderDTO).collect(toList());
 
            listOrders.stream().forEach(e -> setDeviationShipmentOrder(e, Integer.parseInt(mode)));
-           List<PrecisionShipOrderDTO>  result = listOrders.stream().map(this::mapOrderToPrecisionShipOrder).collect(toList());
+           List<PrecisionShipOrderDTO>  result = listOrders.stream().map(this::mapOrderToPrecisionShipOrder).distinct().collect(toList());
 
 
         return result;
@@ -263,7 +263,7 @@ public class ReportService {
                 break;
             }
             case 3 : {
-                if (orderDTO.getDatePlanShip_M() != null) {
+                if (Optional.ofNullable(orderDTO.getDatePlanShip_M()).isPresent()) {
                     orderDTO.setDatePlanShip(orderDTO.getDatePlanShip_M().toLocalDate());
                 }
                 if (orderDTO.getDateActualShip() != null && orderDTO.getDatePlanShip() != null) {
@@ -318,6 +318,16 @@ public class ReportService {
                  }
 
 
+
+                 break;
+             }
+             default: {
+                /*Разница между датой поступления на склад и датой сдачи на склад*/
+                /*TODO Нет даты поступления на склад*/
+                 if(orderDTO.getDatePlanBeginProduction() != null && orderDTO.getDatePlanWhse() != null) {
+                     tempDeviation = Period.between(orderDTO.getFactOnWhseDate().toLocalDate(),orderDTO.getDatePlanWhse()).getDays();
+                     tempDeviation =   tempDeviation > 0 ? 0:Math.abs(tempDeviation) ; ;
+                 }
 
                  break;
              }
