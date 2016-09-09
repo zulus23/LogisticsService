@@ -175,7 +175,10 @@
                          headerAttributes: gridUtils.headerFormat,
                          attributes: gridUtils.columnFormat,
                          aggregates: ["count"],
-                         groupHeaderTemplate: "Менеджер: #=value#: #=count# : (#=  Math.round((count/calcAll(data,field,value))*100)#%): Count : #=count#"
+                         groupHeaderTemplate: "Менеджер: #=value#: #=count# : (#=  Math.round((count/calcAll(data,field,value))*100)#%): Count : #=count#",
+                         filterable:{
+                             multi:true
+                         }
                      },
                      {
                          field: "customer",
@@ -185,6 +188,8 @@
                          headerAttributes: gridUtils.headerFormat,
                          attributes: gridUtils.columnFormat,
                          filterable: {
+
+
                              ui: createMultiSelect,
                              extra: false
                          },
