@@ -7,7 +7,7 @@
 @(message: String)(implicit webJarAssets: WebJarAssets,paramReportSelectForm:Form[ParamReportSelect],select:ParamReportSelect)
 
 
-@main("Точность открытия заказов") {
+@main("Точность отгрузки заказов") {
  @*   <div class="container-fluid">*@
         <div id="vertical">
         <div>
@@ -103,7 +103,8 @@
                     aggregate:[
                         {field:"calcStatus",aggregate:"count"},
                         {field:"customer", aggregate:"count"},
-                        {field:"monthShip", aggregate:"count"}
+                        {field:"monthShip", aggregate:"count"},
+                        {field:"manager", aggregate:"count"}
                     ],
                     change: function(e) {
 
@@ -187,7 +188,7 @@
                             headerAttributes: gridUtils.headerFormat,
                             attributes: gridUtils.columnFormat,
                             aggregates: ["count"],
-                            groupHeaderTemplate: "Менеджер: #=value#: #=count# : (#=  Math.round((count/calcAll(data,field,value))*100)#%): Count : #=count#"
+                            groupHeaderTemplate: "Менеджер: #=value#: (#= calcAll(data,field,value,count)#): Кол-во : #=count#"
                         },
                         {
                             field: "customer",
@@ -327,6 +328,7 @@
                             allCount = _.groupBy(_.pluck(_.where(filteredData, fieldObject), "calcStatus"), function (n) {
                                 return "count"
                             });
+
                             allCount = _.isUndefined(allCount.count) ? 1 : allCount.count.length;
                         }
 

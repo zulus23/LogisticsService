@@ -53,7 +53,7 @@ $(document).ready(function() {
   kendo.culture("ru-RU");
   // create DatePicker from input HTML element
   $("#dateBegin").kendoDatePicker({
-    format: kendo.culture().calendar.patterns.d
+    format: 'yyyy-MM-dd'//kendo.culture().calendar.patterns.d
   });
 
 
@@ -62,7 +62,7 @@ $(document).ready(function() {
 
 
     // display month and year in the input
-    format: kendo.culture().calendar.patterns.d
+    format: 'yyyy-MM-dd'//kendo.culture().calendar.patterns.d
   });
 
   $("#enterprise").kendoDropDownList({
@@ -119,48 +119,18 @@ $(document).ready(function() {
     var value = $("#enterprise").val();
   }
 
-  /*$("#grid").kendoGrid({
-    dataSource: {
-      data: products,
-      schema: {
-        model: {
-          fields: {
-            ProductName: { type: "string" },
-            UnitPrice: { type: "number" },
-            UnitsInStock: { type: "number" },
-            Discontinued: { type: "boolean" }
-          }
-        }
-      },
-      pageSize: 20
-    },
-    height: 550,
-    groupable: true,
-    scrollable: true,
-    sortable: true,
-    filterable: true,
-    pageable: {
-      input: true,
-      numeric: false
-    },
-    columns: [
-      "ProductName",
-      { field: "UnitPrice", title: "Unit Price", format: "{0:c}", width: "130px" },
-      { field: "UnitsInStock", title: "Units In Stock", width: "130px" },
-      { field: "Discontinued", width: "130px" }
-    ]
-  });*/
 
+/*
   createChart();
   $(document).bind("kendo:skinChange", createChart);
   $(".options").bind("change", refresh);
-
+*/
 
 
 
 
 });
-function refresh() {
+/*function refresh() {
   var chart = $("#chart").data("kendoChart"),
       type = $("input[name=seriesType]:checked").val(),
       stack = $("#stack").prop("checked");
@@ -216,3 +186,4 @@ function createChart() {
     }
   });
 }
+*/

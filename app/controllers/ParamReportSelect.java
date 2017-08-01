@@ -2,6 +2,8 @@ package controllers;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 /**
  * Created by Zhukov on 05.08.2016.
@@ -35,7 +37,7 @@ public class ParamReportSelect {
     }
 
     public String getDateEnd() {
-        return dateEnd;
+        return  dateEnd;
     }
 
     public void setDateEnd(String dateEnd) {
